@@ -239,3 +239,4 @@ The next stages of development can include:
 **Project:** PolicyPilot
 **Repository:** `SW2627_PolicyPilot_Kalvium-Community`
 **Purpose:** Reproducible and secure foundation for an internal RAG assistant
+git checkout -b feature/github-workflow-setup
