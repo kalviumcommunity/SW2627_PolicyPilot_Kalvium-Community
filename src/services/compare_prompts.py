@@ -1,7 +1,7 @@
 """Prompt comparison script for PolicyPilot.
 
-Runs prompt variations (vague vs. clear/constrained) against staff policy queries,
-logs outputs, compares behavior differences, and writes output files.
+Runs prompt variations (vague vs. clear/constrained) against staff policy queries
+and prints behavior differences in the terminal.
 """
 
 import json
@@ -33,9 +33,6 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 BASE_URL = os.getenv("API_BASE_URL")
 API_KEY = os.getenv("API_KEY")
 MODEL = os.getenv("CHAT_MODEL", "gpt-3.5-turbo")
-
-OUTPUT_DIR = Path(__file__).resolve().parents[2] / "outputs"
-OUTPUT_DIR.mkdir(exist_ok=True)
 
 SAMPLE_QUERIES = [
     {
@@ -151,42 +148,22 @@ def run_comparisons() -> List[Dict[str, Any]]:
     return results
 
 
-def write_outputs(results: List[Dict[str, Any]]) -> None:
-    """Save results as JSON and Markdown files in outputs/ directory."""
-    json_path = OUTPUT_DIR / "prompt_comparison_results.json"
-    with open(json_path, "w", encoding="utf-8") as f:
-        json.dump(results, f, indent=2)
-    logging.info("Saved JSON results to %s", json_path)
-
-    md_path = OUTPUT_DIR / "prompt_comparison_results.md"
-    md_content = ["# PolicyPilot Prompt Comparison Results\n"]
-    md_content.append("This document records the side-by-side comparison between **Variation 1 (Vague Prompt)** and **Variation 2 (Constrained Grounded Prompt)** for PolicyPilot staff questions.\n")
-
+def print_results(results: List[Dict[str, Any]]) -> None:
+    """Print prompt comparison results directly in the terminal."""
     for res in results:
-        md_content.append(f"## Query {res['id']}: {res['query']} ({res['query_type']})\n")
-        md_content.append("### Variation 1: Vague Prompt")
-        md_content.append(f"- **System Prompt:** `{res['variation_1_vague']['system_prompt']}`")
-        md_content.append(f"- **User Prompt:** `{res['variation_1_vague']['user_prompt']}`")
-        md_content.append(f"- **Output:**\n> {res['variation_1_vague']['output']}\n")
-
-        md_content.append("### Variation 2: Constrained & Grounded Prompt")
-        md_content.append(f"- **System Prompt:** `{res['variation_2_constrained']['system_prompt']}`")
-        md_content.append(f"- **User Prompt:** `{res['variation_2_constrained']['user_prompt']}`")
-        md_content.append(f"- **Output:**\n> {res['variation_2_constrained']['output']}\n")
-
-        md_content.append("### JSON Format Constrained Prompt")
-        md_content.append(f"- **System Prompt:** `{res['json_format_constrained']['system_prompt']}`")
-        md_content.append(f"- **Output:**\n```json\n{res['json_format_constrained']['output']}\n```\n")
-
-        md_content.append("---\n")
-
-    with open(md_path, "w", encoding="utf-8") as f:
-        f.write("\n".join(md_content))
-    logging.info("Saved Markdown summary to %s", md_path)
+        print(f"\n{'=' * 70}")
+        print(f"Query {res['id']}: {res['query']}")
+        print(f"Type: {res['query_type']}")
+        print("\nVariation 1 - Vague Prompt:")
+        print(res["variation_1_vague"]["output"])
+        print("\nVariation 2 - Constrained Prompt:")
+        print(res["variation_2_constrained"]["output"])
+        print("\nJSON Format Prompt:")
+        print(res["json_format_constrained"]["output"])
+    print(f"\n{'=' * 70}")
+    print("Prompt comparison complete.")
 
 
 if __name__ == "__main__":
-    logging.info("Starting prompt comparison test...")
-    results = run_comparisons()
-    write_outputs(results)
-    print("\nPrompt comparison complete! Check outputs/ directory for generated logs.\n")
+    print("Starting prompt comparison test...")
+    print_results(run_comparisons())
