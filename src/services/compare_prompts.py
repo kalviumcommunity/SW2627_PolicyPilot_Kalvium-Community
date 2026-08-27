@@ -25,10 +25,12 @@ from src.services.prompt_service import (
     compare_prompt_structures,
     execute_prompt,
 )
+from src.services.response_service import ResponseService
 
 load_dotenv()
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+# Configure logging to suppress verbose output during interactive mode
+logging.basicConfig(level=logging.WARNING, format="%(asctime)s - %(levelname)s - %(message)s")
 
 BASE_URL = os.getenv("API_BASE_URL")
 API_KEY = os.getenv("API_KEY")
@@ -164,14 +166,76 @@ def print_results(results: List[Dict[str, Any]]) -> None:
     print("Prompt comparison complete.")
 
 
+def save_results_to_json(results: List[Dict[str, Any]], output_file: str = None) -> str:
+    """Save prompt comparison results to a JSON file."""
+    if output_file is None:
+        outputs_dir = PROJECT_ROOT / "outputs"
+        outputs_dir.mkdir(parents=True, exist_ok=True)
+        output_file = outputs_dir / "prompt_comparison_results.json"
+
+    with open(output_file, "w", encoding="utf-8") as file:
+        json.dump(results, file, indent=2, ensure_ascii=False)
+
+    return str(output_file)
+
+
+def run_interactive_mode() -> None:
+    """Run PolicyPilot in interactive mode with clean output.
+    
+    Displays only the final PolicyPilot answer to user queries.
+    Uses the RAG pipeline (ResponseService) to generate grounded policy answers.
+    """
+    response_service = ResponseService()
+    
+    # Print header
+    print("="*40)
+    print("       PolicyPilot")
+    print("="*40)
+    print("Ask your question. Type 'exit' to quit.\n")
+    
+    try:
+        while True:
+            try:
+                user_input = input("Ask your question: ").strip()
+                
+                if user_input.lower() == "exit":
+                    print("\nExiting...")
+                    break
+                
+                if not user_input:
+                    continue
+                
+                # Generate response using RAG pipeline
+                result = response_service.generate(user_input)
+                answer = result["answer"]
+                
+                # Display final answer only
+                print(f"\nPolicyPilot: {answer}\n")
+                
+            except EOFError:
+                # Handle end of input gracefully
+                print("\n\nExiting...")
+                break
+    except KeyboardInterrupt:
+        # Handle Ctrl+C gracefully without showing traceback
+        print("\n\nExiting...")
+        sys.exit(0)
+
+
 if __name__ == "__main__":
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
     if len(sys.argv) > 1 and sys.argv[1] == "--compare":
         print("Starting prompt comparison test...")
-        print_results(run_comparisons())
-    else:
+        results = run_comparisons()
+        print_results(results)
+        output_path = save_results_to_json(results)
+        print(f"\nResults saved to: {output_path}\n")
+    elif len(sys.argv) > 1 and sys.argv[1] == "--test":
         from src.services.test_runner import PolicyPilotTestRunner
         runner = PolicyPilotTestRunner()
         runner.run_all_tests()
+    else:
+        # Default: run interactive mode
+        run_interactive_mode()

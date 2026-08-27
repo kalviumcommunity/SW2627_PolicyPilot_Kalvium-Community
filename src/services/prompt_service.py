@@ -1,107 +1,278 @@
 """Prompt construction and management service for PolicyPilot RAG Assistant.
 
-Demonstrates role separation (system vs user), system message constraints (role,
-scope, length, tone, fallback), and prompt variation comparison.
+Provides:
+- Vague prompt for comparison/testing
+- Strict grounded prompt for PolicyPilot
+- Strict JSON prompt for structured testing
+- Protection against hallucination and <think> output
 """
 
-from typing import Any, Dict, List, Optional
+import re
+from typing import Any, Dict, List
 
 
-SYSTEM_PROMPT_CONSTRAINED = (
-    "You are PolicyPilot, an internal support assistant for staff policy questions. "
-    "Your sole task is to answer staff questions accurately using official company policy guidelines. "
-    "Scope & Boundaries: Do not answer non-policy questions or speculate beyond official guidelines. "
-    "Format & Tone: Keep your response concise (maximum 2 sentences). Maintain a direct, factual, and professional tone. "
-    "Fallback Rule: If the requested information is not specified in the official guidelines or if you are unsure, "
-    "reply strictly with: 'I am unable to answer this question as it is not specified in the official policy guidelines.'"
+FALLBACK_RESPONSE = (
+    "I am unable to answer this question as it is not specified in the official policy guidelines."
 )
+
+
+# ---------------------------------------------------------------------------
+# STRICT POLICY PROMPT
+# ---------------------------------------------------------------------------
+
+SYSTEM_PROMPT_CONSTRAINED = f"""
+You are PolicyPilot, an internal company policy assistant.
+
+Your ONLY job is to answer questions using the official policy information
+provided in the retrieved context.
+
+STRICT RULES:
+
+1. Use ONLY the information contained in the retrieved policy context.
+2. If the retrieved policy context contains enough information to answer the
+   question, answer the question directly and concisely.
+3. If the retrieved policy context does NOT contain enough information to
+   answer the question, reply EXACTLY with:
+   "{FALLBACK_RESPONSE}"
+4. If the question is unrelated to company policy, reply EXACTLY with the
+   same fallback response.
+5. NEVER use general knowledge, outside information, assumptions, common
+   corporate practices, or guesses.
+6. NEVER invent or infer missing policy details.
+7. NEVER provide an answer just because something is generally true in
+   other companies.
+8. Do not recommend HR, Google, websites, handbooks, or other sources when
+   the required information is missing.
+9. Do not mention the retrieved context in the final answer.
+10. Do not reveal your reasoning or internal thought process.
+11. NEVER output <think>, </think>, analysis, reasoning, self-correction,
+    or planning text.
+12. Keep valid answers concise, factual, and professional.
+13. Return ONLY the final answer. Do not add headings, labels, explanations,
+    or extra commentary.
+
+The retrieved policy context will be provided with each user question.
+"""
+
+
+# ---------------------------------------------------------------------------
+# VAGUE PROMPT
+# ---------------------------------------------------------------------------
 
 SYSTEM_PROMPT_VAGUE = "You are a helpful assistant."
 
-SYSTEM_PROMPT_JSON_FORMAT = (
-    "You are PolicyPilot, an internal support assistant for staff policy questions. "
-    "Answer staff questions based on official guidelines. "
-    "Format Constraint: Reply strictly with ONLY a valid JSON object in the following schema: "
-    '{"answer": "<string>", "confidence": "<high|medium|low|unknown>", "refusal": <true|false>}. '
-    "Do not include markdown code block ticks or conversational text outside the JSON."
-)
+
+# ---------------------------------------------------------------------------
+# STRICT JSON PROMPT
+# ---------------------------------------------------------------------------
+
+SYSTEM_PROMPT_JSON_FORMAT = f"""
+You are PolicyPilot, an internal company policy assistant.
+
+Your ONLY job is to answer questions using the official policy information
+provided in the retrieved context.
+
+STRICT RULES:
+
+1. Use ONLY the retrieved policy context.
+2. If the context contains enough information to answer the question,
+   provide the answer using ONLY that information.
+3. If the context does not contain enough information, use exactly:
+   "{FALLBACK_RESPONSE}"
+4. If the question is unrelated to company policy, use exactly the same
+   fallback response.
+5. NEVER use general knowledge or outside information.
+6. NEVER guess or infer missing policy information.
+7. NEVER invent company policies.
+8. Do not reveal reasoning or internal thought processes.
+9. NEVER output <think> or </think>.
+10. Return ONLY valid JSON.
+11. Do not use markdown code fences.
+
+Required JSON schema:
+
+{{
+    "answer": "<string>",
+    "confidence": "<high|medium|low|unknown>",
+    "refusal": <true|false>
+}}
+
+For a supported question:
+- "answer" = concise answer based only on the retrieved context.
+- "confidence" = "high" when the context directly supports the answer.
+- "refusal" = false.
+
+For an unsupported or unrelated question:
+- "answer" = "{FALLBACK_RESPONSE}"
+- "confidence" = "unknown"
+- "refusal" = true.
+"""
 
 
-def build_messages(system_content: str, user_content: str) -> List[Dict[str, str]]:
-    """Construct a message list with distinct system and user roles.
+# ---------------------------------------------------------------------------
+# MESSAGE BUILDER
+# ---------------------------------------------------------------------------
 
-    Args:
-        system_content: Instructions defining assistant identity, scope, constraints, and fallback.
-        user_content: The user's query or turn task.
+def build_messages(
+    system_content: str,
+    user_content: str,
+) -> List[Dict[str, str]]:
+    """Construct system and user messages."""
 
-    Returns:
-        A list of role-content message dictionaries expected by OpenAI-compatible Chat API.
-    """
     return [
-        {"role": "system", "content": system_content},
-        {"role": "user", "content": user_content},
+        {
+            "role": "system",
+            "content": system_content.strip(),
+        },
+        {
+            "role": "user",
+            "content": user_content.strip(),
+        },
     ]
 
 
+# ---------------------------------------------------------------------------
+# PROMPT VARIATIONS
+# ---------------------------------------------------------------------------
+
 def get_vague_prompt(user_query: str) -> List[Dict[str, str]]:
-    """Build a vague/unconstrained prompt pair (Variation 1)."""
+    """Build a vague/unconstrained prompt for comparison."""
+
     return build_messages(
         system_content=SYSTEM_PROMPT_VAGUE,
         user_content=user_query,
     )
 
 
-def get_constrained_prompt(user_query: str) -> List[Dict[str, str]]:
-    """Build a clear, constrained, and grounded system prompt pair (Variation 2)."""
+def get_constrained_prompt(
+    user_query: str,
+    context: str = "",
+) -> List[Dict[str, str]]:
+    """Build a strict, grounded PolicyPilot prompt."""
+
+    user_content = f"""
+Retrieved policy context:
+{context}
+
+User question:
+{user_query}
+"""
+
     return build_messages(
         system_content=SYSTEM_PROMPT_CONSTRAINED,
-        user_content=user_query,
+        user_content=user_content,
     )
 
 
-def get_json_constrained_prompt(user_query: str) -> List[Dict[str, str]]:
-    """Build a system prompt enforcing JSON output format."""
+def get_json_constrained_prompt(
+    user_query: str,
+    context: str = "",
+) -> List[Dict[str, str]]:
+    """Build a strict JSON PolicyPilot prompt."""
+
+    user_content = f"""
+Retrieved policy context:
+{context}
+
+User question:
+{user_query}
+"""
+
     return build_messages(
         system_content=SYSTEM_PROMPT_JSON_FORMAT,
-        user_content=user_query,
+        user_content=user_content,
     )
 
 
+# ---------------------------------------------------------------------------
+# PROMPT COMPARISON
+# ---------------------------------------------------------------------------
+
 def compare_prompt_structures(user_query: str) -> Dict[str, Any]:
-    """Return a structural comparison dictionary of vague vs constrained prompts."""
+    """Return structural comparison of vague vs constrained prompts."""
+
     vague_messages = get_vague_prompt(user_query)
     constrained_messages = get_constrained_prompt(user_query)
 
     return {
         "user_query": user_query,
+
         "variation_1_vague": {
             "system_prompt": vague_messages[0]["content"],
             "user_prompt": vague_messages[1]["content"],
             "characteristics": [
-                "Vague system role ('helpful assistant')",
-                "No defined scope or domain boundary",
-                "No length or formatting constraints",
-                "No refusal fallback mechanism for unknown policies",
+                "Vague system role",
+                "No defined policy scope",
+                "No grounding requirement",
+                "No hallucination protection",
+                "No refusal fallback",
             ],
         },
+
         "variation_2_constrained": {
             "system_prompt": constrained_messages[0]["content"],
             "user_prompt": constrained_messages[1]["content"],
             "characteristics": [
-                "Clear persona ('PolicyPilot internal support assistant')",
-                "Strict scope boundary (staff policy questions only)",
-                "Explicit length constraint (max 2 sentences)",
-                "Factual & professional tone directive",
-                "Strict refusal fallback statement when information is missing",
+                "Clear PolicyPilot persona",
+                "Strict policy-only scope",
+                "Uses retrieved context",
+                "No general knowledge",
+                "No guessing",
+                "No hallucination",
+                "Strict fallback response",
+                "No reasoning output",
+                "Maximum concise response",
             ],
         },
     }
 
 
-def execute_prompt(client: Any, model: str, messages: List[Dict[str, str]]) -> str:
-    """Execute a chat completion request using the provided client and messages."""
+# ---------------------------------------------------------------------------
+# RESPONSE CLEANING
+# ---------------------------------------------------------------------------
+
+def clean_response(response: str) -> str:
+    """Remove accidental reasoning/thinking tags from model output."""
+
+    if not response:
+        return ""
+
+    # Remove <think>...</think>
+    response = re.sub(
+        r"<think>.*?</think>",
+        "",
+        response,
+        flags=re.DOTALL | re.IGNORECASE,
+    )
+
+    # Remove stray thinking tags
+    response = re.sub(
+        r"</?think>",
+        "",
+        response,
+        flags=re.IGNORECASE,
+    )
+
+    return response.strip()
+
+
+# ---------------------------------------------------------------------------
+# API EXECUTION
+# ---------------------------------------------------------------------------
+
+def execute_prompt(
+    client: Any,
+    model: str,
+    messages: List[Dict[str, str]],
+) -> str:
+    """Execute a chat completion request and return clean final answer."""
+
     response = client.chat.completions.create(
         model=model,
         messages=messages,
+        temperature=0,
     )
-    return response.choices[0].message.content
+
+    answer = response.choices[0].message.content or ""
+
+    return clean_response(answer)
