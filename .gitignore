@@ -15,6 +15,7 @@ data/*
 outputs/*
 !outputs/.gitkeep
 !outputs/prompt_comparison_results.*
+!outputs/parameter_experiments_results.*
 
 # Python cache
 __pycache__/
