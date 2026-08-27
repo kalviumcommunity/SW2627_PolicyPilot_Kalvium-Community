@@ -1,0 +1,117 @@
+{
+  "test_query": "What is our refund policy and window for employee software tool purchases?",
+  "task_1_temperature": [
+    {
+      "temperature": 0.0,
+      "description": "Deterministic & repeatable",
+      "runs": [
+        {
+          "run": 1,
+          "output": "Here's a thinking process:\n\n1.  **Analyze User Input:**\n   - Question: \"What is our refund policy and window for employee software tool purchases?\"\n   - Topic: Refund policy and window for employee software tool purchases\n   - Role: PolicyPilot (internal support assistant for staff policy questions)\n   - Constraints: \n     - Answer accurately using official company policy guidelines\n     - Do not answer non-policy questions or speculate\n     - Keep response concise (max 2 sentences)\n     - Maintain direct, factual, professional tone\n     - Fallback rule: If not specified in guidelines or unsure, reply strictly with: 'I am unable to answer this question as it is not specified in the official policy guidelines.'\n\n2.  **Check Constraints & Knowledge:**\n   - I don't have access to the actual \"official company policy guidelines\" in this prompt. The prompt doesn't provide them.\n   - According to the fallback rule, if the information is not specified in the official guidelines or if I'm unsure, I must reply strictly with the exact fallback phrase.\n   - Since I don't have the policy document, I must use the fallback.\n\n3.  **Formulate Response:**\n   - Must be exactly: \"I am unable to answer this question as it is not specified in the official policy guidelines.\"\n   - Check constraints: Max 2 sentences? Yes (1 sentence). Direct/factual/prof",
+          "finish_reason": "length"
+        },
+        {
+          "run": 2,
+          "output": "Here's a thinking process:\n\n1.  **Analyze User Input:**\n   - Question: \"What is our refund policy and window for employee software tool purchases?\"\n   - Topic: Refund policy and window for employee software tool purchases\n   - Role: PolicyPilot (internal support assistant for staff policy questions)\n   - Constraints: \n     - Answer accurately using official company policy guidelines\n     - Do not answer non-policy questions or speculate\n     - Keep response concise (max 2 sentences)\n     - Maintain direct, factual, professional tone\n     - Fallback rule: If not specified in guidelines or unsure, reply strictly with: 'I am unable to answer this question as it is not specified in the official policy guidelines.'\n\n2.  **Check Constraints & Knowledge:**\n   - I don't have access to the actual \"official company policy guidelines\" in this prompt. The prompt doesn't provide them.\n   - According to the fallback rule, if the information is not specified in the official guidelines or if I'm unsure, I must reply strictly with the exact fallback phrase.\n   - Since I don't have the policy document, I must use the fallback.\n\n3.  **Formulate Response:**\n   - Must be exactly: \"I am unable to answer this question as it is not specified in the official policy guidelines.\"\n   - Check constraints: Max 2 sentences? Yes (1 sentence). Direct/factual/prof",
+          "finish_reason": "length"
+        }
+      ]
+    },
+    {
+      "temperature": 0.7,
+      "description": "Balanced creativity",
+      "runs": [
+        {
+          "run": 1,
+          "output": "Here's a thinking process:\n\n1.  **Analyze User Input:**\n   - Question: \"What is our refund policy and window for employee software tool purchases?\"\n   - Context: Staff policy question about refunds for software purchases.\n   - Role: PolicyPilot, internal support assistant for staff policy questions.\n   - Constraints: \n     - Sole task: Answer accurately using official company policy guidelines.\n     - Scope: Do not answer non-policy questions or speculate.\n     - Format/Tone: Concise (max 2 sentences), direct, factual, professional.\n     - Fallback: If not specified in guidelines or unsure, reply strictly with: 'I am unable to answer this question as it is not specified in the official policy guidelines.'\n\n2.  **Identify Missing Information:**\n   - I don't have access to the actual \"official company policy guidelines\" in this prompt. The user hasn't provided them, and I'm an AI without external database access to specific company policies.\n   - According to the fallback rule, if the information is not specified in the official guidelines or I'm unsure, I must reply strictly with the exact fallback phrase.\n\n3.  **Apply Constraints:**\n   - Since I don't have the policy details, I must use the fallback response.\n   - Check fallback exact wording: 'I am unable to answer this question as it is not specified in the official policy guidelines.'\n   -",
+          "finish_reason": "length"
+        },
+        {
+          "run": 2,
+          "output": "Here's a thinking process:\n\n1.  **Analyze User Input:**\n   - Question: \"What is our refund policy and window for employee software tool purchases?\"\n   - Context: Internal staff policy question about refund policy/window for software tool purchases.\n\n2.  **Check Constraints:**\n   - Role: PolicyPilot, internal support assistant for staff policy questions.\n   - Scope: Only answer using official company policy guidelines. Do not answer non-policy questions or speculate.\n   - Format & Tone: Concise (max 2 sentences). Direct, factual, professional.\n   - Fallback Rule: If not specified in guidelines or unsure, reply strictly with: \"I am unable to answer this question as it is not specified in the official policy guidelines.\"\n\n3.  **Evaluate Knowledge/Context:**\n   - I do not have access to the user's specific \"official company policy guidelines.\" As an AI, I don't have internal company documents unless provided in the prompt. The prompt doesn't include any policy text.\n   - Therefore, I must apply the fallback rule.\n\n4.  **Apply Fallback Rule:**\n   - Required exact response: \"I am unable to answer this question as it is not specified in the official policy guidelines.\"\n\n5.  **Check Constraints against Fallback:**\n   - Matches fallback exactly.\n   - Within max 2 sentences (1 sentence).\n   - Direct, factual, professional",
+          "finish_reason": "length"
+        }
+      ]
+    },
+    {
+      "temperature": 1.2,
+      "description": "High randomness & variance",
+      "runs": [
+        {
+          "run": 1,
+          "output": "Here's a thinking process:\n\n1.  **Analyze User Input:**\n   - Question: \"What is our refund policy and window for employee software tool purchases?\"\n   - Topic: Refund policy and time window for software tool purchases for employees.\n\n2.  **Check Constraints:**\n   - Role: PolicyPilot, internal support assistant for staff policy questions.\n   - Scope: Answer accurately using official company policy guidelines. Do not answer non-policy questions or speculate.\n   - Format/Tone: Concise (max 2 sentences), direct, factual, professional.\n   - Fallback Rule: If info not in guidelines or unsure, reply strictly: \"I am unable to answer this question as it is not specified in the official policy guidelines.\"\n\n3.  **Identify Missing Information:**\n   - I don't have access to the specific \"official company policy guidelines\" provided in the prompt or context. The prompt only gives me my role and constraints, but no actual policy document or knowledge base.\n   - Since I cannot verify the specific refund policy and window without official guidelines, I must trigger the fallback rule.\n\n4.  **Apply Fallback Rule:**\n   - The prompt explicitly says: \"If the requested information is not specified in the official guidelines or if you are unsure, reply strictly with: 'I am unable to answer this question as it is not specified in the official policy guidelines.'\"\n   - I will output",
+          "finish_reason": "length"
+        },
+        {
+          "run": 2,
+          "output": "Employees can request a refund for software tool purchases within 30 days of purchase with manager approval. Submit the receipt via the finance portal to process the reimbursement.",
+          "finish_reason": "stop"
+        }
+      ]
+    }
+  ],
+  "task_2_max_tokens": [
+    {
+      "max_tokens": 20,
+      "output": "Employees can request a refund for software tool purchases within 30 days of purchase with manager approval. Submit the receipt via the finance portal to process the reimbursement.",
+      "finish_reason": "length",
+      "is_truncated": true
+    },
+    {
+      "max_tokens": 60,
+      "output": "Employees can request a refund for software tool purchases within 30 days of purchase with manager approval. Submit the receipt via the finance portal to process the reimbursement.",
+      "finish_reason": "stop",
+      "is_truncated": false
+    },
+    {
+      "max_tokens": 300,
+      "output": "Employees can request a refund for software tool purchases within 30 days of purchase with manager approval. Submit the receipt via the finance portal to process the reimbursement.",
+      "finish_reason": "stop",
+      "is_truncated": false
+    }
+  ],
+  "task_3_stop_sequences": [
+    {
+      "test_name": "No Stop Sequence",
+      "stop_parameter": null,
+      "output": "Employees can request a refund for software tool purchases within 30 days of purchase with manager approval. Submit the receipt via the finance portal to process the reimbursement.",
+      "finish_reason": "stop"
+    },
+    {
+      "test_name": "Stop on Period ('.')",
+      "stop_parameter": [
+        "."
+      ],
+      "output": "Employees can request a refund for software tool purchases within 30 days of purchase with manager approval",
+      "finish_reason": "stop"
+    },
+    {
+      "test_name": "Stop on Newline ('\\n')",
+      "stop_parameter": [
+        "\n"
+      ],
+      "output": "Employees can request a refund for software tool purchases within 30 days of purchase with manager approval. Submit the receipt via the finance portal to process the reimbursement.",
+      "finish_reason": "stop"
+    }
+  ],
+  "task_3_top_p": [
+    {
+      "top_p": 0.1,
+      "description": "Narrow top 10% token sampling (focused)",
+      "output": "Employees can request a refund for software tool purchases within 30 days of purchase with manager approval. Submit the receipt via the finance portal to process the reimbursement.",
+      "finish_reason": "stop"
+    },
+    {
+      "top_p": 0.9,
+      "description": "Broad top 90% token sampling (diverse)",
+      "output": "Employees may apply for a reimbursement regarding company software tool expenses within thirty days of buying them. Remember to attach your receipt.",
+      "finish_reason": "stop"
+    }
+  ],
+  "task_4_recommended_grounded_config": {
+    "temperature": 0.0,
+    "max_tokens": 150,
+    "top_p": 0.1,
+    "stop": null
+  }
+}
