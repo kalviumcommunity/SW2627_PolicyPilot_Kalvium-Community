@@ -4,6 +4,10 @@ import os
 import sys
 from pathlib import Path
 
+# Ensure stdout uses UTF-8 encoding on Windows
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
 # Ensure project root is in sys.path
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:

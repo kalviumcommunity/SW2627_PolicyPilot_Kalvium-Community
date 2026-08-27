@@ -22,7 +22,8 @@ POLICYPILOT_SYSTEM_PROMPT = (
     "- If the supplied policy context does not contain enough information to answer the question, return exactly:\n"
     "  'I am unable to answer this question as it is not specified in the official policy guidelines.'\n"
     "- Do not provide alternative sources or recommendations.\n"
-    "- Keep answers concise, factual, and professional."
+    "- Keep answers concise, factual, and professional.\n"
+    "- Output ONLY your final answer. Do not include internal reasoning steps, draft notes, or bullet-point analysis."
 )
 
 
@@ -35,16 +36,27 @@ def clean_cot_reasoning(text: str) -> str:
             text = text.split("</think>", 1)[1]
         else:
             text = text.replace("<think>", "")
-    if "Here's a thinking process:" in text or "thinking process:" in text.lower():
-        lines = text.split("\n")
-        filtered_lines = [
-            line for line in lines
-            if not line.strip().lower().startswith(
-                ("here's", "thinking process", "1.", "2.", "3.", "4.", "5.", "analyze", "scan", "check", "**")
-            )
-        ]
-        text = "\n".join(filtered_lines)
-    return text.replace("```text", "").replace("```", "").strip()
+
+    lines = text.split("\n")
+    cleaned_lines = []
+    for line in lines:
+        l_strip = line.strip()
+        if not l_strip:
+            continue
+        l_lower = l_strip.lower()
+        if l_lower.startswith((
+            "here's", "thinking process", "analyze", "scan", "check", "must use",
+            "context provided", "question:", "1.", "2.", "3.", "4.", "5.",
+            "- context", "- draft", "- final", "- no ", "- matches", "- concise"
+        )):
+            continue
+        if l_strip.startswith("- **") or l_strip.startswith("- Must") or l_strip.startswith("- Directly") or l_strip.startswith("- Check") or l_strip.startswith("- \""):
+            continue
+        cleaned_lines.append(l_strip)
+
+    result_text = " ".join(cleaned_lines)
+    result_text = result_text.replace("```text", "").replace("```", "").replace("✅", "").strip(' "')
+    return result_text
 
 
 class ResponseService:

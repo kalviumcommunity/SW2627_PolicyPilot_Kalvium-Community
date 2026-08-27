@@ -165,5 +165,13 @@ def print_results(results: List[Dict[str, Any]]) -> None:
 
 
 if __name__ == "__main__":
-    print("Starting prompt comparison test...")
-    print_results(run_comparisons())
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
+    if len(sys.argv) > 1 and sys.argv[1] == "--compare":
+        print("Starting prompt comparison test...")
+        print_results(run_comparisons())
+    else:
+        from src.services.test_runner import PolicyPilotTestRunner
+        runner = PolicyPilotTestRunner()
+        runner.run_all_tests()
