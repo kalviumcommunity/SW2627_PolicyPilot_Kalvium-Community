@@ -104,3 +104,4 @@ def execute_completion_with_params(
             "stop": stop,
         },
     }
+    

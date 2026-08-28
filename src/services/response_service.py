@@ -11,65 +11,9 @@ from src.services.retrieval_service import (
     RetrievalService,
     DEFAULT_RELEVANCE_THRESHOLD,
 )
+from src.services.prompt_templates import TemplateRenderer, FALLBACK_RESPONSE
 
 load_dotenv()
-
-FALLBACK_RESPONSE = (
-    "I am unable to answer this question as it is not specified "
-    "in the official policy guidelines."
-)
-
-
-POLICYPILOT_SYSTEM_PROMPT = """
-You are PolicyPilot, an internal company policy assistant.
-
-Your ONLY job is to answer questions using the official company policy
-information provided in the retrieved context.
-
-STRICT RULES:
-
-1. Answer ONLY when the retrieved context contains the exact information
-   needed to answer the user's question.
-
-2. Use ONLY the retrieved context.
-   Do NOT use general knowledge, assumptions, common practices, or outside
-   information.
-
-3. A context that is merely related to the question is NOT sufficient.
-   The actual answer must be present in the context.
-
-4. If the answer is NOT explicitly available in the retrieved context,
-   respond with EXACTLY:
-   I am unable to answer this question as it is not specified in the official policy guidelines.
-
-5. If the question is unrelated to company policy, respond with EXACTLY:
-   I am unable to answer this question as it is not specified in the official policy guidelines.
-
-6. Never guess, infer, invent, or complete missing policy information.
-
-7. Keep valid answers concise, direct, factual, and professional.
-
-8. Return ONLY the final answer.
-
-9. NEVER output:
-   - <think>
-   - </think>
-   - Thinking Process
-   - reasoning
-   - analysis
-   - self-correction
-   - drafts
-   - explanations of your instructions
-
-10. Do not tell the user to check HR, Google, websites, handbooks,
-    or other sources when the answer is unavailable.
-
-Retrieved official policy context:
-{context}
-
-User question:
-{question}
-"""
 
 
 def clean_model_output(text: str) -> str:
@@ -266,10 +210,12 @@ class ResponseService:
         )
 
         # ---------------------------------------------------------
-        # STEP 4: Build strict system prompt
+        # STEP 4: Build strict system prompt using centralized templates
         # ---------------------------------------------------------
 
-        system_message_content = POLICYPILOT_SYSTEM_PROMPT.format(
+        messages = TemplateRenderer.render_messages(
+            system_template="system_constrained",
+            user_template="user_with_context",
             context=context_text,
             question=query,
         )
@@ -295,7 +241,7 @@ class ResponseService:
             }
 
         # ---------------------------------------------------------
-        # STEP 6: Call LLM
+        # STEP 6: Call LLM with templated messages
         # ---------------------------------------------------------
 
         try:
@@ -308,16 +254,7 @@ class ResponseService:
 
             response = client.chat.completions.create(
                 model=self.model,
-                messages=[
-                    {
-                        "role": "system",
-                        "content": system_message_content,
-                    },
-                    {
-                        "role": "user",
-                        "content": query,
-                    },
-                ],
+                messages=messages,
                 temperature=0.0,
                 max_tokens=150,
             )

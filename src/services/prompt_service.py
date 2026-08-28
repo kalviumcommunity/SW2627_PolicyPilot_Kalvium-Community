@@ -1,5 +1,9 @@
 """Prompt construction and management service for PolicyPilot RAG Assistant.
 
+Uses centralized prompt templates from prompt_templates.py for consistency.
+This ensures that prompt changes apply across all features (chat, CLI, comparison, etc.)
+without editing multiple copies.
+
 Provides:
 - Vague prompt for comparison/testing
 - Strict grounded prompt for PolicyPilot
@@ -10,137 +14,23 @@ Provides:
 import re
 from typing import Any, Dict, List
 
-
-FALLBACK_RESPONSE = (
-    "I am unable to answer this question as it is not specified in the official policy guidelines."
-)
+from src.services.prompt_templates import TemplateRenderer, FALLBACK_RESPONSE
 
 
-# ---------------------------------------------------------------------------
-# STRICT POLICY PROMPT
-# ---------------------------------------------------------------------------
-
-SYSTEM_PROMPT_CONSTRAINED = f"""
-You are PolicyPilot, an internal company policy assistant.
-
-Your ONLY job is to answer questions using the official policy information
-provided in the retrieved context.
-
-STRICT RULES:
-
-1. Use ONLY the information contained in the retrieved policy context.
-2. If the retrieved policy context contains enough information to answer the
-   question, answer the question directly and concisely.
-3. If the retrieved policy context does NOT contain enough information to
-   answer the question, reply EXACTLY with:
-   "{FALLBACK_RESPONSE}"
-4. If the question is unrelated to company policy, reply EXACTLY with the
-   same fallback response.
-5. NEVER use general knowledge, outside information, assumptions, common
-   corporate practices, or guesses.
-6. NEVER invent or infer missing policy details.
-7. NEVER provide an answer just because something is generally true in
-   other companies.
-8. Do not recommend HR, Google, websites, handbooks, or other sources when
-   the required information is missing.
-9. Do not mention the retrieved context in the final answer.
-10. Do not reveal your reasoning or internal thought process.
-11. NEVER output <think>, </think>, analysis, reasoning, self-correction,
-    or planning text.
-12. Keep valid answers concise, factual, and professional.
-13. Return ONLY the final answer. Do not add headings, labels, explanations,
-    or extra commentary.
-
-The retrieved policy context will be provided with each user question.
-"""
-
-
-# ---------------------------------------------------------------------------
-# VAGUE PROMPT
-# ---------------------------------------------------------------------------
-
-SYSTEM_PROMPT_VAGUE = "You are a helpful assistant."
-
-
-# ---------------------------------------------------------------------------
-# STRICT JSON PROMPT
-# ---------------------------------------------------------------------------
-
-SYSTEM_PROMPT_JSON_FORMAT = f"""
-You are PolicyPilot, an internal company policy assistant.
-
-Your ONLY job is to answer questions using the official policy information
-provided in the retrieved context.
-
-STRICT RULES:
-
-1. Use ONLY the retrieved policy context.
-2. If the context contains enough information to answer the question,
-   provide the answer using ONLY that information.
-3. If the context does not contain enough information, use exactly:
-   "{FALLBACK_RESPONSE}"
-4. If the question is unrelated to company policy, use exactly the same
-   fallback response.
-5. NEVER use general knowledge or outside information.
-6. NEVER guess or infer missing policy information.
-7. NEVER invent company policies.
-8. Do not reveal reasoning or internal thought processes.
-9. NEVER output <think> or </think>.
-10. Return ONLY valid JSON.
-11. Do not use markdown code fences.
-
-Required JSON schema:
-
-{{
-    "answer": "<string>",
-    "confidence": "<high|medium|low|unknown>",
-    "refusal": <true|false>
-}}
-
-For a supported question:
-- "answer" = concise answer based only on the retrieved context.
-- "confidence" = "high" when the context directly supports the answer.
-- "refusal" = false.
-
-For an unsupported or unrelated question:
-- "answer" = "{FALLBACK_RESPONSE}"
-- "confidence" = "unknown"
-- "refusal" = true.
-"""
-
-
-# ---------------------------------------------------------------------------
-# MESSAGE BUILDER
-# ---------------------------------------------------------------------------
-
-def build_messages(
-    system_content: str,
-    user_content: str,
-) -> List[Dict[str, str]]:
-    """Construct system and user messages."""
-
-    return [
-        {
-            "role": "system",
-            "content": system_content.strip(),
-        },
-        {
-            "role": "user",
-            "content": user_content.strip(),
-        },
-    ]
-
-
-# ---------------------------------------------------------------------------
-# PROMPT VARIATIONS
-# ---------------------------------------------------------------------------
+# ============================================================================
+# PROMPT CONSTRUCTION API (using TemplateRenderer)
+# ============================================================================
 
 def get_vague_prompt(user_query: str) -> List[Dict[str, str]]:
-    """Build a vague/unconstrained prompt for comparison."""
+    """Build a vague/unconstrained prompt for comparison.
 
-    return build_messages(
-        system_content=SYSTEM_PROMPT_VAGUE,
-        user_content=user_query,
+    Uses the 'system_vague' and 'user_simple' templates from the
+    centralized template registry.
+    """
+    return TemplateRenderer.render_messages(
+        system_template="system_vague",
+        user_template="user_simple",
+        question=user_query,
     )
 
 
@@ -148,19 +38,17 @@ def get_constrained_prompt(
     user_query: str,
     context: str = "",
 ) -> List[Dict[str, str]]:
-    """Build a strict, grounded PolicyPilot prompt."""
+    """Build a strict, grounded PolicyPilot prompt.
 
-    user_content = f"""
-Retrieved policy context:
-{context}
-
-User question:
-{user_query}
-"""
-
-    return build_messages(
-        system_content=SYSTEM_PROMPT_CONSTRAINED,
-        user_content=user_content,
+    Uses the 'system_constrained' and 'user_with_context' templates
+    from the centralized template registry.
+    """
+    return TemplateRenderer.render_messages(
+        system_template="system_constrained",
+        user_template="user_with_context",
+        context=context,
+        question=user_query,
+        fallback_response=FALLBACK_RESPONSE,
     )
 
 
@@ -168,19 +56,17 @@ def get_json_constrained_prompt(
     user_query: str,
     context: str = "",
 ) -> List[Dict[str, str]]:
-    """Build a strict JSON PolicyPilot prompt."""
+    """Build a strict JSON PolicyPilot prompt.
 
-    user_content = f"""
-Retrieved policy context:
-{context}
-
-User question:
-{user_query}
-"""
-
-    return build_messages(
-        system_content=SYSTEM_PROMPT_JSON_FORMAT,
-        user_content=user_content,
+    Uses the 'system_json_constrained' and 'user_with_context' templates
+    from the centralized template registry.
+    """
+    return TemplateRenderer.render_messages(
+        system_template="system_json_constrained",
+        user_template="user_with_context",
+        context=context,
+        question=user_query,
+        fallback_response=FALLBACK_RESPONSE,
     )
 
 
