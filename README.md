@@ -217,7 +217,46 @@ outputs/ generated local files
 
 The `.env.example` file is safe to commit because it contains variable names only and no real credentials.
 
+## LLM & Tokenization Core Concepts (Viva Guide)
+
+To prepare for your viva, here is a simple breakdown of the core concepts demonstrated in PolicyPilot:
+
+### 1. What is a Token?
+* A **token** is the basic unit of text processed by a Large Language Model (LLM). It is not always a full word; it can be a single character, a syllable, a punctuation mark, or a sub-word.
+* On average, in English text, 1 token is approximately equal to 4 characters or 0.75 words (conversely, 100 English words is roughly 130–140 tokens).
+
+### 2. Why Token Count Matters
+* **Computational Cost:** LLMs process tokens sequentially. Larger token counts mean more computations, which translates directly to higher API usage costs.
+* **Speed/Latency:** The processing and generation time (latency) of LLMs scale with the number of input and output tokens.
+* **Context Budgeting:** LLMs have finite input capacities. Managing and tracking token counts prevents errors due to context window overflow.
+
+### 3. How Token Count Affects Cost
+* API providers charge for LLMs on a pay-per-use model based on the number of tokens processed.
+* Input (prompt) tokens are priced differently from output (completion) tokens (output tokens are usually more expensive due to autoregressive generation overhead).
+* PolicyPilot calculates estimated cost dynamically using the formula:
+  * Input Cost = (Input Tokens / 1000) * Input Price
+  * Output Cost = (Output Tokens / 1000) * Output Price
+  * Total Cost = Input Cost + Output Cost
+
+### 4. How Token Count Affects Context Limits
+* The **Context Window** is the maximum total limit of combined input and output tokens that a model can process in a single API call (e.g., 4,096 tokens, 8,192 tokens, etc.).
+* If your prompt (system prompt + retrieved context + user query) is larger than this limit, the API request will fail or truncate key information.
+* PolicyPilot prevents this by doing a pre-execution **Context Window check** and safely truncating the retrieved context until it fits inside the maximum token limit.
+
+### 5. Difference between System and User Messages
+* **System Message (Instructions/Rules):** Establishes the persona, goals, constraints, guidelines, and safety boundaries for the chatbot. It instructs the chatbot on *how* to answer (e.g., "Answer only using the provided policy, keep it concise, and reply with a specific fallback if unsure").
+* **User Message (Customer query/turn):** The specific input supplied by the user during the chat turn (e.g., "What is the return period?").
+* **Context (Retrieved documents):** The official policy text fetched from `data/ecommerce_policies.txt` that is appended to the user message to ground the LLM's answer.
+
+### 6. How PolicyPilot Uses These Concepts
+* **Token Counting Utility:** Uses `tiktoken` to count tokens of prompts and responses.
+* **Cost Estimation Utility:** Computes the cost of each transaction based on token usage.
+* **Safe Context Window Management:** Detects if the retrieved policies exceed the context limit and truncates them, warning the user.
+* **Grounded Prompts (System vs User separation):** Prompts the model to answer strictly using the retrieved text and refuse to answer if the context does not contain the answer, preventing hallucination.
+* **Message History Pruner:** Dynamically drops the oldest message pairs (turns) when history tokens exceed limits, keeping the prompt within budget while preserving the system instructions.
+
 ## Current Scope
+
 
 This repository establishes the foundation for the PolicyPilot RAG assistant.
 
