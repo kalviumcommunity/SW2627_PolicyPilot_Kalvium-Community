@@ -8,12 +8,16 @@ import logging
 from pathlib import Path
 from pypdf import PdfReader
 from bs4 import BeautifulSoup
+from src.services.cleaning_service import TextCleaningService
 
 logger = logging.getLogger(__name__)
 
 
 class DocumentService:
     """Prepare knowledge-base documents for indexing."""
+
+    def __init__(self):
+        self.cleaner = TextCleaningService()
 
     def load_text(self, path: Path) -> str:
         """Extract plain text from a supported file format.
@@ -45,7 +49,7 @@ class DocumentService:
         else:
             raise ValueError(f"Unsupported file format: {suffix}")
 
-    def load_documents(self, data_dir: str = "data") -> list:
+    def load_documents(self, data_dir: str = "data", clean: bool = True) -> list:
         """Load documents from the configured data directory.
 
         Robustly handles missing, corrupt, or unsupported files by logging
@@ -75,6 +79,9 @@ class DocumentService:
                 text = self.load_text(path)
                 if text is None:
                     text = ""
+                
+                if clean:
+                    text = self.cleaner.clean_text(text)
                     
                 doc_info = {
                     "source": path.name,

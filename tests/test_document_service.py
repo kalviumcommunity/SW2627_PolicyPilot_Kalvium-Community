@@ -96,3 +96,38 @@ def test_load_documents(tmp_path, capsys):
     assert "OK doc1.txt: 27 chars" in captured
     assert "OK doc2.html: 13 chars" in captured
     assert "SKIP doc3.png: Unsupported file format" in captured
+
+
+def test_load_documents_cleaning_toggle(tmp_path):
+    """Verify that load_documents cleans text by default and respects the clean flag."""
+    data_dir = tmp_path / "data"
+    data_dir.mkdir()
+    
+    # Create file with typical cleaning targets: boilerplate, extra whitespaces, hyphenated line wrap
+    f = data_dir / "doc.txt"
+    f.write_text(
+        "Company Policy Guidelines\n"
+        "Page 1 of 2\n\n"
+        "This is a de-\n"
+        "tailed policy doc with  too  many  spaces.",
+        encoding="utf-8"
+    )
+    
+    service = DocumentService()
+    
+    # 1. Test clean=True (default)
+    docs_cleaned = service.load_documents(data_dir=str(data_dir), clean=True)
+    assert len(docs_cleaned) == 1
+    cleaned_text = docs_cleaned[0]["text"]
+    assert "Page 1 of 2" not in cleaned_text
+    assert "detailed policy doc" in cleaned_text
+    assert "too many spaces" in cleaned_text
+    
+    # 2. Test clean=False
+    docs_raw = service.load_documents(data_dir=str(data_dir), clean=False)
+    assert len(docs_raw) == 1
+    raw_text = docs_raw[0]["text"]
+    assert "Page 1 of 2" in raw_text
+    assert "de-\ntailed" in raw_text
+    assert "too  many  spaces" in raw_text
+
