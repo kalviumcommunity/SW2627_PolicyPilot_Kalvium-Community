@@ -4,14 +4,13 @@
 class RetrievalService:
     """Find relevant documents for a user question."""
 
-    def search(self, query: str, context_documents: str) -> str:
-        """Return sections of context_documents relevant to a query.
+    def search(self, query: str, chunks: list) -> list:
+        """Return sections of chunks relevant to a query.
 
-        Splits context_documents by section blocks and filters based on
-        matching keywords from the query.
+        Filters chunks based on matching keywords from the query, preserving metadata.
         """
-        if not context_documents or not query:
-            return ""
+        if not chunks or not query:
+            return []
 
         # Normalize query and extract keywords
         query_words = set(query.lower().replace("?", "").replace(".", "").split())
@@ -39,23 +38,18 @@ class RetrievalService:
             "should",
         }
         keywords = query_words - stop_words
+        relevant_chunks = []
 
-        # Split into distinct policy blocks
-        sections = [
-            sec.strip() for sec in context_documents.split("\n\n") if sec.strip()
-        ]
-        relevant_sections = []
-
-        for section in sections:
-            section_lower = section.lower()
-            matches = sum(1 for kw in keywords if kw in section_lower)
+        for chunk in chunks:
+            text_lower = chunk["text"].lower()
+            matches = sum(1 for kw in keywords if kw in text_lower)
             if matches > 0:
-                relevant_sections.append((section, matches))
+                relevant_chunks.append((chunk, matches))
 
-        if relevant_sections:
-            # Sort sections by keyword match density descending
-            relevant_sections.sort(key=lambda x: x[1], reverse=True)
-            return "\n\n".join([sec[0] for sec in relevant_sections])
+        if relevant_chunks:
+            # Sort chunks by keyword match density descending
+            relevant_chunks.sort(key=lambda x: x[1], reverse=True)
+            return [item[0] for item in relevant_chunks]
 
-        # If no specific matches, return empty so grounding failure is triggered correctly
-        return ""
+        # If no specific matches, return empty list
+        return []

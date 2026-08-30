@@ -45,9 +45,9 @@ def main():
 
     # Load return policy and seller agreement documents
     doc_service = DocumentService("data")
-    policies = doc_service.load_documents()
+    documents = doc_service.load_documents()
 
-    if not policies:
+    if not documents:
         print(
             "[Error] No policy documents found in the data/ directory. "
             "Please ensure data/ecommerce_policies.txt is present."
@@ -55,6 +55,9 @@ def main():
         return
 
     print("Policy documents successfully loaded.")
+
+    # Chunk the documents
+    chunks = doc_service.chunk_documents(documents)
 
     retrieval_service = RetrievalService()
     response_service = ResponseService()
@@ -79,15 +82,22 @@ def main():
         print_separator()
         print(f"User Question:\n\"{query}\"")
 
-        # 1. Retrieve policy context
-        context = retrieval_service.search(query, policies)
-        print(
-            f"\nContext (Retrieved):\n{context if context else '[No relevant policy text found]'}"
-        )
+        # 1. Retrieve policy context chunks
+        retrieved_chunks = retrieval_service.search(query, chunks)
+        print("\nContext (Retrieved Chunks with Metadata):")
+        if retrieved_chunks:
+            for c_idx, chunk in enumerate(retrieved_chunks):
+                print(f"  Chunk {c_idx + 1}:")
+                print(f"    Source: {chunk['metadata']['source']}")
+                print(f"    Index: {chunk['metadata']['chunk_index']}")
+                print(f"    Start Offset: {chunk['metadata']['char_start']}")
+                print(f"    Text: {chunk['text']}")
+        else:
+            print("  [No relevant policy text found]")
 
         # 2. Generate grounded answer
         res = response_service.generate(
-            query, context, max_context_limit=max_limit
+            query, retrieved_chunks, max_context_limit=max_limit
         )
 
         # 3. Estimate cost
@@ -128,13 +138,15 @@ def main():
     print(f"Simulating a very strict Context Limit of: {small_limit} tokens...")
 
     res_trunc = response_service.generate(
-        test_query, policies, max_context_limit=small_limit
+        test_query, chunks, max_context_limit=small_limit
     )
+
+    original_policy_words = sum(len(doc["text"].split()) for doc in documents)
 
     print(f"\nContext Truncated: {res_trunc['context_truncated']}")
     print(
         f"Context Used Size: {len(res_trunc['context_used'].split())} words "
-        f"(Original policy size: {len(policies.split())} words)"
+        f"(Original policy size: {original_policy_words} words)"
     )
     print(f"Answer: {res_trunc['answer']}")
     print_separator()

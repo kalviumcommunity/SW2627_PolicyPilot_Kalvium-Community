@@ -20,7 +20,7 @@ SYSTEM_PROMPT_TEMPLATE = (
     '  "answer": "<string>",\n'
     '  "source": "<string>"\n'
     '}\n'
-    "The 'source' field MUST be the specific policy title or header extracted from the context (e.g., 'RETURN PERIOD POLICY', 'DAMAGED PRODUCT POLICY', 'REFUND CONDITIONS POLICY', or 'SELLER RESPONSIBILITIES POLICY') that was used to answer the question, or 'None' if no answer could be determined from the guidelines."
+    "The 'source' field MUST be the specific source filename (e.g. 'ecommerce_policies.txt') of the policy context block that was used to answer the question, or 'None' if no answer could be determined from the guidelines."
 )
 
 
@@ -102,7 +102,7 @@ class ResponseService:
             if "return period" in context_lower and "30 days" in context_lower:
                 return json.dumps({
                     "answer": "The return period for standard catalog items is 30 days from the delivery date.",
-                    "source": "RETURN PERIOD POLICY"
+                    "source": "ecommerce_policies.txt"
                 })
             return json.dumps({"answer": fallback_msg, "source": "None"})
 
@@ -110,7 +110,7 @@ class ResponseService:
             if "damaged" in context_lower and "48 hours" in context_lower:
                 return json.dumps({
                     "answer": "You can return a damaged product if you report the damage and initiate the return within 48 hours of delivery.",
-                    "source": "DAMAGED PRODUCT POLICY"
+                    "source": "ecommerce_policies.txt"
                 })
             return json.dumps({"answer": fallback_msg, "source": "None"})
 
@@ -121,7 +121,7 @@ class ResponseService:
             ):
                 return json.dumps({
                     "answer": "Refund conditions require products to be in original packaging, unused, and with tags intact. Refunds are processed in 5-7 business days.",
-                    "source": "REFUND CONDITIONS POLICY"
+                    "source": "ecommerce_policies.txt"
                 })
             return json.dumps({"answer": fallback_msg, "source": "None"})
 
@@ -129,14 +129,14 @@ class ResponseService:
             if "seller" in context_lower and "2 business days" in context_lower:
                 return json.dumps({
                     "answer": "Seller responsibilities include dispatching orders within 2 business days, guaranteeing product authenticity, and responding to inquiries within 24 hours.",
-                    "source": "SELLER RESPONSIBILITIES POLICY"
+                    "source": "ecommerce_policies.txt"
                 })
             return json.dumps({"answer": fallback_msg, "source": "None"})
 
         return json.dumps({"answer": fallback_msg, "source": "None"})
 
     def generate(
-        self, query: str, context: str, max_context_limit: int = 1000
+        self, query: str, context: Any, max_context_limit: int = 1000
     ) -> Dict[str, Any]:
         """Generate a grounded policy response, performing context size limit checks.
 
@@ -148,14 +148,27 @@ class ResponseService:
         # Allocate minor token overhead for conversational template structure
         fixed_tokens = system_tokens + query_tokens + 20
 
-        context_tokens = get_token_count(context)
+        # Construct context string
+        context_str = ""
+        if isinstance(context, list):
+            formatted_parts = []
+            for chunk in context:
+                formatted_parts.append(
+                    f"Source: {chunk['metadata']['source']}\n"
+                    f"Content: {chunk['text']}"
+                )
+            context_str = "\n\n".join(formatted_parts)
+        else:
+            context_str = context
+
+        context_tokens = get_token_count(context_str)
         context_truncated = False
-        final_context = context
+        final_context = context_str
 
         # Check context limits and truncate context if exceeded
         if fixed_tokens + context_tokens > max_context_limit:
             context_truncated = True
-            words = context.split()
+            words = context_str.split()
             while len(words) > 0:
                 final_context = " ".join(words)
                 current_total = fixed_tokens + get_token_count(final_context)

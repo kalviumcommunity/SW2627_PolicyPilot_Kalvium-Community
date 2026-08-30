@@ -171,7 +171,7 @@ def test_grounded_answer_and_source():
     )
     data1 = json.loads(res1["answer"])
     assert "30 days" in data1["answer"]
-    assert data1["source"] == "RETURN PERIOD POLICY"
+    assert data1["source"] == "ecommerce_policies.txt"
 
     # Damaged Products
     res2 = service.generate(
@@ -180,5 +180,5 @@ def test_grounded_answer_and_source():
     )
     data2 = json.loads(res2["answer"])
     assert "48 hours" in data2["answer"]
-    assert data2["source"] == "DAMAGED PRODUCT POLICY"
+    assert data2["source"] == "ecommerce_policies.txt"
 
