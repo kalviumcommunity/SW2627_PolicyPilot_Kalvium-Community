@@ -37,6 +37,20 @@ SW2627_PolicyPilot_Kalvium-Community/
 | `prompts/` | RAG prompts and prompt templates        |
 | `outputs/` | Generated or local application outputs  |
 
+## Structured JSON Response Format
+
+PolicyPilot returns structured JSON responses instead of plain text. The output follows the schema:
+
+```json
+{
+  "answer": "string",
+  "source": "string"
+}
+```
+
+* **answer**: The grounded response generated strictly based on the retrieved policy context. If no policy matches, a standard fallback refusal message is returned.
+* **source**: The specific policy header/title (e.g., `RETURN PERIOD POLICY`) extracted from the retrieved context. If no policy is found, it defaults to `None`.
+
 ## Requirements
 
 * Python 3.x
