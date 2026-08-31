@@ -17,6 +17,7 @@ outputs/*
 !outputs/prompt_comparison_results.*
 !outputs/parameter_experiments_results.*
 !outputs/cleaning_before_after_report.md
+!outputs/chunking_demo_report.md
 
 
 # Python cache
