@@ -9,6 +9,7 @@ from pathlib import Path
 from pypdf import PdfReader
 from bs4 import BeautifulSoup
 from src.services.cleaning_service import TextCleaningService
+from src.services.chunking_service import ChunkingService
 
 logger = logging.getLogger(__name__)
 
@@ -18,6 +19,7 @@ class DocumentService:
 
     def __init__(self):
         self.cleaner = TextCleaningService()
+        self.chunker = ChunkingService()
 
     def load_text(self, path: Path) -> str:
         """Extract plain text from a supported file format.
@@ -100,3 +102,21 @@ class DocumentService:
                 logger.warning("Failed to load document %s: %s", path.name, e)
                 
         return docs
+
+    def load_and_chunk_documents(
+        self,
+        data_dir: str = "data",
+        clean: bool = True,
+        chunk_size: int = 400,
+        chunk_overlap: int = 60
+    ) -> list:
+        """Load documents, clean them, and split them into token-aware chunks.
+
+        Robustly handles loader issues and chunks each successfully loaded document.
+        """
+        docs = self.load_documents(data_dir=data_dir, clean=clean)
+        all_chunks = []
+        for doc in docs:
+            chunks = self.chunker.chunk_document(doc, chunk_size=chunk_size, chunk_overlap=chunk_overlap)
+            all_chunks.extend(chunks)
+        return all_chunks
