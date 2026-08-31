@@ -1,0 +1,106 @@
+{
+  "run_timestamp": "2026-08-31T17:58:39.903676+00:00",
+  "data_dir": "C:\\Users\\Sushmitha Malleboina\\Desktop\\privacypolicy\\SW2627_PolicyPilot_Kalvium-Community\\data",
+  "chunk_size": 400,
+  "chunk_overlap": 60,
+  "clean_applied": true,
+  "total_source_documents": 5,
+  "successfully_ingested_count": 4,
+  "failed_count": 1,
+  "total_chunks_created": 4,
+  "total_tokens": 182,
+  "total_characters": 789,
+  "completeness_validation": {
+    "status": "PASSED",
+    "is_reconciled": true,
+    "total_source_documents": 5,
+    "successfully_ingested": 4,
+    "failed_documents": 1,
+    "total_accounted": 5,
+    "discrepancy": 0,
+    "validation_message": "Completeness Verified: Total discovered (5) matches ingested (4) + failed (1). Zero documents silently dropped."
+  },
+  "documents": [
+    {
+      "source": "corrupt_file.pdf",
+      "relative_path": "data\\corrupt_file.pdf",
+      "doc_type": "pdf",
+      "size_bytes": 40,
+      "raw_chars": 0,
+      "cleaned_chars": 0,
+      "chunk_count": 0,
+      "total_tokens": 0,
+      "status": "FAILED",
+      "error_message": "Stream has ended unexpectedly",
+      "error_type": "PdfStreamError",
+      "ingested_at": "2026-08-31T17:58:39.903676+00:00"
+    },
+    {
+      "source": "remote_policy.txt",
+      "relative_path": "data\\remote_policy.txt",
+      "doc_type": "txt",
+      "size_bytes": 213,
+      "raw_chars": 208,
+      "cleaned_chars": 207,
+      "chunk_count": 1,
+      "total_tokens": 46,
+      "status": "SUCCESS",
+      "error_message": null,
+      "error_type": null,
+      "ingested_at": "2026-08-31T17:58:39.903676+00:00"
+    },
+    {
+      "source": "sample_policy.pdf",
+      "relative_path": "data\\sample_policy.pdf",
+      "doc_type": "pdf",
+      "size_bytes": 1589,
+      "raw_chars": 191,
+      "cleaned_chars": 190,
+      "chunk_count": 1,
+      "total_tokens": 40,
+      "status": "SUCCESS",
+      "error_message": null,
+      "error_type": null,
+      "ingested_at": "2026-08-31T17:58:39.903676+00:00"
+    },
+    {
+      "source": "stipend_faq.html",
+      "relative_path": "data\\stipend_faq.html",
+      "doc_type": "html",
+      "size_bytes": 291,
+      "raw_chars": 186,
+      "cleaned_chars": 164,
+      "chunk_count": 1,
+      "total_tokens": 41,
+      "status": "SUCCESS",
+      "error_message": null,
+      "error_type": null,
+      "ingested_at": "2026-08-31T17:58:39.903676+00:00"
+    },
+    {
+      "source": "work_hours.md",
+      "relative_path": "data\\work_hours.md",
+      "doc_type": "md",
+      "size_bytes": 234,
+      "raw_chars": 229,
+      "cleaned_chars": 228,
+      "chunk_count": 1,
+      "total_tokens": 55,
+      "status": "SUCCESS",
+      "error_message": null,
+      "error_type": null,
+      "ingested_at": "2026-08-31T17:58:39.903676+00:00"
+    }
+  ],
+  "failures": [
+    {
+      "source": "corrupt_file.pdf",
+      "relative_path": "data\\corrupt_file.pdf",
+      "doc_type": "pdf",
+      "size_bytes": 40,
+      "error_type": "PdfStreamError",
+      "error_message": "Stream has ended unexpectedly"
+    }
+  ],
+  "sample_chunks_preview_count": 4
+}
