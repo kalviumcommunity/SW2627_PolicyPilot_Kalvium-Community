@@ -10,11 +10,15 @@ venv/
 # Local data
 data/*
 !data/.gitkeep
+!data/company_policies.md
+!data/privacy_policy.txt
 
 # Generated outputs
 outputs/*
 !outputs/.gitkeep
 !outputs/prompt_comparison_results.*
+!outputs/chunk_comparison.md
+!outputs/sample_chunks.md
 
 # Python cache
 __pycache__/
