@@ -19,6 +19,7 @@ from src.services.retrieval_service import RetrievalService
 from src.services.response_service import ResponseService
 from src.services.token_service import estimate_cost, get_token_count
 from src.services.history_service import ConversationHistory
+from src.services.embedding_service import EmbeddingService
 
 load_dotenv()
 
@@ -172,6 +173,48 @@ def main():
     )
     for msg in trimmed_prompt:
         print(f"  [{msg['role'].upper()}]: {msg['content']}")
+    print()
+
+    # 6. Demonstrate Embedding Generation and Cosine Similarity
+    print("=== DEMONSTRATING EMBEDDINGS AND VECTOR REPRESENTATIONS ===")
+    print_separator()
+    embed_service = EmbeddingService()
+
+    # Define test queries
+    query_base = "What is the return period?"
+    query_similar = "How long is the return window?"
+    query_unrelated = "The seller must respond within 24 hours."
+
+    print(f"Base Text:      \"{query_base}\"")
+    print(f"Similar Text:   \"{query_similar}\"")
+    print(f"Unrelated Text: \"{query_unrelated}\"")
+    print()
+
+    # Generate embeddings
+    emb_base = embed_service.generate_embedding(query_base)
+    emb_similar = embed_service.generate_embedding(query_similar)
+    emb_unrelated = embed_service.generate_embedding(query_unrelated)
+
+    # Print dimensions and vector preview
+    print(f"Embedding Model: {embed_service.model}")
+    print(f"Vector Dimensions: {len(emb_base)}")
+    print(f"Vector Preview (first 5 elements): {emb_base[:5]}")
+    print()
+
+    # Calculate similarities
+    sim_similar = embed_service.cosine_similarity(emb_base, emb_similar)
+    sim_unrelated = embed_service.cosine_similarity(emb_base, emb_unrelated)
+
+    print(f"Cosine Similarity (Base <-> Similar):   {sim_similar:.6f}")
+    print(f"Cosine Similarity (Base <-> Unrelated): {sim_unrelated:.6f}")
+    print()
+    
+    if sim_similar > sim_unrelated:
+        print("Success: Similar texts have a higher similarity score than unrelated texts!")
+    else:
+        print("Failure: Similarity scores do not align with semantic similarity.")
+    print_separator()
+
     print()
     print("PolicyPilot foundation is running successfully.")
     print("=" * 65)
