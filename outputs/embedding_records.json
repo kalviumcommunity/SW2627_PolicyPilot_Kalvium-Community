@@ -1,0 +1,397 @@
+[
+  {
+    "text": "Password reset instructions for learner accounts.",
+    "metadata": {
+      "source": "account-guide.md",
+      "chunk_index": 0
+    },
+    "model": "text-embedding-3-small",
+    "vector_length": 1536,
+    "embedding_sample": [
+      -0.035598,
+      -0.035597,
+      -0.029324,
+      -0.034729,
+      -0.022697
+    ],
+    "embedding_full": [
+      -0.035598,
+      -0.035597,
+      -0.029324,
+      -0.034729,
+      -0.022697,
+      0.036621,
+      0.021391,
+      0.025885,
+      0.036765,
+      -0.031353,
+      0.023965,
+      -0.030465,
+      0.022957,
+      0.03514,
+      0.035761,
+      0.03462
+    ]
+  },
+  {
+    "text": "Learners can recover access using their registered email.",
+    "metadata": {
+      "source": "account-guide.md",
+      "chunk_index": 1
+    },
+    "model": "text-embedding-3-small",
+    "vector_length": 1536,
+    "embedding_sample": [
+      -0.023639,
+      0.013812,
+      0.034158,
+      -0.035367,
+      -0.035612
+    ],
+    "embedding_full": [
+      -0.023639,
+      0.013812,
+      0.034158,
+      -0.035367,
+      -0.035612,
+      -0.024339,
+      0.030636,
+      0.027963,
+      -0.023635,
+      0.028535,
+      0.001891,
+      -0.033976,
+      -0.02069,
+      0.033248,
+      0.023159,
+      -0.033876
+    ]
+  },
+  {
+    "text": "Standard Working Hours: The core team operates under the Flexible Hours Program (FHP).",
+    "metadata": {
+      "source": "work_hours.md",
+      "chunk_index": 0
+    },
+    "model": "text-embedding-3-small",
+    "vector_length": 1536,
+    "embedding_sample": [
+      -0.026584,
+      0.011868,
+      -0.034905,
+      -0.015112,
+      0.035885
+    ],
+    "embedding_full": [
+      -0.026584,
+      0.011868,
+      -0.034905,
+      -0.015112,
+      0.035885,
+      0.025033,
+      -0.033449,
+      -0.015967,
+      0.025708,
+      0.023393,
+      -0.026365,
+      -0.016827,
+      0.032009,
+      -0.00063,
+      0.001599,
+      0.024104
+    ]
+  },
+  {
+    "text": "Travel Reimbursements: Employees traveling on official business can claim meal allowances.",
+    "metadata": {
+      "source": "sample_policy.pdf",
+      "chunk_index": 0
+    },
+    "model": "text-embedding-3-small",
+    "vector_length": 1536,
+    "embedding_sample": [
+      0.01855,
+      -0.034324,
+      0.009778,
+      0.019901,
+      -0.012509
+    ],
+    "embedding_full": [
+      0.01855,
+      -0.034324,
+      0.009778,
+      0.019901,
+      -0.012509,
+      -0.034515,
+      -0.028913,
+      0.032816,
+      -0.000955,
+      -0.035378,
+      -0.029657,
+      -0.009781,
+      0.009784,
+      -0.007305,
+      -0.034605,
+      -0.031199
+    ]
+  },
+  {
+    "text": "Company Remote Work Policy Effective: January 1, 2026\n\nEligible employees are allowed to work remotely up to three days per week. Employees must maintain standard core collaboration hours from 10",
+    "metadata": {
+      "source": "remote_policy.txt",
+      "chunk_index": 0,
+      "token_count": 40,
+      "start_token": 0,
+      "end_token": 40
+    },
+    "model": "text-embedding-3-small",
+    "vector_length": 1536,
+    "embedding_sample": [
+      -0.02728,
+      0.021611,
+      0.036325,
+      0.022124,
+      -0.03589
+    ],
+    "embedding_full": [
+      -0.02728,
+      0.021611,
+      0.036325,
+      0.022124,
+      -0.03589,
+      0.032618,
+      0.024816,
+      -0.03584,
+      0.003848,
+      0.033785,
+      0.032035,
+      0.02706,
+      -0.012292,
+      -0.034239,
+      -0.03247,
+      0.017277
+    ]
+  },
+  {
+    "text": " Employees must maintain standard core collaboration hours from 10 AM to 4 PM.",
+    "metadata": {
+      "source": "remote_policy.txt",
+      "chunk_index": 1,
+      "token_count": 16,
+      "start_token": 30,
+      "end_token": 46
+    },
+    "model": "text-embedding-3-small",
+    "vector_length": 1536,
+    "embedding_sample": [
+      -0.035206,
+      0.013068,
+      -0.016548,
+      -0.016265,
+      -0.027846
+    ],
+    "embedding_full": [
+      -0.035206,
+      0.013068,
+      -0.016548,
+      -0.016265,
+      -0.027846,
+      -0.00665,
+      -0.007584,
+      0.026378,
+      -0.02723,
+      0.012473,
+      0.025727,
+      -0.008524,
+      -0.013073,
+      0.035902,
+      0.018223,
+      -0.032452
+    ]
+  },
+  {
+    "text": "PolicyPilot Official Travel Reimbursement Guidelines\n1. Travel expenses must be submitted within 30 days of returning.\n2. All flights must be booked in economy class unless approved by a VP.",
+    "metadata": {
+      "source": "sample_policy.pdf",
+      "chunk_index": 0,
+      "token_count": 40,
+      "start_token": 0,
+      "end_token": 40
+    },
+    "model": "text-embedding-3-small",
+    "vector_length": 1536,
+    "embedding_sample": [
+      -0.035987,
+      0.023193,
+      -0.027982,
+      0.006729,
+      0.024888
+    ],
+    "embedding_full": [
+      -0.035987,
+      0.023193,
+      -0.027982,
+      0.006729,
+      0.024888,
+      0.017601,
+      -0.000646,
+      -0.021666,
+      -0.023438,
+      -0.030115,
+      0.031494,
+      0.017328,
+      -0.034542,
+      0.030987,
+      0.011105,
+      -0.02898
+    ]
+  },
+  {
+    "text": "Stipend FAQ Stipend & Reimbursement FAQ Q: What can I claim under the internet allowance? A: You can claim up to $75 per month for high-speed home internet service",
+    "metadata": {
+      "source": "stipend_faq.html",
+      "chunk_index": 0,
+      "token_count": 40,
+      "start_token": 0,
+      "end_token": 40
+    },
+    "model": "text-embedding-3-small",
+    "vector_length": 1536,
+    "embedding_sample": [
+      0.035732,
+      -0.036208,
+      -0.034541,
+      0.005427,
+      -0.004794
+    ],
+    "embedding_full": [
+      0.035732,
+      -0.036208,
+      -0.034541,
+      0.005427,
+      -0.004794,
+      0.018615,
+      -0.02843,
+      0.024515,
+      0.034905,
+      -0.007949,
+      -0.030122,
+      0.000955,
+      -0.005419,
+      0.013156,
+      0.001594,
+      -0.02256
+    ]
+  },
+  {
+    "text": " $75 per month for high-speed home internet service.",
+    "metadata": {
+      "source": "stipend_faq.html",
+      "chunk_index": 1,
+      "token_count": 11,
+      "start_token": 30,
+      "end_token": 41
+    },
+    "model": "text-embedding-3-small",
+    "vector_length": 1536,
+    "embedding_sample": [
+      -0.029975,
+      -0.029412,
+      0.005147,
+      0.027815,
+      0.035399
+    ],
+    "embedding_full": [
+      -0.029975,
+      -0.029412,
+      0.005147,
+      0.027815,
+      0.035399,
+      0.025159,
+      0.017629,
+      -0.014742,
+      -0.032315,
+      0.034975,
+      0.017903,
+      -0.016198,
+      -0.006431,
+      0.023721,
+      -0.014153,
+      -0.00162
+    ]
+  },
+  {
+    "text": "# Work Hours and Overtime Guideline\n\nAll remote workers must log their daily check-in and check-out times in the HR system.\n- Standard hours: 8 hours per day, 40 hours",
+    "metadata": {
+      "source": "work_hours.md",
+      "chunk_index": 0,
+      "token_count": 40,
+      "start_token": 0,
+      "end_token": 40
+    },
+    "model": "text-embedding-3-small",
+    "vector_length": 1536,
+    "embedding_sample": [
+      0.03486,
+      -0.02859,
+      -0.034496,
+      -0.012838,
+      -0.003193
+    ],
+    "embedding_full": [
+      0.03486,
+      -0.02859,
+      -0.034496,
+      -0.012838,
+      -0.003193,
+      -0.011025,
+      -0.025174,
+      0.020734,
+      0.004158,
+      -0.035104,
+      0.007626,
+      -0.033755,
+      0.009806,
+      0.016917,
+      0.033023,
+      0.034299
+    ]
+  },
+  {
+    "text": ": 8 hours per day, 40 hours per week.\n- Overtime must be pre-approved by your team lead.",
+    "metadata": {
+      "source": "work_hours.md",
+      "chunk_index": 1,
+      "token_count": 25,
+      "start_token": 30,
+      "end_token": 55
+    },
+    "model": "text-embedding-3-small",
+    "vector_length": 1536,
+    "embedding_sample": [
+      -0.035834,
+      -0.016581,
+      0.015436,
+      -0.011896,
+      -0.035975
+    ],
+    "embedding_full": [
+      -0.035834,
+      -0.016581,
+      0.015436,
+      -0.011896,
+      -0.035975,
+      -0.034191,
+      0.031173,
+      0.006981,
+      -0.00666,
+      -0.032914,
+      0.021954,
+      -0.028692,
+      0.03251,
+      0.031795,
+      0.029805,
+      -0.016306
+    ]
+  }
+]

@@ -18,6 +18,8 @@ outputs/*
 !outputs/parameter_experiments_results.*
 !outputs/cleaning_before_after_report.md
 !outputs/chunking_demo_report.md
+!outputs/embedding_records.json
+!outputs/embedding_demo_report.md
 
 
 # Python cache
