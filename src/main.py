@@ -20,6 +20,8 @@ from src.services.response_service import ResponseService
 from src.services.token_service import estimate_cost, get_token_count
 from src.services.history_service import ConversationHistory
 from src.services.embedding_service import EmbeddingService
+from src.services.similarity_service import SimilarityService
+
 
 load_dotenv()
 
@@ -175,10 +177,11 @@ def main():
         print(f"  [{msg['role'].upper()}]: {msg['content']}")
     print()
 
-    # 6. Demonstrate Embedding Generation and Cosine Similarity
+    # 6. Demonstrate Embedding Generation and Vector Representations
     print("=== DEMONSTRATING EMBEDDINGS AND VECTOR REPRESENTATIONS ===")
     print_separator()
     embed_service = EmbeddingService()
+    sim_service = SimilarityService(embedding_service=embed_service)
 
     # Define test queries
     query_base = "What is the return period?"
@@ -201,9 +204,10 @@ def main():
     print(f"Vector Preview (first 5 elements): {emb_base[:5]}")
     print()
 
-    # Calculate similarities
-    sim_similar = embed_service.cosine_similarity(emb_base, emb_similar)
-    sim_unrelated = embed_service.cosine_similarity(emb_base, emb_unrelated)
+    # Calculate similarities using SimilarityService
+    sim_similar = sim_service.cosine_similarity(emb_base, emb_similar)
+    sim_unrelated = sim_service.cosine_similarity(emb_base, emb_unrelated)
+
 
     print(f"Cosine Similarity (Base <-> Similar):   {sim_similar:.6f}")
     print(f"Cosine Similarity (Base <-> Unrelated): {sim_unrelated:.6f}")
@@ -215,6 +219,71 @@ def main():
         print("Failure: Similarity scores do not align with semantic similarity.")
     print_separator()
 
+    # 7. Demonstrate Similarity Ranking and Chunk Retrieval
+    print("\n=== DEMONSTRATING SIMILARITY RANKING & RETRIEVAL ===")
+    print_separator()
+
+    sample_chunks = [
+        {
+            "chunk_index": 0,
+            "source": "ACCOUNT_SECURITY_POLICY",
+            "content": (
+                "To reset your password, click 'Forgot Password' on the login page, "
+                "enter your registered email address, and follow the password reset link "
+                "sent to your inbox."
+            ),
+        },
+        {
+            "chunk_index": 1,
+            "source": "LEARNER_PORTAL_GUIDELINES",
+            "content": (
+                "Learners can access online course materials, lecture recordings, "
+                "and track assignment submission deadlines directly from the student dashboard."
+            ),
+        },
+        {
+            "chunk_index": 2,
+            "source": "RETURN_AND_REFUND_POLICY",
+            "content": (
+                "Customers can request a refund for eligible catalog items within 30 days "
+                "of delivery. All items must be unused and in original packaging."
+            ),
+        },
+    ]
+
+    sample_query = "How can a learner reset their password?"
+    print(f"Sample Query: \"{sample_query}\"")
+    print(f"Total Candidate Chunks: {len(sample_chunks)}\n")
+
+    ranked_chunks = retrieval_service.retrieve_ranked_chunks(
+        sample_query, sample_chunks
+    )
+
+    print("Ranked Results (Descending Similarity):")
+    for rank, chunk in enumerate(ranked_chunks, start=1):
+        print(f"  Rank #{rank}:")
+        print(f"    Similarity Score : {chunk['similarity_score']:.6f}")
+        print(f"    Source Policy    : {chunk['source']}")
+        print(f"    Chunk Index      : {chunk['chunk_index']}")
+        print(f"    Content Snippet  : \"{chunk['content'][:80]}...\"")
+        print()
+
+    most_relevant = ranked_chunks[0]
+    least_relevant = ranked_chunks[-1]
+
+    print("Similarity Highlights:")
+    print(
+        f"  [MOST RELEVANT]  Score: {most_relevant['similarity_score']:.6f} | "
+        f"Source: {most_relevant['source']} (Chunk #{most_relevant['chunk_index']})"
+    )
+    print(f"                   Snippet: \"{most_relevant['content']}\"")
+    print(
+        f"  [LEAST RELEVANT] Score: {least_relevant['similarity_score']:.6f} | "
+        f"Source: {least_relevant['source']} (Chunk #{least_relevant['chunk_index']})"
+    )
+    print(f"                   Snippet: \"{least_relevant['content']}\"")
+    print_separator()
+
     print()
     print("PolicyPilot foundation is running successfully.")
     print("=" * 65)
@@ -222,3 +291,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

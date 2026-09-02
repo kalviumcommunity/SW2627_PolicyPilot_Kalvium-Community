@@ -1,8 +1,22 @@
 """Knowledge-base retrieval services."""
 
+from typing import Any, Dict, List, Optional
+from src.services.embedding_service import EmbeddingService
+from src.services.similarity_service import SimilarityService
+
 
 class RetrievalService:
     """Find relevant documents for a user question."""
+
+    def __init__(
+        self,
+        embedding_service: Optional[EmbeddingService] = None,
+        similarity_service: Optional[SimilarityService] = None,
+    ):
+        self.embedding_service = embedding_service or EmbeddingService()
+        self.similarity_service = similarity_service or SimilarityService(
+            embedding_service=self.embedding_service
+        )
 
     def search(self, query: str, context_documents: str) -> str:
         """Return sections of context_documents relevant to a query.
@@ -59,3 +73,30 @@ class RetrievalService:
 
         # If no specific matches, return empty so grounding failure is triggered correctly
         return ""
+
+    def retrieve_ranked_chunks(
+        self,
+        query: str,
+        chunks: List[Dict[str, Any]],
+        top_k: Optional[int] = None,
+    ) -> List[Dict[str, Any]]:
+        """Retrieve and rank chunks against a query using semantic similarity.
+
+        Args:
+            query: The user query string.
+            chunks: List of chunk dictionaries with metadata (e.g. source, chunk_index).
+            top_k: Optional maximum number of top results to return.
+
+        Returns:
+            List of ranked chunk dictionaries in descending order of similarity score.
+        """
+        if not query or not chunks:
+            return []
+
+        query_embedding = self.embedding_service.generate_embedding(query)
+        ranked = self.similarity_service.rank_chunks(query_embedding, chunks)
+
+        if top_k is not None:
+            return ranked[:top_k]
+        return ranked
+
