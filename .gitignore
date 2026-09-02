@@ -22,6 +22,7 @@ outputs/*
 !outputs/sample_ingested_chunks.md
 !outputs/batch_embedding_summary.*
 !outputs/embedded_chunks.json
+!outputs/sanity_report.*
 
 
 # Python cache

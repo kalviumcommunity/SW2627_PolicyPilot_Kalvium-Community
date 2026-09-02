@@ -1,0 +1,202 @@
+{
+  "run_timestamp": "2026-09-02T11:40:38.996350+00:00",
+  "total_tests": 6,
+  "passed_count": 5,
+  "failed_count": 1,
+  "pass_rate_percent": 83.33,
+  "corpus_document_count": 4,
+  "results": [
+    {
+      "id": "TC-01",
+      "category": "Remote Work Allowance",
+      "query": "How many days per week can eligible employees work remotely?",
+      "expected_source": "remote_policy.txt",
+      "top_ranked_source": "remote_policy.txt",
+      "top_score": 0.4406,
+      "expected_source_score": 0.4406,
+      "passed": true,
+      "description": "Checks if query about remote work days correctly ranks remote_policy.txt as #1.",
+      "scores_breakdown": [
+        {
+          "source": "remote_policy.txt",
+          "score": 0.4406
+        },
+        {
+          "source": "work_hours.md",
+          "score": 0.1776
+        },
+        {
+          "source": "stipend_faq.html",
+          "score": 0.1553
+        },
+        {
+          "source": "sample_policy.pdf",
+          "score": 0.0856
+        }
+      ],
+      "notes": "PASS: 'remote_policy.txt' ranked #1 with similarity score 0.4406 (margin of +0.2630 over 2nd rank 'work_hours.md')."
+    },
+    {
+      "id": "TC-02",
+      "category": "Internet Stipend Claim",
+      "query": "What is the monthly claim limit for home internet allowance under the stipend policy?",
+      "expected_source": "stipend_faq.html",
+      "top_ranked_source": "stipend_faq.html",
+      "top_score": 0.5186,
+      "expected_source_score": 0.5186,
+      "passed": true,
+      "description": "Checks if internet allowance reimbursement question ranks stipend_faq.html as #1.",
+      "scores_breakdown": [
+        {
+          "source": "stipend_faq.html",
+          "score": 0.5186
+        },
+        {
+          "source": "work_hours.md",
+          "score": 0.0674
+        },
+        {
+          "source": "remote_policy.txt",
+          "score": 0.0329
+        },
+        {
+          "source": "sample_policy.pdf",
+          "score": 0.0065
+        }
+      ],
+      "notes": "PASS: 'stipend_faq.html' ranked #1 with similarity score 0.5186 (margin of +0.4512 over 2nd rank 'work_hours.md')."
+    },
+    {
+      "id": "TC-03",
+      "category": "Work Hours & Check-in",
+      "query": "What are the standard weekly work hours and daily check-in requirements?",
+      "expected_source": "work_hours.md",
+      "top_ranked_source": "work_hours.md",
+      "top_score": 0.4247,
+      "expected_source_score": 0.4247,
+      "passed": true,
+      "description": "Checks if work hours and check-in logging question ranks work_hours.md as #1.",
+      "scores_breakdown": [
+        {
+          "source": "work_hours.md",
+          "score": 0.4247
+        },
+        {
+          "source": "remote_policy.txt",
+          "score": 0.2131
+        },
+        {
+          "source": "stipend_faq.html",
+          "score": 0.1298
+        },
+        {
+          "source": "sample_policy.pdf",
+          "score": -0.0129
+        }
+      ],
+      "notes": "PASS: 'work_hours.md' ranked #1 with similarity score 0.4247 (margin of +0.2116 over 2nd rank 'remote_policy.txt')."
+    },
+    {
+      "id": "TC-04",
+      "category": "Travel Expense Rules",
+      "query": "What are the rules and guidelines for travel expense reimbursement and economy flights?",
+      "expected_source": "sample_policy.pdf",
+      "top_ranked_source": "sample_policy.pdf",
+      "top_score": 0.2416,
+      "expected_source_score": 0.2416,
+      "passed": true,
+      "description": "Checks if travel expense submission rules rank sample_policy.pdf as #1.",
+      "scores_breakdown": [
+        {
+          "source": "sample_policy.pdf",
+          "score": 0.2416
+        },
+        {
+          "source": "work_hours.md",
+          "score": 0.1736
+        },
+        {
+          "source": "stipend_faq.html",
+          "score": 0.156
+        },
+        {
+          "source": "remote_policy.txt",
+          "score": 0.0261
+        }
+      ],
+      "notes": "PASS: 'sample_policy.pdf' ranked #1 with similarity score 0.2416 (margin of +0.0680 over 2nd rank 'work_hours.md')."
+    },
+    {
+      "id": "TC-05",
+      "category": "Borderline / Domain Overlap",
+      "query": "What hours must remote employees work for daily core collaboration?",
+      "expected_source": "remote_policy.txt",
+      "top_ranked_source": "remote_policy.txt",
+      "top_score": 0.4148,
+      "expected_source_score": 0.4148,
+      "passed": true,
+      "description": "Tests differentiation between core collaboration hours (remote_policy.txt) and general work hours (work_hours.md).",
+      "scores_breakdown": [
+        {
+          "source": "remote_policy.txt",
+          "score": 0.4148
+        },
+        {
+          "source": "work_hours.md",
+          "score": 0.3538
+        },
+        {
+          "source": "stipend_faq.html",
+          "score": 0.1304
+        },
+        {
+          "source": "sample_policy.pdf",
+          "score": 0.115
+        }
+      ],
+      "notes": "PASS: 'remote_policy.txt' ranked #1 with similarity score 0.4148 (margin of +0.0610 over 2nd rank 'work_hours.md')."
+    },
+    {
+      "id": "TC-06",
+      "category": "Morphological Miss (Surprising Failure)",
+      "query": "What are the rules for travel expense submission and flight bookings?",
+      "expected_source": "sample_policy.pdf",
+      "top_ranked_source": "work_hours.md",
+      "top_score": 0.1391,
+      "expected_source_score": 0.081,
+      "passed": false,
+      "description": "Surprising failure case where inflected query words ('submission', 'bookings') fail to match source words ('submitted', 'booked') due to lack of stemming/lemmatization in hash embeddings.",
+      "scores_breakdown": [
+        {
+          "source": "work_hours.md",
+          "score": 0.1391
+        },
+        {
+          "source": "stipend_faq.html",
+          "score": 0.1245
+        },
+        {
+          "source": "sample_policy.pdf",
+          "score": 0.081
+        },
+        {
+          "source": "remote_policy.txt",
+          "score": 0.0565
+        }
+      ],
+      "notes": "FAIL/SURPRISING: Expected 'sample_policy.pdf' (ranked #3 with score 0.0810), but 'work_hours.md' ranked #1 with score 0.1391."
+    }
+  ],
+  "failing_cases_analysis": [
+    {
+      "test_id": "TC-06",
+      "query": "What are the rules for travel expense submission and flight bookings?",
+      "expected_source": "sample_policy.pdf",
+      "actual_top_source": "work_hours.md",
+      "expected_score": 0.081,
+      "top_score": 0.1391,
+      "rank_of_expected": 3,
+      "analysis": "Morphological Variation / Word Form Mismatch: The query contains inflected words ('submission', 'bookings') while the source contains ('submitted', 'booked'). Because word token MD5 hash embeddings lack stemming/lemmatization, inflected terms generate orthogonal hash vectors, diluting target similarity below noisy background overlap."
+    }
+  ]
+}
