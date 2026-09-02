@@ -47,7 +47,7 @@ class EmbeddingService:
         if self._client is None:
             if not self.api_key:
                 raise ValueError(
-                    "API key not found. Please set OPENAI_API_KEY or API_KEY in your environment or .env file."
+                    "API key not found. Please set API_KEY in your environment or .env file."
                 )
             
             client_kwargs: Dict[str, Any] = {"api_key": self.api_key}
