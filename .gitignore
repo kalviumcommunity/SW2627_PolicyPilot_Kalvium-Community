@@ -20,6 +20,8 @@ outputs/*
 !outputs/chunking_demo_report.md
 !outputs/ingestion_summary.*
 !outputs/sample_ingested_chunks.md
+!outputs/batch_embedding_summary.*
+!outputs/embedded_chunks.json
 
 
 # Python cache
