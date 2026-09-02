@@ -20,6 +20,8 @@ outputs/*
 !outputs/chunking_demo_report.md
 !outputs/embedding_records.json
 !outputs/embedding_demo_report.md
+!outputs/vector_store_readback.json
+!outputs/vector_database_report.md
 
 
 # Python cache

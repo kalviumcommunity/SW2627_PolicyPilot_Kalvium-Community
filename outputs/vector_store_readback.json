@@ -1,0 +1,157 @@
+{
+  "collection_name": "rag_chunks",
+  "dimension": 1536,
+  "metric": "cosine",
+  "total_records_stored": 9,
+  "primary_readback": {
+    "id": "account-guide.md:0",
+    "vector_length": 1536,
+    "text": "Password reset instructions for learner accounts.",
+    "metadata": {
+      "token_count": 8,
+      "section": "Account access",
+      "chunk_index": 0,
+      "source": "account-guide.md"
+    },
+    "vector_sample": [
+      -0.03559799864888191,
+      -0.035597000271081924,
+      -0.0293240025639534,
+      -0.0347290001809597,
+      -0.022696999832987785
+    ]
+  },
+  "sample_readback_records": [
+    {
+      "id": "account-guide.md:0",
+      "vector_length": 1536,
+      "text": "Password reset instructions for learner accounts.",
+      "metadata": {
+        "source": "account-guide.md",
+        "section": "Account access",
+        "chunk_index": 0,
+        "token_count": 8
+      },
+      "vector_sample": [
+        -0.03559799864888191,
+        -0.035597000271081924,
+        -0.0293240025639534,
+        -0.0347290001809597,
+        -0.022696999832987785
+      ]
+    },
+    {
+      "id": "account-guide.md:1",
+      "vector_length": 1536,
+      "text": "Learners can recover access using their registered email.",
+      "metadata": {
+        "chunk_index": 1,
+        "source": "account-guide.md",
+        "section": "Account recovery"
+      },
+      "vector_sample": [
+        -0.023638999089598656,
+        0.013811999931931496,
+        0.034157998859882355,
+        -0.035367000848054886,
+        -0.03561199828982353
+      ]
+    },
+    {
+      "id": "work_hours.md:0",
+      "vector_length": 1536,
+      "text": "# Work Hours and Overtime Guideline\n\nAll remote workers must log their daily check-in and check-out times in the HR system.\n- Standard hours: 8 hours per day, 40 hours",
+      "metadata": {
+        "end_token": 40,
+        "chunk_index": 0,
+        "start_token": 0,
+        "token_count": 40,
+        "source": "work_hours.md"
+      },
+      "vector_sample": [
+        0.034860000014305115,
+        -0.028589999303221703,
+        -0.0344959981739521,
+        -0.012838000431656837,
+        -0.0031930000986903906
+      ]
+    },
+    {
+      "id": "sample_policy.pdf:0",
+      "vector_length": 1536,
+      "text": "PolicyPilot Official Travel Reimbursement Guidelines\n1. Travel expenses must be submitted within 30 days of returning.\n2. All flights must be booked in economy class unless approved by a VP.",
+      "metadata": {
+        "start_token": 0,
+        "end_token": 40,
+        "source": "sample_policy.pdf",
+        "chunk_index": 0,
+        "token_count": 40
+      },
+      "vector_sample": [
+        -0.0359870009124279,
+        0.0231929998844862,
+        -0.02798200026154518,
+        0.00672899978235364,
+        0.024887999519705772
+      ]
+    }
+  ],
+  "query_demonstration": {
+    "query": "How do I reset my password if I am locked out?",
+    "top_results": [
+      {
+        "id": "stipend_faq.html:0",
+        "similarity": 0.054154,
+        "distance": 0.945846,
+        "text": "Stipend FAQ Stipend & Reimbursement FAQ Q: What can I claim under the internet allowance? A: You can claim up to $75 per month for high-speed home internet service",
+        "metadata": {
+          "token_count": 40,
+          "source": "stipend_faq.html",
+          "chunk_index": 0,
+          "end_token": 40,
+          "start_token": 0
+        },
+        "vector_length": 1536
+      },
+      {
+        "id": "account-guide.md:0",
+        "similarity": 0.013987,
+        "distance": 0.986013,
+        "text": "Password reset instructions for learner accounts.",
+        "metadata": {
+          "section": "Account access",
+          "token_count": 8,
+          "source": "account-guide.md",
+          "chunk_index": 0
+        },
+        "vector_length": 1536
+      },
+      {
+        "id": "account-guide.md:1",
+        "similarity": 0.010245,
+        "distance": 0.989755,
+        "text": "Learners can recover access using their registered email.",
+        "metadata": {
+          "section": "Account recovery",
+          "chunk_index": 1,
+          "source": "account-guide.md"
+        },
+        "vector_length": 1536
+      },
+      {
+        "id": "work_hours.md:0",
+        "similarity": -0.002151,
+        "distance": 1.002151,
+        "text": "# Work Hours and Overtime Guideline\n\nAll remote workers must log their daily check-in and check-out times in the HR system.\n- Standard hours: 8 hours per day, 40 hours",
+        "metadata": {
+          "chunk_index": 0,
+          "token_count": 40,
+          "end_token": 40,
+          "source": "work_hours.md",
+          "start_token": 0
+        },
+        "vector_length": 1536
+      }
+    ]
+  }
+}
