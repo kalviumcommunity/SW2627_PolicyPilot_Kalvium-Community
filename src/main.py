@@ -22,6 +22,7 @@ from src.services.history_service import ConversationHistory
 from src.services.embedding_service import EmbeddingService
 from src.services.similarity_service import SimilarityService
 from src.services.batch_embedding_service import BatchEmbeddingService
+from src.services.metadata_search_service import MetadataSearchService
 
 
 load_dotenv()
@@ -337,6 +338,79 @@ def main():
     print(f"  Failed Chunks   : {metrics2['failed_chunks']}")
     print(f"  Input Tokens    : {metrics2['input_tokens']}")
     print(f"  Estimated Cost  : ${metrics2['estimated_cost']:.6f}")
+    print_separator()
+
+    # 9. Demonstrate Metadata Filtering & Hybrid Search
+    print("\n=== DEMONSTRATING METADATA FILTERING & HYBRID SEARCH ===")
+    print_separator()
+    metadata_service = MetadataSearchService()
+
+    meta_chunks = [
+        {
+            "chunk_index": 0,
+            "source": "ACCOUNT_SECURITY_POLICY",
+            "section": "Account access",
+            "content": "To reset your password, click 'Forgot Password' on the login page, enter your registered email address, and follow the password reset link sent to your inbox.",
+        },
+        {
+            "chunk_index": 1,
+            "source": "LEARNER_PORTAL_GUIDELINES",
+            "section": "Student dashboard",
+            "content": "Learners can access online course materials, lecture recordings, and track assignment submission deadlines directly from the student dashboard.",
+        },
+        {
+            "chunk_index": 2,
+            "source": "RETURN_AND_REFUND_POLICY",
+            "section": "Refund conditions",
+            "content": "Customers can request a refund for eligible catalog items within 30 days of delivery. All items must be in original packaging.",
+        },
+    ]
+
+    target_query = "What are the password reset steps?"
+    print(f"Query: \"{target_query}\"\n")
+
+    # A. Unfiltered Retrieval
+    print("--- 1. Unfiltered Retrieval (all candidate chunks) ---")
+    unfiltered_results = metadata_service.search(target_query, meta_chunks, metadata_filter=None)
+    for idx, item in enumerate(unfiltered_results, 1):
+        print(f"  Result #{idx}:")
+        print(f"    Similarity Score : {item.get('similarity_score', 0.0):.6f}")
+        print(f"    Source           : {item.get('source')}")
+        print(f"    Section          : {item.get('section')}")
+        print(f"    Chunk Content    : \"{item.get('content')[:75]}...\"")
+        print()
+
+    # B. Filtered Retrieval
+    filter_dict = {"section": "Account access"}
+    print(f"--- 2. Filtered Retrieval (filter: {filter_dict}) ---")
+    filtered_results = metadata_service.search(target_query, meta_chunks, metadata_filter=filter_dict)
+    for idx, item in enumerate(filtered_results, 1):
+        print(f"  Result #{idx}:")
+        print(f"    Similarity Score : {item.get('similarity_score', 0.0):.6f}")
+        print(f"    Source           : {item.get('source')}")
+        print(f"    Section          : {item.get('section')}")
+        print(f"    Chunk Content    : \"{item.get('content')[:75]}...\"")
+        print()
+
+    # C. Hybrid Search (Vector Similarity + Keyword Score)
+    print("--- 3. Hybrid Search (Vector Weight: 0.8 | Keyword Weight: 0.2) ---")
+    hybrid_results = metadata_service.search(
+        target_query,
+        meta_chunks,
+        metadata_filter=None,
+        enable_hybrid=True,
+        vector_weight=0.8,
+        keyword_weight=0.2,
+    )
+    for idx, item in enumerate(hybrid_results, 1):
+        print(f"  Result #{idx}:")
+        print(f"    Hybrid Score     : {item.get('hybrid_score', 0.0):.6f}")
+        print(f"    Vector Score     : {item.get('similarity_score', 0.0):.6f}")
+        print(f"    Keyword Score    : {item.get('keyword_score', 0.0):.6f}")
+        print(f"    Source           : {item.get('source')}")
+        print(f"    Section          : {item.get('section')}")
+        print(f"    Chunk Content    : \"{item.get('content')[:75]}...\"")
+        print()
     print_separator()
 
     print()

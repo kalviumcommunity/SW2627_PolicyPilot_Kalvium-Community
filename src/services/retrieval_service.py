@@ -79,13 +79,15 @@ class RetrievalService:
         query: str,
         chunks: List[Dict[str, Any]],
         top_k: Optional[int] = None,
+        metadata_filter: Optional[Dict[str, Any]] = None,
     ) -> List[Dict[str, Any]]:
-        """Retrieve and rank chunks against a query using semantic similarity.
+        """Retrieve and rank chunks against a query using semantic similarity, with optional metadata filtering.
 
         Args:
             query: The user query string.
-            chunks: List of chunk dictionaries with metadata (e.g. source, chunk_index).
+            chunks: List of chunk dictionaries with metadata (e.g. source, chunk_index, section).
             top_k: Optional maximum number of top results to return.
+            metadata_filter: Optional dictionary of key-value filters.
 
         Returns:
             List of ranked chunk dictionaries in descending order of similarity score.
@@ -93,8 +95,35 @@ class RetrievalService:
         if not query or not chunks:
             return []
 
+        candidate_chunks = chunks
+        if metadata_filter:
+            candidate_chunks = []
+            for chunk in chunks:
+                match = True
+                for key, expected_val in metadata_filter.items():
+                    actual_val = chunk.get(key)
+                    if actual_val is None and "metadata" in chunk and isinstance(chunk["metadata"], dict):
+                        actual_val = chunk["metadata"].get(key)
+
+                    if actual_val is None:
+                        match = False
+                        break
+
+                    if isinstance(expected_val, str) and isinstance(actual_val, str):
+                        if expected_val.strip().lower() != actual_val.strip().lower():
+                            match = False
+                            break
+                    elif actual_val != expected_val:
+                        match = False
+                        break
+                if match:
+                    candidate_chunks.append(chunk)
+
+        if not candidate_chunks:
+            return []
+
         query_embedding = self.embedding_service.generate_embedding(query)
-        ranked = self.similarity_service.rank_chunks(query_embedding, chunks)
+        ranked = self.similarity_service.rank_chunks(query_embedding, candidate_chunks)
 
         if top_k is not None:
             return ranked[:top_k]
