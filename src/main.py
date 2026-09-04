@@ -21,6 +21,7 @@ from src.services.token_service import estimate_cost, get_token_count
 from src.services.history_service import ConversationHistory
 from src.services.embedding_service import EmbeddingService
 from src.services.similarity_service import SimilarityService
+from src.services.batch_embedding_service import BatchEmbeddingService
 
 
 load_dotenv()
@@ -282,6 +283,60 @@ def main():
         f"Source: {least_relevant['source']} (Chunk #{least_relevant['chunk_index']})"
     )
     print(f"                   Snippet: \"{least_relevant['content']}\"")
+    print_separator()
+
+    # 8. Demonstrate Batch Embedding & Rate/Cost Management
+    print("\n=== DEMONSTRATING BATCH EMBEDDING & RATE/COST MANAGEMENT ===")
+    print_separator()
+    batch_service = BatchEmbeddingService(batch_size=2)
+
+    batch_chunks = [
+        {
+            "chunk_index": 0,
+            "source": "SHIPPING_POLICY",
+            "content": "Standard delivery takes 3 to 5 business days for standard orders.",
+        },
+        {
+            "chunk_index": 1,
+            "source": "SHIPPING_POLICY",
+            "content": "Expedited shipping guarantees delivery within 24 to 48 hours.",
+        },
+        {
+            "chunk_index": 2,
+            "source": "PAYMENT_POLICY",
+            "content": "We accept major credit cards, debit cards, and digital wallet payments.",
+        },
+        {
+            "chunk_index": 3,
+            "source": "CANCELLATION_POLICY",
+            "content": "Orders can be canceled within 2 hours of placement before dispatch.",
+        },
+    ]
+
+    print(f"Initial Chunks Count: {len(batch_chunks)}")
+    print("Processing initial batch embedding run...")
+    metrics1 = batch_service.process_chunks(batch_chunks)
+
+    print("\nInitial Run Metrics:")
+    print(f"  Total Chunks    : {metrics1['total_chunks']}")
+    print(f"  Skipped Chunks  : {metrics1['skipped_chunks']}")
+    print(f"  Embedded Chunks : {metrics1['embedded_chunks']}")
+    print(f"  Failed Chunks   : {metrics1['failed_chunks']}")
+    print(f"  Input Tokens    : {metrics1['input_tokens']}")
+    print(f"  Estimated Cost  : ${metrics1['estimated_cost']:.6f}")
+
+    print("\nDemonstrating Resumability (re-running on same chunk list)...")
+    metrics2 = batch_service.process_chunks(batch_chunks)
+
+    print("\nResumed Run Metrics:")
+    print(f"  Total Chunks    : {metrics2['total_chunks']}")
+    print(
+        f"  Skipped Chunks  : {metrics2['skipped_chunks']} (all previously embedded chunks skipped)"
+    )
+    print(f"  Embedded Chunks : {metrics2['embedded_chunks']}")
+    print(f"  Failed Chunks   : {metrics2['failed_chunks']}")
+    print(f"  Input Tokens    : {metrics2['input_tokens']}")
+    print(f"  Estimated Cost  : ${metrics2['estimated_cost']:.6f}")
     print_separator()
 
     print()
