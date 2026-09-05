@@ -23,6 +23,7 @@ from src.services.embedding_service import EmbeddingService
 from src.services.similarity_service import SimilarityService
 from src.services.batch_embedding_service import BatchEmbeddingService
 from src.services.metadata_search_service import MetadataSearchService
+from src.services.retrieval_evaluation_service import RetrievalEvaluationService
 
 
 load_dotenv()
@@ -410,6 +411,93 @@ def main():
         print(f"    Source           : {item.get('source')}")
         print(f"    Section          : {item.get('section')}")
         print(f"    Chunk Content    : \"{item.get('content')[:75]}...\"")
+        print()
+    print_separator()
+
+    # 10. Demonstrate Retrieval Evaluation & IR Metrics
+    print("\n=== DEMONSTRATING RETRIEVAL EVALUATION & IR METRICS ===")
+    print_separator()
+
+    eval_chunks = [
+        {
+            "id": "account-guide.md:0",
+            "source": "account-guide.md",
+            "chunk_index": 0,
+            "content": "To reset your password, click 'Forgot Password' on the login page and enter registered email.",
+        },
+        {
+            "id": "account-guide.md:1",
+            "source": "account-guide.md",
+            "chunk_index": 1,
+            "content": "Follow the link sent to your email to set a new account password securely.",
+        },
+        {
+            "id": "submission-rubric.md:2",
+            "source": "submission-rubric.md",
+            "chunk_index": 2,
+            "content": "Project submission requires evidence of unit tests passing and comprehensive documentation.",
+        },
+        {
+            "id": "return-policy.md:0",
+            "source": "return-policy.md",
+            "chunk_index": 0,
+            "content": "Eligible catalog products can be returned within 30 days of initial delivery.",
+        },
+    ]
+
+    labelled_queries = [
+        {
+            "query": "How can a learner reset their password?",
+            "relevant_chunk_ids": {
+                "account-guide.md:0",
+                "account-guide.md:1",
+            },
+        },
+        {
+            "query": "What evidence is required for project submission?",
+            "relevant_chunk_ids": {
+                "submission-rubric.md:2",
+            },
+        },
+        {
+            "query": "What are the rules for returning damaged items?",
+            "relevant_chunk_ids": {
+                "return-policy.md:0",
+                "nonexistent-policy.md:1",
+            },
+        },
+    ]
+
+    eval_service = RetrievalEvaluationService(retrieval_service=retrieval_service)
+    eval_results = eval_service.evaluate_dataset(
+        labelled_queries, candidate_chunks=eval_chunks, top_k=2
+    )
+
+    print("--- Per-Query Evaluation Results (Top-2 Retrieval) ---")
+    for q_idx, res in enumerate(eval_results["query_results"], 1):
+        print(f"  Query #{q_idx}: \"{res['query']}\"")
+        print(f"    Retrieved IDs      : {res['retrieved_ids']}")
+        print(f"    Relevant IDs       : {sorted(list(res['relevant_chunk_ids']))}")
+        print(f"    Hits               : {res['hits']}")
+        print(f"    Recall@2           : {res['recall@k']:.4f}")
+        print(f"    Precision@2        : {res['precision@k']:.4f}")
+        print()
+
+    print("--- Aggregate Evaluation Metrics ---")
+    print(f"  Total Queries        : {eval_results['number_of_queries']}")
+    print(f"  Average Recall@2     : {eval_results['average_recall@k']:.4f}")
+    print(f"  Average Precision@2  : {eval_results['average_precision@k']:.4f}")
+    print()
+
+    failures = eval_service.inspect_failures(eval_results)
+    print(f"--- Failure Inspection ({len(failures)} Failed Queries where Recall < 1.0) ---")
+    for f_idx, fail in enumerate(failures, 1):
+        print(f"  Failure #{f_idx}:")
+        print(f"    Failed Query        : \"{fail['query']}\"")
+        print(f"    Expected Relevant IDs: {sorted(list(fail['expected_chunk_ids']))}")
+        print(f"    Retrieved Chunk IDs : {fail['retrieved_chunk_ids']}")
+        print(f"    Recall              : {fail['recall']:.4f}")
+        print(f"    Precision           : {fail['precision']:.4f}")
         print()
     print_separator()
 
