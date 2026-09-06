@@ -24,6 +24,7 @@ from src.services.similarity_service import SimilarityService
 from src.services.batch_embedding_service import BatchEmbeddingService
 from src.services.metadata_search_service import MetadataSearchService
 from src.services.retrieval_evaluation_service import RetrievalEvaluationService
+from src.services.rag_pipeline_service import RAGPipelineService
 
 
 load_dotenv()
@@ -499,6 +500,60 @@ def main():
         print(f"    Recall              : {fail['recall']:.4f}")
         print(f"    Precision           : {fail['precision']:.4f}")
         print()
+    # 11. RAG Pipeline Architecture & Flow Design
+    print("\n=== 11. RAG PIPELINE ARCHITECTURE & FLOW DESIGN ===")
+    print_separator()
+
+    rag_chunks = [
+        {
+            "chunk_index": 0,
+            "source": "submission-rubric.md",
+            "content": "Project submission requires evidence of unit tests passing and comprehensive documentation.",
+        },
+        {
+            "chunk_index": 1,
+            "source": "account-guide.md",
+            "content": "To reset your password, click 'Forgot Password' on the login page and enter your registered email.",
+        },
+        {
+            "chunk_index": 2,
+            "source": "return-policy.md",
+            "content": "Customers can request a refund for eligible catalog items within 30 days of delivery.",
+        },
+    ]
+
+    rag_pipeline = RAGPipelineService(chunks=rag_chunks)
+    sample_rag_query = "What evidence is required for project submission?"
+
+    print(f"Sample Query: \"{sample_rag_query}\"\n")
+
+    # Stage A: Query Embedding
+    query_vec = rag_pipeline.embed_query(sample_rag_query)
+    print(f"1. embed_query()       : Generated {len(query_vec)}-dim vector (preview: {query_vec[:3]}...)")
+
+    # Stage B: Context Retrieval
+    top_chunks = rag_pipeline.retrieve_context(query_vec, k=2)
+    print(f"2. retrieve_context()  : Retrieved {len(top_chunks)} relevant chunks (Top source: '{top_chunks[0]['source']}')")
+
+    # Stage C: Context Assembly
+    assembled_ctx = rag_pipeline.assemble_context(top_chunks)
+    print(f"3. assemble_context()  :\n{assembled_ctx}\n")
+
+    # Stage D: Answer Generation
+    gen_answer = rag_pipeline.generate_answer(sample_rag_query, assembled_ctx)
+    print(f"4. generate_answer()   : \"{gen_answer}\"\n")
+
+    # Stage E: Complete Pipeline (answer_query)
+    print("--- End-to-End Pipeline Execution (answer_query) ---")
+    full_result = rag_pipeline.answer_query(sample_rag_query, k=2)
+    print(f"  Answer  : {full_result['answer']}")
+    print(f"  Sources : {full_result['sources']}\n")
+
+    # Stage F: Empty Retrieval Demonstration
+    print("--- Empty Retrieval Demonstration (No chunks available) ---")
+    empty_result = rag_pipeline.answer_query(sample_rag_query, k=2, chunks=[])
+    print(f"  Answer  : {empty_result['answer']}")
+    print(f"  Sources : {empty_result['sources']}")
     print_separator()
 
     print()

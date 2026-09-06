@@ -133,6 +133,30 @@ class ResponseService:
                 })
             return json.dumps({"answer": fallback_msg, "source": "None"})
 
+        # General sentence matching for offline queries with provided context
+        import re
+        query_words = set(re.findall(r"\b\w+\b", query_lower)) - {
+            "what", "is", "are", "for", "the", "a", "an", "to", "in", "of", "and", "or", "how", "can", "i", "required"
+        }
+        if query_words:
+            current_source = "None"
+            for line in context.splitlines():
+                line_str = line.strip()
+                if line_str.startswith("[") and "Source:" in line_str:
+                    parts = line_str.split("Source:", 1)
+                    if len(parts) > 1:
+                        current_source = parts[1].strip()
+                    continue
+                if not line_str:
+                    continue
+                line_lower = line_str.lower()
+                matches = sum(1 for w in query_words if w in line_lower)
+                if matches >= min(2, len(query_words)):
+                    return json.dumps({
+                        "answer": line_str,
+                        "source": current_source
+                    })
+
         return json.dumps({"answer": fallback_msg, "source": "None"})
 
     def generate(
