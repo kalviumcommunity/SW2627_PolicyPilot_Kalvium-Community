@@ -634,6 +634,34 @@ def main():
     print(f"Citations : {empty_result['citations']}")
     print_separator()
 
+    # 13. Backend API Server & Query Endpoint
+    print("\n=== 13. BACKEND API SERVER & QUERY ENDPOINT ===")
+    print_separator()
+
+    from src.api import QueryRequestHandler, create_mock_handler
+
+    print("Simulating POST /query API Request...")
+    test_payload = {"question": "What is the return period?"}
+    mock_handler = create_mock_handler("POST", "/query", body=test_payload)
+    mock_handler.do_POST()
+
+    import json
+    res_data = json.loads(mock_handler.wfile.getvalue().decode("utf-8"))
+
+    print(f"HTTP Response Code : {mock_handler.response_code}")
+    print(f"Content-Type       : {mock_handler.response_headers.get('Content-Type')}")
+    print(f"Access-Control-CORS: {mock_handler.response_headers.get('Access-Control-Allow-Origin')}")
+    print(f"Answer (from API)  : {res_data.get('answer')}")
+    print(f"Sources Count      : {len(res_data.get('sources', []))}")
+
+    print("\nSimulating POST /query Empty Question Validation...")
+    empty_handler = create_mock_handler("POST", "/query", body={"question": "   "})
+    empty_handler.do_POST()
+    empty_res = json.loads(empty_handler.wfile.getvalue().decode("utf-8"))
+    print(f"HTTP Response Code : {empty_handler.response_code}")
+    print(f"Error Message      : {empty_res.get('error')}")
+    print_separator()
+
     print()
     print("PolicyPilot foundation is running successfully.")
     print("=" * 65)

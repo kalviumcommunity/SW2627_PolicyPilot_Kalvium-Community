@@ -285,11 +285,82 @@ The next stages of development can include:
 * LLM-based answer generation
 * Source citation
 * Evaluation of retrieval quality
-* User-facing RAG assistant interface
+* ## Web API Server & Chat Interface UI Setup
+
+PolicyPilot includes a backend RAG API server and a Next.js web chat interface.
+
+### 1. Starting the Backend API Server
+Start the Python HTTP server exposing the `POST /query` endpoint:
+
+```bash
+python src/api.py
+```
+Or specify a custom port:
+```bash
+PORT=8000 python src/api.py
+```
+
+The server will listen at `http://localhost:8000/query`.
+
+### 2. Starting the Frontend UI
+Navigate to the `frontend/` directory, install dependencies, and start the development server:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+Open `http://localhost:3000` in your web browser.
+
+### 3. Environment Variable Configuration (`NEXT_PUBLIC_RAG_API_URL`)
+The frontend API client communicates with the backend via the `NEXT_PUBLIC_RAG_API_URL` environment variable.
+
+Configure this variable in `frontend/.env.local`:
+```env
+NEXT_PUBLIC_RAG_API_URL=http://localhost:8000/query
+```
+
+### 4. API Communication Specification (`POST /query`)
+The chat UI communicates with the backend RAG pipeline via `POST /query`.
+
+**Request:**
+```json
+POST /query
+Content-Type: application/json
+
+{
+  "question": "What is the return period for catalog items?"
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "answer": "Customers can request a refund for eligible catalog items within 30 days of delivery. [1]",
+  "citations": {
+    "[1]": {
+      "source": "RETURN_AND_REFUND_POLICY",
+      "chunk_id": "policy-doc:0",
+      "chunk_index": 0,
+      "section": "Return Window",
+      "text": "Customers can request a refund for eligible catalog items within 30 days of delivery."
+    }
+  },
+  "sources": [
+    {
+      "marker": "[1]",
+      "source": "RETURN_AND_REFUND_POLICY",
+      "chunk_id": "policy-doc:0",
+      "chunk_index": 0,
+      "section": "Return Window",
+      "text": "Customers can request a refund for eligible catalog items within 30 days of delivery."
+    }
+  ]
+}
+```
 
 ---
 
 **Project:** PolicyPilot
 **Repository:** `SW2627_PolicyPilot_Kalvium-Community`
 **Purpose:** Reproducible and secure foundation for an internal RAG assistant
-git checkout -b feature/github-workflow-setup
