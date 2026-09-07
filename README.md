@@ -217,26 +217,79 @@ outputs/ generated local files
 
 The `.env.example` file is safe to commit because it contains variable names only and no real credentials.
 
-## Current Scope
+## Retrieval Settings Tuning & Evaluation (Sprint 2)
 
-This repository establishes the foundation for the PolicyPilot RAG assistant.
+PolicyPilot includes a comprehensive retrieval evaluation and tuning framework (`src/services/retrieval_service.py`) to benchmark nearest-neighbor vector search, metadata filters, score cutoffs, and top-$k$ configurations against ground-truth query-source pairs.
 
-The next stages of development can include:
+### 1. Ground-Truth Test Queries & Expected Sources
 
-* Document ingestion
-* Document chunking
-* Embedding generation
-* ChromaDB indexing
-* Similarity and hybrid retrieval
-* Prompt construction
-* LLM-based answer generation
-* Source citation
-* Evaluation of retrieval quality
-* User-facing RAG assistant interface
+| Query ID | User Search Query | Expected Ground-Truth Source | Target Domain |
+| --- | --- | --- | --- |
+| `Q1` | *How can a learner reset their password?* | `account-guide.md` | Authentication & Account Support |
+| `Q2` | *When does the cafeteria menu change?* | `campus-guide.md` | Campus Life & Dining |
+| `Q3` | *What evidence is required for project submission?* | `submission-rubric.md` | Academic Evaluation |
+| `Q4` | *How many days per week can employees work remotely?* | `remote_policy.txt` | HR & Workplace Policy |
+| `Q5` | *What is the monthly limit for home internet allowance?* | `stipend_faq.html` | Finance & Reimbursements |
+| `Q6` | *What are the rules for overtime approval and daily work hours?* | `work_hours.md` | Operations & Work Hours |
+| `Q7` | *What is the daily meal per diem for business travel?* | `sample_policy.pdf` | Travel & Expense Policies |
+
+### 2. Retrieval Settings Compared
+
+We systematically evaluate 6 distinct configurations:
+
+1. **`baseline_k3`**: Top-$k=3$, no metadata filter, no score threshold (`min_score=0.0`).
+2. **`filtered_k3`**: Top-$k=3$, hard metadata filter strictly on `{"doc_type": "guide"}`.
+3. **`strict_k5`**: Top-$k=5$, strict score cutoff (`min_score=0.72`).
+4. **`minimal_k1`**: Top-$k=1$, no filter, testing rank-1 precision vs risk of dropped context.
+5. **`expanded_k5`**: Top-$k=5$, no filter, testing recall gains vs token noise overhead.
+6. **`calibrated_optimal_k3`**: Top-$k=3$, calibrated noise-filtering threshold (`min_score=0.30`).
+
+### 3. Summary Results & Relevance Metrics
+
+| Setting Name | $k$ | Metadata Filter | Min Score | Hit Rate (Recall@k) | Top-1 Accuracy | MRR | Avg Chunks Returned |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `baseline_k3` | 3 | None | 0.00 | **100.0%** | 100.0% | 1.0000 | 3.00 |
+| `filtered_k3` | 3 | `{'doc_type': 'guide'}` | 0.00 | **28.6%** | 28.6% | 0.2857 | 1.86 |
+| `strict_k5` | 5 | None | 0.72 | **0.0%** | 0.0% | 0.0000 | 0.00 |
+| `minimal_k1` | 1 | None | 0.00 | **100.0%** | 100.0% | 1.0000 | 1.00 |
+| `expanded_k5` | 5 | None | 0.00 | **100.0%** | 100.0% | 1.0000 | 5.00 |
+| `calibrated_optimal_k3` | 3 | None | 0.30 | **100.0%** | 100.0% | 1.0000 | 1.00 |
+
+### 4. Running the Retrieval Tuning Demo
+
+Run the automated experiment runner to evaluate all settings and export reports:
+
+```bash
+python src/run_retrieval_tuning_demo.py
+```
+
+Generated artifact outputs:
+- `outputs/retrieval_eval_queries.json`: Ground-truth test query dataset.
+- `outputs/retrieval_tuning_results.json`: Machine-readable evaluation metrics and row-level details.
+- `outputs/retrieval_tuning_report.md`: Detailed markdown evaluation report.
+
+### 5. Running the Test Suite
+
+Run the full automated test suite with pytest:
+
+```bash
+pytest
+```
 
 ---
 
-**Project:** PolicyPilot
-**Repository:** `SW2627_PolicyPilot_Kalvium-Community`
-**Purpose:** Reproducible and secure foundation for an internal RAG assistant
-git checkout -b feature/github-workflow-setup
+## 3-5 Minute Video Demonstration Guide
+
+For the video submission walkthrough:
+1. **Introduction (0:00 - 0:45):** Define retrieval relevance (retrieving chunks that are useful, authoritative, and factually sufficient to answer user queries).
+2. **Settings Compared (0:45 - 1:45):** Explain why $k$, metadata filters, and score thresholds were chosen.
+3. **Execution & Metrics (1:45 - 2:45):** Run `python src/run_retrieval_tuning_demo.py` and explain Hit Rate, Top-1 Hit, MRR, and Manual Judgment.
+4. **Biggest Effect & Winner (2:45 - 3:45):** Justify `calibrated_optimal_k3` (filters noise, avoids token bloating, guarantees 100% Hit Rate).
+5. **Follow-Up Analysis (3:45 - 4:45):** How poor retrieval affects final answers (hallucinations, incomplete responses, vague generalizations).
+
+---
+
+**Project:** PolicyPilot  
+**Repository:** `SW2627_PolicyPilot_Kalvium-Community`  
+**Branch:** `feature/retrieval-tuning`  
+**Purpose:** Empirical retrieval tuning, evaluation metrics, and noise reduction for RAG knowledge bases

@@ -22,6 +22,9 @@ outputs/*
 !outputs/embedding_demo_report.md
 !outputs/vector_store_readback.json
 !outputs/vector_database_report.md
+!outputs/retrieval_eval_queries.json
+!outputs/retrieval_tuning_results.json
+!outputs/retrieval_tuning_report.md
 
 
 # Python cache
