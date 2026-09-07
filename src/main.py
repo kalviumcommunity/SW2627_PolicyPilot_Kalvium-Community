@@ -25,6 +25,7 @@ from src.services.batch_embedding_service import BatchEmbeddingService
 from src.services.metadata_search_service import MetadataSearchService
 from src.services.retrieval_evaluation_service import RetrievalEvaluationService
 from src.services.rag_pipeline_service import RAGPipelineService
+from src.services.citation_service import CitationService
 
 
 load_dotenv()
@@ -554,6 +555,83 @@ def main():
     empty_result = rag_pipeline.answer_query(sample_rag_query, k=2, chunks=[])
     print(f"  Answer  : {empty_result['answer']}")
     print(f"  Sources : {empty_result['sources']}")
+    print_separator()
+
+    # 12. Source Citation & Attribution
+    print("\n=== 12. SOURCE CITATION & ATTRIBUTION ===")
+    print_separator()
+
+    citation_chunks = [
+        {
+            "id": "return-policy.md:0",
+            "source": "return-policy.md",
+            "chunk_index": 0,
+            "section": "Return Window",
+            "text": "Customers can request a refund for eligible catalog items within 30 days of delivery.",
+        },
+        {
+            "id": "return-policy.md:1",
+            "source": "return-policy.md",
+            "chunk_index": 1,
+            "section": "Packaging Guidelines",
+            "text": "All returned items must be unused, in original packaging with intact tags.",
+        },
+        {
+            "id": "seller-agreement.md:0",
+            "source": "seller-agreement.md",
+            "chunk_index": 2,
+            "section": "Seller Dispatch SLAs",
+            "text": "Sellers are required to dispatch ordered items within 2 business days.",
+        },
+    ]
+
+    citation_service = CitationService(chunks=citation_chunks)
+    citation_query = "What is the return period for catalog items?"
+
+    print(f"Sample Query: \"{citation_query}\"\n")
+
+    # A. Retrieve Chunks & Build Citation Map
+    retrieved_c_chunks = citation_service.retrieval_service.retrieve_ranked_chunks(
+        citation_query, citation_chunks, top_k=2
+    )
+    citation_map = citation_service.build_citation_map(retrieved_c_chunks)
+    print(f"1. Retrieved Chunks Count : {len(retrieved_c_chunks)}")
+    print(f"2. Built Citation Map      : {list(citation_map.keys())}")
+
+    # B. Build Cited Prompt
+    cited_prompt = citation_service.build_cited_prompt(citation_query, retrieved_c_chunks)
+    print("\n--- 3. Constructed Cited Prompt ---")
+    print(cited_prompt)
+
+    # C. Generate Answer with Citations
+    print("\n--- 4. End-to-End answer_with_citations Output ---")
+    result = citation_service.answer_with_citations(citation_query, top_k=2)
+    print(f"Answer    : {result['answer']}\n")
+    print("Citations :")
+    for marker, meta in result["citations"].items():
+        print(f"  {marker}: Source='{meta['source']}' | Chunk ID='{meta['chunk_id']}' | Section='{meta['section']}'")
+        print(f"        Original Text: \"{meta['text']}\"")
+
+    # D. Citation Verification
+    print("\n--- 5. Citation Verification (verify_citation) ---")
+    target_marker = "[1]"
+    verification = citation_service.verify_citation(result, target_marker)
+    print(f"Verifying Marker '{target_marker}':")
+    if verification:
+        print(f"  [SUCCESS] Marker '{target_marker}' verified!")
+        print(f"    Source       : {verification['source']}")
+        print(f"    Chunk ID     : {verification['chunk_id']}")
+        print(f"    Chunk Index  : {verification['chunk_index']}")
+        print(f"    Section      : {verification['section']}")
+        print(f"    Original Text: \"{verification['text']}\"")
+    else:
+        print(f"  [FAILURE] Marker '{target_marker}' could not be verified.")
+
+    # E. Empty Retrieval Demonstration
+    print("\n--- 6. Empty Retrieval Demonstration ---")
+    empty_result = citation_service.answer_with_citations(citation_query, chunks=[])
+    print(f"Answer    : {empty_result['answer']}")
+    print(f"Citations : {empty_result['citations']}")
     print_separator()
 
     print()
