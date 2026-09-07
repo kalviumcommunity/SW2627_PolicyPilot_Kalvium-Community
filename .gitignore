@@ -27,6 +27,8 @@ outputs/*
 !outputs/retrieval_tuning_report.md
 !outputs/reranking_results.json
 !outputs/reranking_report.md
+!outputs/prompt_augmentation_results.json
+!outputs/prompt_augmentation_report.md
 
 
 # Python cache
