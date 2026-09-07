@@ -105,3 +105,145 @@ def execute_prompt(client: Any, model: str, messages: List[Dict[str, str]]) -> s
         messages=messages,
     )
     return response.choices[0].message.content
+
+
+# -------------------------------------------------------------
+# Prompt Augmentation & Context Injection (Concept 3.36)
+# -------------------------------------------------------------
+
+import tiktoken
+
+DEFAULT_MAX_CONTEXT_TOKENS = 5000
+
+
+def count_tokens(text: str, encoding_name: str = "cl100k_base") -> int:
+    """Count tokens in a text string using tiktoken encoding."""
+    if not text:
+        return 0
+    try:
+        enc = tiktoken.get_encoding(encoding_name)
+    except Exception:
+        enc = tiktoken.get_encoding("cl100k_base")
+    return len(enc.encode(text, disallowed_special=()))
+
+
+def format_chunk(index: int, chunk: Dict[str, Any]) -> str:
+    """Format a retrieved chunk with source and chunk index citation markers.
+
+    Example Output:
+        [1] account-guide.md#0
+        How can a learner reset their password? Click Forgot Password...
+    """
+    metadata = chunk.get("metadata", {})
+    source = metadata.get("source", "unknown_source")
+    chunk_index = metadata.get("chunk_index", chunk.get("index", 0))
+    marker = f"[{index}] {source}#{chunk_index}"
+    text = chunk.get("text", "").strip()
+    return f"{marker}\n{text}"
+
+
+def assemble_context(
+    chunks: List[Dict[str, Any]],
+    max_context_tokens: int = DEFAULT_MAX_CONTEXT_TOKENS,
+    encoding_name: str = "cl100k_base",
+) -> tuple:
+    """Assemble formatted retrieved chunks into a single context string within token budget.
+
+    Args:
+        chunks: List of retrieved chunk dictionaries.
+        max_context_tokens: Maximum tokens allowed for the assembled context.
+        encoding_name: Tiktoken encoding name (default: cl100k_base).
+
+    Returns:
+        tuple: (assembled_context_str, used_tokens_int, selected_chunks_metadata_list)
+    """
+    selected = []
+    selected_meta = []
+    used_tokens = 0
+
+    for index, chunk in enumerate(chunks, start=1):
+        formatted = format_chunk(index, chunk)
+        token_count = count_tokens(formatted, encoding_name=encoding_name)
+
+        # Account for delimiter tokens between chunks
+        delimiter_tokens = count_tokens("\n\n---\n\n", encoding_name=encoding_name) if selected else 0
+
+        if used_tokens + delimiter_tokens + token_count > max_context_tokens:
+            break
+
+        selected.append(formatted)
+        meta = dict(chunk.get("metadata", {}))
+        meta["citation_index"] = index
+        selected_meta.append(meta)
+        used_tokens += (delimiter_tokens + token_count)
+
+    context_str = "\n\n---\n\n".join(selected)
+    return context_str, used_tokens, selected_meta
+
+
+def build_augmented_prompt(
+    question: str,
+    retrieved_chunks: List[Dict[str, Any]],
+    max_context_tokens: int = DEFAULT_MAX_CONTEXT_TOKENS,
+    encoding_name: str = "cl100k_base",
+) -> Dict[str, Any]:
+    """Construct an augmented grounded prompt separating instructions, context, and question.
+
+    Instructs the model to answer strictly from the provided context with source citations,
+    and fallback when information is missing.
+
+    Args:
+        question: The user query string.
+        retrieved_chunks: List of retrieved evidence chunks.
+        max_context_tokens: Token budget for injected context.
+        encoding_name: Tokenizer encoding name.
+
+    Returns:
+        Dictionary containing:
+            - prompt: Complete formatted prompt string.
+            - messages: Role-separated OpenAI messages list.
+            - context: Raw injected context string.
+            - context_tokens: Tokens used by context.
+            - total_prompt_tokens: Total tokens in prompt.
+            - sources_used: List of metadata for chunks included in context.
+            - num_chunks_included: Number of chunks within token budget.
+            - total_chunks_provided: Total input chunks before budget cutoff.
+    """
+    context, context_tokens, sources_used = assemble_context(
+        chunks=retrieved_chunks,
+        max_context_tokens=max_context_tokens,
+        encoding_name=encoding_name,
+    )
+
+    system_instruction = (
+        "You are a grounded assistant. Answer the question using only the provided context. "
+        "If the answer is not in the context, say: \"I don't have enough information in the provided context.\"\n"
+        "When possible, cite sources using the markers like [1] or [2]."
+    )
+
+    user_content = f"Context:\n{context}\n\nQuestion:\n{question}"
+
+    prompt_str = f"{system_instruction}\n\n{user_content}"
+    total_tokens = count_tokens(prompt_str, encoding_name=encoding_name)
+
+    messages = [
+        {"role": "system", "content": system_instruction},
+        {"role": "user", "content": user_content},
+    ]
+
+    return {
+        "prompt": prompt_str,
+        "messages": messages,
+        "context": context,
+        "context_tokens": context_tokens,
+        "total_prompt_tokens": total_tokens,
+        "sources_used": sources_used,
+        "num_chunks_included": len(sources_used),
+        "total_chunks_provided": len(retrieved_chunks),
+    }
+
+
+def build_prompt(question: str, retrieved_chunks: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """Build augmented prompt matching the standard signature."""
+    return build_augmented_prompt(question=question, retrieved_chunks=retrieved_chunks)
+

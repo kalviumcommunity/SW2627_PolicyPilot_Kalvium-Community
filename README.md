@@ -341,8 +341,40 @@ For the video submission walkthrough:
 
 ---
 
+## Prompt Augmentation & Context Injection (Sprint 2 - Concept 3.36)
+
+PolicyPilot implements robust **Prompt Augmentation and Context Injection** (`src/services/prompt_service.py`) to transform retrieved evidence chunks into structured, token-bounded, grounded prompts for the generator model.
+
+### 1. Key Capabilities
+
+1. **Chunk Labeling & Source Citation Markers:**
+   - Formats each retrieved chunk as `[{index}] {source}#{chunk_index}\n{text}`.
+   - Example:
+     ```text
+     [1] account-guide.md#0
+     How can a learner reset their password? Learners can reset their password by navigating to the login portal...
+     ```
+2. **Strict Token Budgeting (`MAX_CONTEXT_TOKENS`):**
+   - Automatically packs highest-ranked chunks first using `tiktoken` (cl100k_base).
+   - Enforces a hard context cap (e.g. 5,000 tokens) reserving headroom for instructions, question, and generated output.
+3. **Grounded Instruction & Refusal Fallback:**
+   - Explicitly instructs the model to answer strictly from the provided context and cite source markers (`[1]`, `[2]`).
+   - Mandates refusal when context is insufficient: *"I don't have enough information in the provided context."*
+
+### 2. Running the Prompt Augmentation Demo
+
+```bash
+python src/run_prompt_augmentation_demo.py
+```
+
+Generated outputs:
+- `outputs/prompt_augmentation_results.json`: Prompt assembly records and token usage metadata.
+- `outputs/prompt_augmentation_report.md`: Markdown documentation of context formatting and token budgeting.
+
+---
+
 **Project:** PolicyPilot  
 **Repository:** `SW2627_PolicyPilot_Kalvium-Community`  
-**Branch:** `feature/chunk-reranking`  
-**Purpose:** Two-stage retrieval and precision re-ranking for RAG assistants
+**Branch:** `feature/prompt-augmentation`  
+**Purpose:** Context injection, token budget management, source citation labeling, and grounded prompt assembly
 

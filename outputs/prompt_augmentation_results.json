@@ -1,0 +1,89 @@
+{
+  "timestamp": "2026-09-07 14:10:24",
+  "sample_chunks_count": 4,
+  "standard_budget_evaluation": {
+    "max_tokens": 5000,
+    "used_tokens": 251,
+    "included_chunks": 4,
+    "sources": [
+      {
+        "source": "account-guide.md",
+        "chunk_index": 0,
+        "section": "password_reset",
+        "doc_type": "guide",
+        "citation_index": 1
+      },
+      {
+        "source": "campus-guide.md",
+        "chunk_index": 0,
+        "section": "dining",
+        "doc_type": "guide",
+        "citation_index": 2
+      },
+      {
+        "source": "submission-rubric.md",
+        "chunk_index": 0,
+        "section": "submission_evidence",
+        "doc_type": "rubric",
+        "citation_index": 3
+      },
+      {
+        "source": "remote_policy.txt",
+        "chunk_index": 0,
+        "section": "remote_work",
+        "doc_type": "policy",
+        "citation_index": 4
+      }
+    ]
+  },
+  "constrained_budget_evaluation": {
+    "max_tokens": 100,
+    "used_tokens": 61,
+    "included_chunks": 1,
+    "sources": [
+      {
+        "source": "account-guide.md",
+        "chunk_index": 0,
+        "section": "password_reset",
+        "doc_type": "guide",
+        "citation_index": 1
+      }
+    ]
+  },
+  "sample_prompt_generation": {
+    "query": "How can a learner reset their password?",
+    "total_tokens": 314,
+    "context_tokens": 251,
+    "sources_used": [
+      {
+        "source": "account-guide.md",
+        "chunk_index": 0,
+        "section": "password_reset",
+        "doc_type": "guide",
+        "citation_index": 1
+      },
+      {
+        "source": "campus-guide.md",
+        "chunk_index": 0,
+        "section": "dining",
+        "doc_type": "guide",
+        "citation_index": 2
+      },
+      {
+        "source": "submission-rubric.md",
+        "chunk_index": 0,
+        "section": "submission_evidence",
+        "doc_type": "rubric",
+        "citation_index": 3
+      },
+      {
+        "source": "remote_policy.txt",
+        "chunk_index": 0,
+        "section": "remote_work",
+        "doc_type": "policy",
+        "citation_index": 4
+      }
+    ],
+    "prompt_sample": "You are a grounded assistant. Answer the question using only the provided context. If the answer is not in the context, say: \"I don't have enough information in the provided context.\"\nWhen possible, cite sources using the markers like [1] or [2].\n\nContext:\n[1] account-guide.md#0\nHow can a learner reset their password? Learners can reset their password by navigating to the login portal, clicking 'Forgot Password', entering their registered email, and following the secure reset link. Multi-factor authentication (MFA) recovery can be initiated through support.\n\n---\n\n[2] campus-guide.md#0\nCampus Facilities and Dining: When does the cafeteria menu change? The campus cafeteria rotates its full menu every Monday morning at 7:00 AM. Operating hours: Breakfast 7:30-10:00 AM, Lunch 12:00-2:30 PM, Dinner 6:00-8:30 PM.\n\n---\n\n[3] submission-rubric.md#0\nAcademic Project Submission Rubric: What evidence is required for project submission? Required evidence includes a public GitHub repository link, clean source code, passing automated unit tests, granular commit history, and a 3-5 minute demo video.\n\n---\n\n[4] remote_policy.txt#0\nCompany Remote Work Policy (Effective January 1, 2026): Eligible employees may work remotely up to three days per week while maintaining standard core collaboration hours from 10 AM to 4 PM.\n\nQuestion:\nHow can a learner reset their password?"
+  }
+}
