@@ -373,8 +373,66 @@ Generated outputs:
 
 ---
 
+## Hallucination Guardrails & Refusal Handling (Sprint 2 - Concept 3.41)
+
+PolicyPilot implements robust pre-generation **Hallucination Guardrails and Safe Refusal Mechanisms** (`src/services/response_service.py`):
+1. **Detect Weak or Missing Retrieval:** Evaluates retrieved chunks against a calibrated relevance score threshold (`min_score=0.35`) and minimum supporting chunk count (`min_supporting_chunks=1`) before invoking the generator.
+2. **Safe Refusal on Weak Context:** If retrieval yields empty results or scores below threshold, execution halts immediately and returns a safe refusal message (`"I don't have enough reliable context to answer that."`, `status="refused_weak_context"`), avoiding unsupported hallucinations.
+3. **Preserve Confident Grounded Answers:** When strong evidence exists, generates grounded, factual responses with source markers (`[1]`, `[2]`) (`status="answered"`).
+
+### 1. Guardrail Evaluation Summary Table
+
+| Test ID | Query Type | Question | Top Similarity Score | Status | Result | Answer / Safe Refusal Output |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| `TC1` | `answer_case` | *What evidence is required for project submission?* | `0.6445` | **`answered`** | **PASS** | *"Based on the provided context, the required evidence for project submission includes a public GitHub repository link, clean code, test reports, and a 3-5 min video [1]."* |
+| `TC2` | `answer_case` | *How can a learner reset their password?* | `0.6183` | **`answered`** | **PASS** | *"To reset their password, a learner should navigate to the login portal, select 'Forgot Password', enter their registered email address, and follow instructions [1]."* |
+| `TC3` | `answer_case` | *How many days per week are employees permitted to work remotely?* | `0.5710` | **`answered`** | **PASS** | *"Employees are permitted to work remotely up to three days per week [1]."* |
+| `TC4` | `refusal_case` | *What is the refund policy for a product not in this corpus?* | `0.2041` | **`refused_weak_context`** | **PASS** | *"I don't have enough reliable context to answer that."* |
+| `TC5` | `refusal_case` | *What are the health insurance dental coverage tiers and copay amounts?* | `0.1909` | **`refused_weak_context`** | **PASS** | *"I don't have enough reliable context to answer that."* |
+| `TC6` | `refusal_case` | *How do employees book international flights using the Concur travel portal?* | `0.1564` | **`refused_weak_context`** | **PASS** | *"I don't have enough reliable context to answer that."* |
+
+### 2. Refusing vs. Answering Trade-Off Analysis
+
+| Strategy | Strengths | Risks / Drawbacks | Ideal Use Case |
+| :--- | :--- | :--- | :--- |
+| **Aggressive Answering** | Minimizes user friction; handles edge cases | High hallucination rate; confident misinformation | Open-ended brainstorming, creative writing, casual chatbots |
+| **Aggressive Refusal** | 0% hallucination rate; highest factual reliability | Higher false-refusal rate on valid questions | Medical diagnostics, legal contracts, regulatory compliance |
+| **Calibrated Guardrail (PolicyPilot)** | 100% recall on indexed policies; immediate refusal on unindexed topics | Requires empirical threshold calibration per domain | Internal company handbooks, academic rubrics, enterprise policies |
+
+### 3. Running the Guardrails Demo
+
+```bash
+python src/run_guardrails_demo.py
+```
+
+Generated outputs:
+- `outputs/guardrail_refusal_results.json`: Complete test case records with scores, statuses, and outputs.
+- `outputs/guardrail_refusal_report.md`: Markdown evaluation report with trade-off analysis and video script.
+
+---
+
+## 3–5 Minute Video Demonstration Guide (Concept 3.41)
+
+For your video submission:
+1. **What is Hallucination & Why is it Dangerous? (0:00 – 0:45):**
+   - Explain that a hallucination is an unsupported answer that sounds confident and plausible.
+   - In corporate and academic policies, a hallucination can mislead employees or students on grading, leave, or compliance rules.
+2. **How PolicyPilot Decides When to Refuse (0:45 – 1:45):**
+   - Walk through `retrieval_is_strong()` in `src/services/response_service.py`.
+   - Explain the relevance threshold (`min_score = 0.35`) and supporting chunk count.
+3. **Live Demonstration of Answered vs. Refusal Cases (1:45 – 2:45):**
+   - Run `python src/run_guardrails_demo.py`.
+   - Show `TC1` (*"What evidence is required for project submission?"* -> `status="answered"` with `[1]` citation).
+   - Show `TC4` (*"What is the refund policy for a product not in this corpus?"* -> `status="refused_weak_context"` with `"I don't have enough reliable context to answer that."`).
+4. **The Trade-Off Between Refusing and Answering (2:45 – 3:45):**
+   - Discuss why refusing too often frustrates users, while answering too freely causes misinformation.
+5. **Follow-Up: Why Refusing is Safer in High-Stakes Domains (3:45 – 4:45):**
+   - Explain that in high-stakes domains (legal, healthcare, finance, policy), an explicit refusal prompts the user to verify with human HR/support, avoiding severe liability and compliance breaches.
+
+---
+
 **Project:** PolicyPilot  
 **Repository:** `SW2627_PolicyPilot_Kalvium-Community`  
-**Branch:** `feature/prompt-augmentation`  
-**Purpose:** Context injection, token budget management, source citation labeling, and grounded prompt assembly
+**Branch:** `feature/hallucination-guardrails`  
+**Purpose:** Pre-generation retrieval quality verification, safe refusal handling, and hallucination reduction for enterprise RAG.
 
