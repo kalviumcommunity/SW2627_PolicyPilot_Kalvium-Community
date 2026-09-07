@@ -23,6 +23,9 @@ outputs/*
 !outputs/batch_embedding_summary.*
 !outputs/embedded_chunks.json
 !outputs/sanity_report.*
+!outputs/retrieval_results.json
+!outputs/retrieval_demo_report.md
+
 
 
 # Python cache
