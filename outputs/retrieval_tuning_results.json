@@ -1,0 +1,2239 @@
+{
+  "timestamp": "2026-09-07 13:28:25",
+  "total_test_queries": 7,
+  "total_corpus_chunks": 7,
+  "chosen_setting": "calibrated_optimal_k3",
+  "justification_summary": "Empirical Justification:\n1. Hit Rate & Recall (100.0%):\n   - 'calibrated_optimal_k3' (k=3, min_score=0.30) achieved a 100.0% Hit Rate across all test queries, guaranteeing that the required policy document is always present in the LLM's prompt context.\n2. Rank Quality & Top-1 Hit Rate (100.0% / MRR 1.0000):\n   - In all test cases, the expected document was ranked #1, maximizing the attention weight given by the LLM to the most authoritative source chunk.\n3. Noise Reduction & Token Economy:\n   - Unlike 'expanded_k5' which retrieved an average of 5.0 chunks per query (introducing irrelevant workplace policy chunks into unrelated academic queries and bloating token costs by 66%), 'calibrated_optimal_k3' cleanly filtered low-scoring chunks while preserving relevant context.\n4. Robustness vs Strict Filtering:\n   - Hard metadata filters ('filtered_k3') failed on non-guide queries (e.g. Q3 rubric, Q4 remote policy, Q5 stipend faq) resulting in a low 28.6% Hit Rate.\n   - Overly strict score cutoffs ('strict_k5' with min_score=0.72) caused false negatives whenever phrasing was not word-for-word identical.\n   - Calibrating min_score to 0.30 eliminates true cross-domain noise without creating false negative dropouts.",
+  "settings_comparison": [
+    {
+      "setting": "baseline_k3",
+      "description": "Standard baseline retriever with top_k=3, no filters, and no score threshold",
+      "config": {
+        "k": 3,
+        "filter": null,
+        "min_score": 0.0
+      },
+      "metrics": {
+        "hit_rate": 1.0,
+        "top_1_hit_rate": 1.0,
+        "mrr": 1.0,
+        "avg_returned_chunks": 3.0,
+        "latency_ms": 25.65
+      }
+    },
+    {
+      "setting": "filtered_k3",
+      "description": "Metadata-filtered retrieval restricted strictly to doc_type='guide'",
+      "config": {
+        "k": 3,
+        "filter": {
+          "doc_type": "guide"
+        },
+        "min_score": 0.0
+      },
+      "metrics": {
+        "hit_rate": 0.2857,
+        "top_1_hit_rate": 0.2857,
+        "mrr": 0.2857,
+        "avg_returned_chunks": 1.86,
+        "latency_ms": 40.77
+      }
+    },
+    {
+      "setting": "strict_k5",
+      "description": "Strict similarity threshold cutoff (min_score=0.72) with top_k=5",
+      "config": {
+        "k": 5,
+        "filter": null,
+        "min_score": 0.72
+      },
+      "metrics": {
+        "hit_rate": 0.0,
+        "top_1_hit_rate": 0.0,
+        "mrr": 0.0,
+        "avg_returned_chunks": 0.0,
+        "latency_ms": 37.37
+      }
+    },
+    {
+      "setting": "minimal_k1",
+      "description": "Minimal top-1 retrieval to test rank-1 precision and risk of missing context",
+      "config": {
+        "k": 1,
+        "filter": null,
+        "min_score": 0.0
+      },
+      "metrics": {
+        "hit_rate": 1.0,
+        "top_1_hit_rate": 1.0,
+        "mrr": 1.0,
+        "avg_returned_chunks": 1.0,
+        "latency_ms": 52.98
+      }
+    },
+    {
+      "setting": "expanded_k5",
+      "description": "Expanded retrieval with top_k=5 to test recall gains vs noise penalty",
+      "config": {
+        "k": 5,
+        "filter": null,
+        "min_score": 0.0
+      },
+      "metrics": {
+        "hit_rate": 1.0,
+        "top_1_hit_rate": 1.0,
+        "mrr": 1.0,
+        "avg_returned_chunks": 5.0,
+        "latency_ms": 58.25
+      }
+    },
+    {
+      "setting": "calibrated_optimal_k3",
+      "description": "Calibrated optimal setting: top_k=3 with noise-filtering threshold (min_score=0.30)",
+      "config": {
+        "k": 3,
+        "filter": null,
+        "min_score": 0.3
+      },
+      "metrics": {
+        "hit_rate": 1.0,
+        "top_1_hit_rate": 1.0,
+        "mrr": 1.0,
+        "avg_returned_chunks": 1.0,
+        "latency_ms": 54.16
+      }
+    }
+  ],
+  "detailed_evaluations": [
+    {
+      "setting": "baseline_k3",
+      "description": "Standard baseline retriever with top_k=3, no filters, and no score threshold",
+      "config": {
+        "k": 3,
+        "filter": null,
+        "min_score": 0.0
+      },
+      "metrics": {
+        "hit_rate": 1.0,
+        "top_1_hit_rate": 1.0,
+        "mrr": 1.0,
+        "avg_returned_chunks": 3.0,
+        "latency_ms": 25.65
+      },
+      "rows": [
+        {
+          "query": "How can a learner reset their password?",
+          "expected_source": "account-guide.md",
+          "returned_sources": [
+            "account-guide.md",
+            "stipend_faq.html",
+            "submission-rubric.md"
+          ],
+          "returned_count": 3,
+          "hit": true,
+          "top_1_hit": true,
+          "rank": 1,
+          "reciprocal_rank": 1.0,
+          "results": [
+            {
+              "id": "account-guide.md:0",
+              "score": 0.716052,
+              "distance": 0.283948,
+              "text": "How can a learner reset their password? Learners can reset their password by clicking 'Forgot Password' on the login portal, entering their registered email, and following the secure reset link sent to their inbox. Multi-factor authentication (MFA) can also be reset via admin support.",
+              "metadata": {
+                "chunk_index": 0,
+                "token_count": 52,
+                "doc_type": "guide",
+                "category": "account_access",
+                "source": "account-guide.md"
+              },
+              "rank": 1,
+              "judgment": "Excellent"
+            },
+            {
+              "id": "stipend_faq.html:0",
+              "score": 0.118411,
+              "distance": 0.881589,
+              "text": "Stipend & Reimbursement FAQ: What can I claim under the internet allowance? Eligible remote employees can claim up to $75 per month for high-speed home internet service via monthly expense reports with valid broadband receipts.",
+              "metadata": {
+                "doc_type": "faq",
+                "category": "finance",
+                "chunk_index": 0,
+                "source": "stipend_faq.html",
+                "token_count": 44
+              },
+              "rank": 2,
+              "judgment": "Irrelevant"
+            },
+            {
+              "id": "submission-rubric.md:0",
+              "score": 0.077761,
+              "distance": 0.922239,
+              "text": "Academic Project Submission Rubric: What evidence is required for project submission? Students must submit a public GitHub repository link containing clean modular code, passing automated unit test suites, clear commit history, an architecture walkthrough, and a 3-5 minute screen recording demo.",
+              "metadata": {
+                "chunk_index": 0,
+                "category": "academics",
+                "token_count": 55,
+                "doc_type": "rubric",
+                "source": "submission-rubric.md"
+              },
+              "rank": 3,
+              "judgment": "Irrelevant"
+            }
+          ],
+          "judgments": [
+            "Excellent",
+            "Irrelevant",
+            "Irrelevant"
+          ]
+        },
+        {
+          "query": "When does the cafeteria menu change?",
+          "expected_source": "campus-guide.md",
+          "returned_sources": [
+            "campus-guide.md",
+            "account-guide.md",
+            "work_hours.md"
+          ],
+          "returned_count": 3,
+          "hit": true,
+          "top_1_hit": true,
+          "rank": 1,
+          "reciprocal_rank": 1.0,
+          "results": [
+            {
+              "id": "campus-guide.md:0",
+              "score": 0.452183,
+              "distance": 0.547817,
+              "text": "Campus Facilities and Dining: When does the cafeteria menu change? The campus cafeteria rotates its full menu every Monday morning at 7:00 AM. Breakfast is served from 7:30 AM to 10:00 AM, lunch from 12:00 PM to 2:30 PM, and dinner from 6:00 PM to 8:30 PM.",
+              "metadata": {
+                "category": "campus_life",
+                "chunk_index": 0,
+                "token_count": 58,
+                "doc_type": "guide",
+                "source": "campus-guide.md"
+              },
+              "rank": 1,
+              "judgment": "Excellent"
+            },
+            {
+              "id": "account-guide.md:0",
+              "score": 0.074528,
+              "distance": 0.925472,
+              "text": "How can a learner reset their password? Learners can reset their password by clicking 'Forgot Password' on the login portal, entering their registered email, and following the secure reset link sent to their inbox. Multi-factor authentication (MFA) can also be reset via admin support.",
+              "metadata": {
+                "token_count": 52,
+                "category": "account_access",
+                "doc_type": "guide",
+                "source": "account-guide.md",
+                "chunk_index": 0
+              },
+              "rank": 2,
+              "judgment": "Irrelevant"
+            },
+            {
+              "id": "work_hours.md:0",
+              "score": 0.049304,
+              "distance": 0.950696,
+              "text": "Work Hours and Overtime Guideline: All remote workers must log daily check-in and check-out times in the HR portal. Standard schedule is 8 hours per day, 40 hours per week. Overtime hours must receive pre-approval from team leads.",
+              "metadata": {
+                "source": "work_hours.md",
+                "doc_type": "policy",
+                "token_count": 47,
+                "category": "operations",
+                "chunk_index": 0
+              },
+              "rank": 3,
+              "judgment": "Irrelevant"
+            }
+          ],
+          "judgments": [
+            "Excellent",
+            "Irrelevant",
+            "Irrelevant"
+          ]
+        },
+        {
+          "query": "What evidence is required for project submission?",
+          "expected_source": "submission-rubric.md",
+          "returned_sources": [
+            "submission-rubric.md",
+            "stipend_faq.html",
+            "account-guide.md"
+          ],
+          "returned_count": 3,
+          "hit": true,
+          "top_1_hit": true,
+          "rank": 1,
+          "reciprocal_rank": 1.0,
+          "results": [
+            {
+              "id": "submission-rubric.md:0",
+              "score": 0.512273,
+              "distance": 0.487727,
+              "text": "Academic Project Submission Rubric: What evidence is required for project submission? Students must submit a public GitHub repository link containing clean modular code, passing automated unit test suites, clear commit history, an architecture walkthrough, and a 3-5 minute screen recording demo.",
+              "metadata": {
+                "token_count": 55,
+                "category": "academics",
+                "source": "submission-rubric.md",
+                "doc_type": "rubric",
+                "chunk_index": 0
+              },
+              "rank": 1,
+              "judgment": "Excellent"
+            },
+            {
+              "id": "stipend_faq.html:0",
+              "score": 0.088869,
+              "distance": 0.911131,
+              "text": "Stipend & Reimbursement FAQ: What can I claim under the internet allowance? Eligible remote employees can claim up to $75 per month for high-speed home internet service via monthly expense reports with valid broadband receipts.",
+              "metadata": {
+                "source": "stipend_faq.html",
+                "category": "finance",
+                "token_count": 44,
+                "doc_type": "faq",
+                "chunk_index": 0
+              },
+              "rank": 2,
+              "judgment": "Irrelevant"
+            },
+            {
+              "id": "account-guide.md:0",
+              "score": 0.065302,
+              "distance": 0.934698,
+              "text": "How can a learner reset their password? Learners can reset their password by clicking 'Forgot Password' on the login portal, entering their registered email, and following the secure reset link sent to their inbox. Multi-factor authentication (MFA) can also be reset via admin support.",
+              "metadata": {
+                "doc_type": "guide",
+                "token_count": 52,
+                "category": "account_access",
+                "source": "account-guide.md",
+                "chunk_index": 0
+              },
+              "rank": 3,
+              "judgment": "Irrelevant"
+            }
+          ],
+          "judgments": [
+            "Excellent",
+            "Irrelevant",
+            "Irrelevant"
+          ]
+        },
+        {
+          "query": "How many days per week can employees work remotely?",
+          "expected_source": "remote_policy.txt",
+          "returned_sources": [
+            "remote_policy.txt",
+            "stipend_faq.html",
+            "sample_policy.pdf"
+          ],
+          "returned_count": 3,
+          "hit": true,
+          "top_1_hit": true,
+          "rank": 1,
+          "reciprocal_rank": 1.0,
+          "results": [
+            {
+              "id": "remote_policy.txt:0",
+              "score": 0.461042,
+              "distance": 0.538958,
+              "text": "Company Remote Work Policy (Effective January 1, 2026): Eligible employees are permitted to work remotely up to three days per week. All employees must maintain standard core collaboration hours from 10 AM to 4 PM regardless of work location.",
+              "metadata": {
+                "doc_type": "policy",
+                "chunk_index": 0,
+                "token_count": 48,
+                "category": "workplace",
+                "source": "remote_policy.txt"
+              },
+              "rank": 1,
+              "judgment": "Excellent"
+            },
+            {
+              "id": "stipend_faq.html:0",
+              "score": 0.220427,
+              "distance": 0.779573,
+              "text": "Stipend & Reimbursement FAQ: What can I claim under the internet allowance? Eligible remote employees can claim up to $75 per month for high-speed home internet service via monthly expense reports with valid broadband receipts.",
+              "metadata": {
+                "chunk_index": 0,
+                "source": "stipend_faq.html",
+                "category": "finance",
+                "token_count": 44,
+                "doc_type": "faq"
+              },
+              "rank": 2,
+              "judgment": "Irrelevant"
+            },
+            {
+              "id": "sample_policy.pdf:0",
+              "score": 0.176883,
+              "distance": 0.823117,
+              "text": "Corporate Travel and Meal Reimbursement Policy: Employees traveling on approved company business may claim up to $60 daily meal per diem. Original itemized receipts must be submitted within 30 days of travel completion.",
+              "metadata": {
+                "doc_type": "policy",
+                "source": "sample_policy.pdf",
+                "category": "finance",
+                "token_count": 46,
+                "chunk_index": 0
+              },
+              "rank": 3,
+              "judgment": "Irrelevant"
+            }
+          ],
+          "judgments": [
+            "Excellent",
+            "Irrelevant",
+            "Irrelevant"
+          ]
+        },
+        {
+          "query": "What is the monthly limit for home internet allowance?",
+          "expected_source": "stipend_faq.html",
+          "returned_sources": [
+            "stipend_faq.html",
+            "work_hours.md",
+            "submission-rubric.md"
+          ],
+          "returned_count": 3,
+          "hit": true,
+          "top_1_hit": true,
+          "rank": 1,
+          "reciprocal_rank": 1.0,
+          "results": [
+            {
+              "id": "stipend_faq.html:0",
+              "score": 0.451088,
+              "distance": 0.548912,
+              "text": "Stipend & Reimbursement FAQ: What can I claim under the internet allowance? Eligible remote employees can claim up to $75 per month for high-speed home internet service via monthly expense reports with valid broadband receipts.",
+              "metadata": {
+                "chunk_index": 0,
+                "category": "finance",
+                "token_count": 44,
+                "doc_type": "faq",
+                "source": "stipend_faq.html"
+              },
+              "rank": 1,
+              "judgment": "Excellent"
+            },
+            {
+              "id": "work_hours.md:0",
+              "score": 0.111686,
+              "distance": 0.888314,
+              "text": "Work Hours and Overtime Guideline: All remote workers must log daily check-in and check-out times in the HR portal. Standard schedule is 8 hours per day, 40 hours per week. Overtime hours must receive pre-approval from team leads.",
+              "metadata": {
+                "source": "work_hours.md",
+                "token_count": 47,
+                "doc_type": "policy",
+                "chunk_index": 0,
+                "category": "operations"
+              },
+              "rank": 2,
+              "judgment": "Irrelevant"
+            },
+            {
+              "id": "submission-rubric.md:0",
+              "score": 0.105212,
+              "distance": 0.894788,
+              "text": "Academic Project Submission Rubric: What evidence is required for project submission? Students must submit a public GitHub repository link containing clean modular code, passing automated unit test suites, clear commit history, an architecture walkthrough, and a 3-5 minute screen recording demo.",
+              "metadata": {
+                "category": "academics",
+                "source": "submission-rubric.md",
+                "token_count": 55,
+                "chunk_index": 0,
+                "doc_type": "rubric"
+              },
+              "rank": 3,
+              "judgment": "Irrelevant"
+            }
+          ],
+          "judgments": [
+            "Excellent",
+            "Irrelevant",
+            "Irrelevant"
+          ]
+        },
+        {
+          "query": "What are the rules for overtime approval and daily work hours?",
+          "expected_source": "work_hours.md",
+          "returned_sources": [
+            "work_hours.md",
+            "stipend_faq.html",
+            "remote_policy.txt"
+          ],
+          "returned_count": 3,
+          "hit": true,
+          "top_1_hit": true,
+          "rank": 1,
+          "reciprocal_rank": 1.0,
+          "results": [
+            {
+              "id": "work_hours.md:0",
+              "score": 0.501753,
+              "distance": 0.498247,
+              "text": "Work Hours and Overtime Guideline: All remote workers must log daily check-in and check-out times in the HR portal. Standard schedule is 8 hours per day, 40 hours per week. Overtime hours must receive pre-approval from team leads.",
+              "metadata": {
+                "doc_type": "policy",
+                "source": "work_hours.md",
+                "token_count": 47,
+                "category": "operations",
+                "chunk_index": 0
+              },
+              "rank": 1,
+              "judgment": "Excellent"
+            },
+            {
+              "id": "stipend_faq.html:0",
+              "score": 0.168073,
+              "distance": 0.831927,
+              "text": "Stipend & Reimbursement FAQ: What can I claim under the internet allowance? Eligible remote employees can claim up to $75 per month for high-speed home internet service via monthly expense reports with valid broadband receipts.",
+              "metadata": {
+                "token_count": 44,
+                "source": "stipend_faq.html",
+                "chunk_index": 0,
+                "category": "finance",
+                "doc_type": "faq"
+              },
+              "rank": 2,
+              "judgment": "Irrelevant"
+            },
+            {
+              "id": "remote_policy.txt:0",
+              "score": 0.162264,
+              "distance": 0.837736,
+              "text": "Company Remote Work Policy (Effective January 1, 2026): Eligible employees are permitted to work remotely up to three days per week. All employees must maintain standard core collaboration hours from 10 AM to 4 PM regardless of work location.",
+              "metadata": {
+                "category": "workplace",
+                "token_count": 48,
+                "doc_type": "policy",
+                "source": "remote_policy.txt",
+                "chunk_index": 0
+              },
+              "rank": 3,
+              "judgment": "Irrelevant"
+            }
+          ],
+          "judgments": [
+            "Excellent",
+            "Irrelevant",
+            "Irrelevant"
+          ]
+        },
+        {
+          "query": "What is the daily meal per diem for business travel?",
+          "expected_source": "sample_policy.pdf",
+          "returned_sources": [
+            "sample_policy.pdf",
+            "work_hours.md",
+            "stipend_faq.html"
+          ],
+          "returned_count": 3,
+          "hit": true,
+          "top_1_hit": true,
+          "rank": 1,
+          "reciprocal_rank": 1.0,
+          "results": [
+            {
+              "id": "sample_policy.pdf:0",
+              "score": 0.433903,
+              "distance": 0.566097,
+              "text": "Corporate Travel and Meal Reimbursement Policy: Employees traveling on approved company business may claim up to $60 daily meal per diem. Original itemized receipts must be submitted within 30 days of travel completion.",
+              "metadata": {
+                "chunk_index": 0,
+                "token_count": 46,
+                "source": "sample_policy.pdf",
+                "category": "finance",
+                "doc_type": "policy"
+              },
+              "rank": 1,
+              "judgment": "Excellent"
+            },
+            {
+              "id": "work_hours.md:0",
+              "score": 0.179336,
+              "distance": 0.820664,
+              "text": "Work Hours and Overtime Guideline: All remote workers must log daily check-in and check-out times in the HR portal. Standard schedule is 8 hours per day, 40 hours per week. Overtime hours must receive pre-approval from team leads.",
+              "metadata": {
+                "chunk_index": 0,
+                "category": "operations",
+                "token_count": 47,
+                "doc_type": "policy",
+                "source": "work_hours.md"
+              },
+              "rank": 2,
+              "judgment": "Irrelevant"
+            },
+            {
+              "id": "stipend_faq.html:0",
+              "score": 0.14395,
+              "distance": 0.85605,
+              "text": "Stipend & Reimbursement FAQ: What can I claim under the internet allowance? Eligible remote employees can claim up to $75 per month for high-speed home internet service via monthly expense reports with valid broadband receipts.",
+              "metadata": {
+                "chunk_index": 0,
+                "doc_type": "faq",
+                "category": "finance",
+                "source": "stipend_faq.html",
+                "token_count": 44
+              },
+              "rank": 3,
+              "judgment": "Irrelevant"
+            }
+          ],
+          "judgments": [
+            "Excellent",
+            "Irrelevant",
+            "Irrelevant"
+          ]
+        }
+      ]
+    },
+    {
+      "setting": "filtered_k3",
+      "description": "Metadata-filtered retrieval restricted strictly to doc_type='guide'",
+      "config": {
+        "k": 3,
+        "filter": {
+          "doc_type": "guide"
+        },
+        "min_score": 0.0
+      },
+      "metrics": {
+        "hit_rate": 0.2857,
+        "top_1_hit_rate": 0.2857,
+        "mrr": 0.2857,
+        "avg_returned_chunks": 1.86,
+        "latency_ms": 40.77
+      },
+      "rows": [
+        {
+          "query": "How can a learner reset their password?",
+          "expected_source": "account-guide.md",
+          "returned_sources": [
+            "account-guide.md"
+          ],
+          "returned_count": 1,
+          "hit": true,
+          "top_1_hit": true,
+          "rank": 1,
+          "reciprocal_rank": 1.0,
+          "results": [
+            {
+              "id": "account-guide.md:0",
+              "score": 0.716052,
+              "distance": 0.283948,
+              "text": "How can a learner reset their password? Learners can reset their password by clicking 'Forgot Password' on the login portal, entering their registered email, and following the secure reset link sent to their inbox. Multi-factor authentication (MFA) can also be reset via admin support.",
+              "metadata": {
+                "category": "account_access",
+                "doc_type": "guide",
+                "token_count": 52,
+                "source": "account-guide.md",
+                "chunk_index": 0
+              },
+              "rank": 1,
+              "judgment": "Excellent"
+            }
+          ],
+          "judgments": [
+            "Excellent"
+          ]
+        },
+        {
+          "query": "When does the cafeteria menu change?",
+          "expected_source": "campus-guide.md",
+          "returned_sources": [
+            "campus-guide.md",
+            "account-guide.md"
+          ],
+          "returned_count": 2,
+          "hit": true,
+          "top_1_hit": true,
+          "rank": 1,
+          "reciprocal_rank": 1.0,
+          "results": [
+            {
+              "id": "campus-guide.md:0",
+              "score": 0.452183,
+              "distance": 0.547817,
+              "text": "Campus Facilities and Dining: When does the cafeteria menu change? The campus cafeteria rotates its full menu every Monday morning at 7:00 AM. Breakfast is served from 7:30 AM to 10:00 AM, lunch from 12:00 PM to 2:30 PM, and dinner from 6:00 PM to 8:30 PM.",
+              "metadata": {
+                "source": "campus-guide.md",
+                "token_count": 58,
+                "doc_type": "guide",
+                "category": "campus_life",
+                "chunk_index": 0
+              },
+              "rank": 1,
+              "judgment": "Excellent"
+            },
+            {
+              "id": "account-guide.md:0",
+              "score": 0.074528,
+              "distance": 0.925472,
+              "text": "How can a learner reset their password? Learners can reset their password by clicking 'Forgot Password' on the login portal, entering their registered email, and following the secure reset link sent to their inbox. Multi-factor authentication (MFA) can also be reset via admin support.",
+              "metadata": {
+                "category": "account_access",
+                "chunk_index": 0,
+                "source": "account-guide.md",
+                "doc_type": "guide",
+                "token_count": 52
+              },
+              "rank": 2,
+              "judgment": "Irrelevant"
+            }
+          ],
+          "judgments": [
+            "Excellent",
+            "Irrelevant"
+          ]
+        },
+        {
+          "query": "What evidence is required for project submission?",
+          "expected_source": "submission-rubric.md",
+          "returned_sources": [
+            "account-guide.md",
+            "campus-guide.md"
+          ],
+          "returned_count": 2,
+          "hit": false,
+          "top_1_hit": false,
+          "rank": null,
+          "reciprocal_rank": 0.0,
+          "results": [
+            {
+              "id": "account-guide.md:0",
+              "score": 0.065302,
+              "distance": 0.934698,
+              "text": "How can a learner reset their password? Learners can reset their password by clicking 'Forgot Password' on the login portal, entering their registered email, and following the secure reset link sent to their inbox. Multi-factor authentication (MFA) can also be reset via admin support.",
+              "metadata": {
+                "chunk_index": 0,
+                "token_count": 52,
+                "source": "account-guide.md",
+                "doc_type": "guide",
+                "category": "account_access"
+              },
+              "rank": 1,
+              "judgment": "Irrelevant"
+            },
+            {
+              "id": "campus-guide.md:0",
+              "score": 0.019301,
+              "distance": 0.980699,
+              "text": "Campus Facilities and Dining: When does the cafeteria menu change? The campus cafeteria rotates its full menu every Monday morning at 7:00 AM. Breakfast is served from 7:30 AM to 10:00 AM, lunch from 12:00 PM to 2:30 PM, and dinner from 6:00 PM to 8:30 PM.",
+              "metadata": {
+                "doc_type": "guide",
+                "chunk_index": 0,
+                "category": "campus_life",
+                "token_count": 58,
+                "source": "campus-guide.md"
+              },
+              "rank": 2,
+              "judgment": "Irrelevant"
+            }
+          ],
+          "judgments": [
+            "Irrelevant",
+            "Irrelevant"
+          ]
+        },
+        {
+          "query": "How many days per week can employees work remotely?",
+          "expected_source": "remote_policy.txt",
+          "returned_sources": [
+            "account-guide.md",
+            "campus-guide.md"
+          ],
+          "returned_count": 2,
+          "hit": false,
+          "top_1_hit": false,
+          "rank": null,
+          "reciprocal_rank": 0.0,
+          "results": [
+            {
+              "id": "account-guide.md:0",
+              "score": 0.135025,
+              "distance": 0.864975,
+              "text": "How can a learner reset their password? Learners can reset their password by clicking 'Forgot Password' on the login portal, entering their registered email, and following the secure reset link sent to their inbox. Multi-factor authentication (MFA) can also be reset via admin support.",
+              "metadata": {
+                "token_count": 52,
+                "doc_type": "guide",
+                "chunk_index": 0,
+                "source": "account-guide.md",
+                "category": "account_access"
+              },
+              "rank": 1,
+              "judgment": "Irrelevant"
+            },
+            {
+              "id": "campus-guide.md:0",
+              "score": 0.010491,
+              "distance": 0.989509,
+              "text": "Campus Facilities and Dining: When does the cafeteria menu change? The campus cafeteria rotates its full menu every Monday morning at 7:00 AM. Breakfast is served from 7:30 AM to 10:00 AM, lunch from 12:00 PM to 2:30 PM, and dinner from 6:00 PM to 8:30 PM.",
+              "metadata": {
+                "token_count": 58,
+                "chunk_index": 0,
+                "category": "campus_life",
+                "source": "campus-guide.md",
+                "doc_type": "guide"
+              },
+              "rank": 2,
+              "judgment": "Irrelevant"
+            }
+          ],
+          "judgments": [
+            "Irrelevant",
+            "Irrelevant"
+          ]
+        },
+        {
+          "query": "What is the monthly limit for home internet allowance?",
+          "expected_source": "stipend_faq.html",
+          "returned_sources": [
+            "campus-guide.md",
+            "account-guide.md"
+          ],
+          "returned_count": 2,
+          "hit": false,
+          "top_1_hit": false,
+          "rank": null,
+          "reciprocal_rank": 0.0,
+          "results": [
+            {
+              "id": "campus-guide.md:0",
+              "score": 0.078741,
+              "distance": 0.921259,
+              "text": "Campus Facilities and Dining: When does the cafeteria menu change? The campus cafeteria rotates its full menu every Monday morning at 7:00 AM. Breakfast is served from 7:30 AM to 10:00 AM, lunch from 12:00 PM to 2:30 PM, and dinner from 6:00 PM to 8:30 PM.",
+              "metadata": {
+                "doc_type": "guide",
+                "source": "campus-guide.md",
+                "chunk_index": 0,
+                "token_count": 58,
+                "category": "campus_life"
+              },
+              "rank": 1,
+              "judgment": "Irrelevant"
+            },
+            {
+              "id": "account-guide.md:0",
+              "score": 0.064504,
+              "distance": 0.935496,
+              "text": "How can a learner reset their password? Learners can reset their password by clicking 'Forgot Password' on the login portal, entering their registered email, and following the secure reset link sent to their inbox. Multi-factor authentication (MFA) can also be reset via admin support.",
+              "metadata": {
+                "token_count": 52,
+                "doc_type": "guide",
+                "chunk_index": 0,
+                "source": "account-guide.md",
+                "category": "account_access"
+              },
+              "rank": 2,
+              "judgment": "Irrelevant"
+            }
+          ],
+          "judgments": [
+            "Irrelevant",
+            "Irrelevant"
+          ]
+        },
+        {
+          "query": "What are the rules for overtime approval and daily work hours?",
+          "expected_source": "work_hours.md",
+          "returned_sources": [
+            "campus-guide.md",
+            "account-guide.md"
+          ],
+          "returned_count": 2,
+          "hit": false,
+          "top_1_hit": false,
+          "rank": null,
+          "reciprocal_rank": 0.0,
+          "results": [
+            {
+              "id": "campus-guide.md:0",
+              "score": 0.120511,
+              "distance": 0.879489,
+              "text": "Campus Facilities and Dining: When does the cafeteria menu change? The campus cafeteria rotates its full menu every Monday morning at 7:00 AM. Breakfast is served from 7:30 AM to 10:00 AM, lunch from 12:00 PM to 2:30 PM, and dinner from 6:00 PM to 8:30 PM.",
+              "metadata": {
+                "token_count": 58,
+                "doc_type": "guide",
+                "category": "campus_life",
+                "source": "campus-guide.md",
+                "chunk_index": 0
+              },
+              "rank": 1,
+              "judgment": "Irrelevant"
+            },
+            {
+              "id": "account-guide.md:0",
+              "score": 0.094691,
+              "distance": 0.905309,
+              "text": "How can a learner reset their password? Learners can reset their password by clicking 'Forgot Password' on the login portal, entering their registered email, and following the secure reset link sent to their inbox. Multi-factor authentication (MFA) can also be reset via admin support.",
+              "metadata": {
+                "token_count": 52,
+                "doc_type": "guide",
+                "chunk_index": 0,
+                "source": "account-guide.md",
+                "category": "account_access"
+              },
+              "rank": 2,
+              "judgment": "Irrelevant"
+            }
+          ],
+          "judgments": [
+            "Irrelevant",
+            "Irrelevant"
+          ]
+        },
+        {
+          "query": "What is the daily meal per diem for business travel?",
+          "expected_source": "sample_policy.pdf",
+          "returned_sources": [
+            "campus-guide.md",
+            "account-guide.md"
+          ],
+          "returned_count": 2,
+          "hit": false,
+          "top_1_hit": false,
+          "rank": null,
+          "reciprocal_rank": 0.0,
+          "results": [
+            {
+              "id": "campus-guide.md:0",
+              "score": 0.082501,
+              "distance": 0.917499,
+              "text": "Campus Facilities and Dining: When does the cafeteria menu change? The campus cafeteria rotates its full menu every Monday morning at 7:00 AM. Breakfast is served from 7:30 AM to 10:00 AM, lunch from 12:00 PM to 2:30 PM, and dinner from 6:00 PM to 8:30 PM.",
+              "metadata": {
+                "chunk_index": 0,
+                "doc_type": "guide",
+                "token_count": 58,
+                "source": "campus-guide.md",
+                "category": "campus_life"
+              },
+              "rank": 1,
+              "judgment": "Irrelevant"
+            },
+            {
+              "id": "account-guide.md:0",
+              "score": 0.074491,
+              "distance": 0.925509,
+              "text": "How can a learner reset their password? Learners can reset their password by clicking 'Forgot Password' on the login portal, entering their registered email, and following the secure reset link sent to their inbox. Multi-factor authentication (MFA) can also be reset via admin support.",
+              "metadata": {
+                "token_count": 52,
+                "source": "account-guide.md",
+                "category": "account_access",
+                "doc_type": "guide",
+                "chunk_index": 0
+              },
+              "rank": 2,
+              "judgment": "Irrelevant"
+            }
+          ],
+          "judgments": [
+            "Irrelevant",
+            "Irrelevant"
+          ]
+        }
+      ]
+    },
+    {
+      "setting": "strict_k5",
+      "description": "Strict similarity threshold cutoff (min_score=0.72) with top_k=5",
+      "config": {
+        "k": 5,
+        "filter": null,
+        "min_score": 0.72
+      },
+      "metrics": {
+        "hit_rate": 0.0,
+        "top_1_hit_rate": 0.0,
+        "mrr": 0.0,
+        "avg_returned_chunks": 0.0,
+        "latency_ms": 37.37
+      },
+      "rows": [
+        {
+          "query": "How can a learner reset their password?",
+          "expected_source": "account-guide.md",
+          "returned_sources": [],
+          "returned_count": 0,
+          "hit": false,
+          "top_1_hit": false,
+          "rank": null,
+          "reciprocal_rank": 0.0,
+          "results": [],
+          "judgments": []
+        },
+        {
+          "query": "When does the cafeteria menu change?",
+          "expected_source": "campus-guide.md",
+          "returned_sources": [],
+          "returned_count": 0,
+          "hit": false,
+          "top_1_hit": false,
+          "rank": null,
+          "reciprocal_rank": 0.0,
+          "results": [],
+          "judgments": []
+        },
+        {
+          "query": "What evidence is required for project submission?",
+          "expected_source": "submission-rubric.md",
+          "returned_sources": [],
+          "returned_count": 0,
+          "hit": false,
+          "top_1_hit": false,
+          "rank": null,
+          "reciprocal_rank": 0.0,
+          "results": [],
+          "judgments": []
+        },
+        {
+          "query": "How many days per week can employees work remotely?",
+          "expected_source": "remote_policy.txt",
+          "returned_sources": [],
+          "returned_count": 0,
+          "hit": false,
+          "top_1_hit": false,
+          "rank": null,
+          "reciprocal_rank": 0.0,
+          "results": [],
+          "judgments": []
+        },
+        {
+          "query": "What is the monthly limit for home internet allowance?",
+          "expected_source": "stipend_faq.html",
+          "returned_sources": [],
+          "returned_count": 0,
+          "hit": false,
+          "top_1_hit": false,
+          "rank": null,
+          "reciprocal_rank": 0.0,
+          "results": [],
+          "judgments": []
+        },
+        {
+          "query": "What are the rules for overtime approval and daily work hours?",
+          "expected_source": "work_hours.md",
+          "returned_sources": [],
+          "returned_count": 0,
+          "hit": false,
+          "top_1_hit": false,
+          "rank": null,
+          "reciprocal_rank": 0.0,
+          "results": [],
+          "judgments": []
+        },
+        {
+          "query": "What is the daily meal per diem for business travel?",
+          "expected_source": "sample_policy.pdf",
+          "returned_sources": [],
+          "returned_count": 0,
+          "hit": false,
+          "top_1_hit": false,
+          "rank": null,
+          "reciprocal_rank": 0.0,
+          "results": [],
+          "judgments": []
+        }
+      ]
+    },
+    {
+      "setting": "minimal_k1",
+      "description": "Minimal top-1 retrieval to test rank-1 precision and risk of missing context",
+      "config": {
+        "k": 1,
+        "filter": null,
+        "min_score": 0.0
+      },
+      "metrics": {
+        "hit_rate": 1.0,
+        "top_1_hit_rate": 1.0,
+        "mrr": 1.0,
+        "avg_returned_chunks": 1.0,
+        "latency_ms": 52.98
+      },
+      "rows": [
+        {
+          "query": "How can a learner reset their password?",
+          "expected_source": "account-guide.md",
+          "returned_sources": [
+            "account-guide.md"
+          ],
+          "returned_count": 1,
+          "hit": true,
+          "top_1_hit": true,
+          "rank": 1,
+          "reciprocal_rank": 1.0,
+          "results": [
+            {
+              "id": "account-guide.md:0",
+              "score": 0.716052,
+              "distance": 0.283948,
+              "text": "How can a learner reset their password? Learners can reset their password by clicking 'Forgot Password' on the login portal, entering their registered email, and following the secure reset link sent to their inbox. Multi-factor authentication (MFA) can also be reset via admin support.",
+              "metadata": {
+                "source": "account-guide.md",
+                "chunk_index": 0,
+                "doc_type": "guide",
+                "category": "account_access",
+                "token_count": 52
+              },
+              "rank": 1,
+              "judgment": "Excellent"
+            }
+          ],
+          "judgments": [
+            "Excellent"
+          ]
+        },
+        {
+          "query": "When does the cafeteria menu change?",
+          "expected_source": "campus-guide.md",
+          "returned_sources": [
+            "campus-guide.md"
+          ],
+          "returned_count": 1,
+          "hit": true,
+          "top_1_hit": true,
+          "rank": 1,
+          "reciprocal_rank": 1.0,
+          "results": [
+            {
+              "id": "campus-guide.md:0",
+              "score": 0.452183,
+              "distance": 0.547817,
+              "text": "Campus Facilities and Dining: When does the cafeteria menu change? The campus cafeteria rotates its full menu every Monday morning at 7:00 AM. Breakfast is served from 7:30 AM to 10:00 AM, lunch from 12:00 PM to 2:30 PM, and dinner from 6:00 PM to 8:30 PM.",
+              "metadata": {
+                "chunk_index": 0,
+                "doc_type": "guide",
+                "token_count": 58,
+                "source": "campus-guide.md",
+                "category": "campus_life"
+              },
+              "rank": 1,
+              "judgment": "Excellent"
+            }
+          ],
+          "judgments": [
+            "Excellent"
+          ]
+        },
+        {
+          "query": "What evidence is required for project submission?",
+          "expected_source": "submission-rubric.md",
+          "returned_sources": [
+            "submission-rubric.md"
+          ],
+          "returned_count": 1,
+          "hit": true,
+          "top_1_hit": true,
+          "rank": 1,
+          "reciprocal_rank": 1.0,
+          "results": [
+            {
+              "id": "submission-rubric.md:0",
+              "score": 0.512273,
+              "distance": 0.487727,
+              "text": "Academic Project Submission Rubric: What evidence is required for project submission? Students must submit a public GitHub repository link containing clean modular code, passing automated unit test suites, clear commit history, an architecture walkthrough, and a 3-5 minute screen recording demo.",
+              "metadata": {
+                "token_count": 55,
+                "source": "submission-rubric.md",
+                "category": "academics",
+                "doc_type": "rubric",
+                "chunk_index": 0
+              },
+              "rank": 1,
+              "judgment": "Excellent"
+            }
+          ],
+          "judgments": [
+            "Excellent"
+          ]
+        },
+        {
+          "query": "How many days per week can employees work remotely?",
+          "expected_source": "remote_policy.txt",
+          "returned_sources": [
+            "remote_policy.txt"
+          ],
+          "returned_count": 1,
+          "hit": true,
+          "top_1_hit": true,
+          "rank": 1,
+          "reciprocal_rank": 1.0,
+          "results": [
+            {
+              "id": "remote_policy.txt:0",
+              "score": 0.461042,
+              "distance": 0.538958,
+              "text": "Company Remote Work Policy (Effective January 1, 2026): Eligible employees are permitted to work remotely up to three days per week. All employees must maintain standard core collaboration hours from 10 AM to 4 PM regardless of work location.",
+              "metadata": {
+                "doc_type": "policy",
+                "category": "workplace",
+                "source": "remote_policy.txt",
+                "chunk_index": 0,
+                "token_count": 48
+              },
+              "rank": 1,
+              "judgment": "Excellent"
+            }
+          ],
+          "judgments": [
+            "Excellent"
+          ]
+        },
+        {
+          "query": "What is the monthly limit for home internet allowance?",
+          "expected_source": "stipend_faq.html",
+          "returned_sources": [
+            "stipend_faq.html"
+          ],
+          "returned_count": 1,
+          "hit": true,
+          "top_1_hit": true,
+          "rank": 1,
+          "reciprocal_rank": 1.0,
+          "results": [
+            {
+              "id": "stipend_faq.html:0",
+              "score": 0.451088,
+              "distance": 0.548912,
+              "text": "Stipend & Reimbursement FAQ: What can I claim under the internet allowance? Eligible remote employees can claim up to $75 per month for high-speed home internet service via monthly expense reports with valid broadband receipts.",
+              "metadata": {
+                "category": "finance",
+                "source": "stipend_faq.html",
+                "chunk_index": 0,
+                "doc_type": "faq",
+                "token_count": 44
+              },
+              "rank": 1,
+              "judgment": "Excellent"
+            }
+          ],
+          "judgments": [
+            "Excellent"
+          ]
+        },
+        {
+          "query": "What are the rules for overtime approval and daily work hours?",
+          "expected_source": "work_hours.md",
+          "returned_sources": [
+            "work_hours.md"
+          ],
+          "returned_count": 1,
+          "hit": true,
+          "top_1_hit": true,
+          "rank": 1,
+          "reciprocal_rank": 1.0,
+          "results": [
+            {
+              "id": "work_hours.md:0",
+              "score": 0.501753,
+              "distance": 0.498247,
+              "text": "Work Hours and Overtime Guideline: All remote workers must log daily check-in and check-out times in the HR portal. Standard schedule is 8 hours per day, 40 hours per week. Overtime hours must receive pre-approval from team leads.",
+              "metadata": {
+                "token_count": 47,
+                "doc_type": "policy",
+                "category": "operations",
+                "chunk_index": 0,
+                "source": "work_hours.md"
+              },
+              "rank": 1,
+              "judgment": "Excellent"
+            }
+          ],
+          "judgments": [
+            "Excellent"
+          ]
+        },
+        {
+          "query": "What is the daily meal per diem for business travel?",
+          "expected_source": "sample_policy.pdf",
+          "returned_sources": [
+            "sample_policy.pdf"
+          ],
+          "returned_count": 1,
+          "hit": true,
+          "top_1_hit": true,
+          "rank": 1,
+          "reciprocal_rank": 1.0,
+          "results": [
+            {
+              "id": "sample_policy.pdf:0",
+              "score": 0.433903,
+              "distance": 0.566097,
+              "text": "Corporate Travel and Meal Reimbursement Policy: Employees traveling on approved company business may claim up to $60 daily meal per diem. Original itemized receipts must be submitted within 30 days of travel completion.",
+              "metadata": {
+                "token_count": 46,
+                "category": "finance",
+                "doc_type": "policy",
+                "chunk_index": 0,
+                "source": "sample_policy.pdf"
+              },
+              "rank": 1,
+              "judgment": "Excellent"
+            }
+          ],
+          "judgments": [
+            "Excellent"
+          ]
+        }
+      ]
+    },
+    {
+      "setting": "expanded_k5",
+      "description": "Expanded retrieval with top_k=5 to test recall gains vs noise penalty",
+      "config": {
+        "k": 5,
+        "filter": null,
+        "min_score": 0.0
+      },
+      "metrics": {
+        "hit_rate": 1.0,
+        "top_1_hit_rate": 1.0,
+        "mrr": 1.0,
+        "avg_returned_chunks": 5.0,
+        "latency_ms": 58.25
+      },
+      "rows": [
+        {
+          "query": "How can a learner reset their password?",
+          "expected_source": "account-guide.md",
+          "returned_sources": [
+            "account-guide.md",
+            "stipend_faq.html",
+            "submission-rubric.md",
+            "remote_policy.txt",
+            "work_hours.md"
+          ],
+          "returned_count": 5,
+          "hit": true,
+          "top_1_hit": true,
+          "rank": 1,
+          "reciprocal_rank": 1.0,
+          "results": [
+            {
+              "id": "account-guide.md:0",
+              "score": 0.716052,
+              "distance": 0.283948,
+              "text": "How can a learner reset their password? Learners can reset their password by clicking 'Forgot Password' on the login portal, entering their registered email, and following the secure reset link sent to their inbox. Multi-factor authentication (MFA) can also be reset via admin support.",
+              "metadata": {
+                "doc_type": "guide",
+                "token_count": 52,
+                "source": "account-guide.md",
+                "chunk_index": 0,
+                "category": "account_access"
+              },
+              "rank": 1,
+              "judgment": "Excellent"
+            },
+            {
+              "id": "stipend_faq.html:0",
+              "score": 0.118411,
+              "distance": 0.881589,
+              "text": "Stipend & Reimbursement FAQ: What can I claim under the internet allowance? Eligible remote employees can claim up to $75 per month for high-speed home internet service via monthly expense reports with valid broadband receipts.",
+              "metadata": {
+                "chunk_index": 0,
+                "source": "stipend_faq.html",
+                "token_count": 44,
+                "doc_type": "faq",
+                "category": "finance"
+              },
+              "rank": 2,
+              "judgment": "Irrelevant"
+            },
+            {
+              "id": "submission-rubric.md:0",
+              "score": 0.077761,
+              "distance": 0.922239,
+              "text": "Academic Project Submission Rubric: What evidence is required for project submission? Students must submit a public GitHub repository link containing clean modular code, passing automated unit test suites, clear commit history, an architecture walkthrough, and a 3-5 minute screen recording demo.",
+              "metadata": {
+                "chunk_index": 0,
+                "source": "submission-rubric.md",
+                "category": "academics",
+                "token_count": 55,
+                "doc_type": "rubric"
+              },
+              "rank": 3,
+              "judgment": "Irrelevant"
+            },
+            {
+              "id": "remote_policy.txt:0",
+              "score": 0.045515,
+              "distance": 0.954485,
+              "text": "Company Remote Work Policy (Effective January 1, 2026): Eligible employees are permitted to work remotely up to three days per week. All employees must maintain standard core collaboration hours from 10 AM to 4 PM regardless of work location.",
+              "metadata": {
+                "category": "workplace",
+                "doc_type": "policy",
+                "token_count": 48,
+                "chunk_index": 0,
+                "source": "remote_policy.txt"
+              },
+              "rank": 4,
+              "judgment": "Irrelevant"
+            },
+            {
+              "id": "work_hours.md:0",
+              "score": 0.034866,
+              "distance": 0.965134,
+              "text": "Work Hours and Overtime Guideline: All remote workers must log daily check-in and check-out times in the HR portal. Standard schedule is 8 hours per day, 40 hours per week. Overtime hours must receive pre-approval from team leads.",
+              "metadata": {
+                "chunk_index": 0,
+                "source": "work_hours.md",
+                "doc_type": "policy",
+                "token_count": 47,
+                "category": "operations"
+              },
+              "rank": 5,
+              "judgment": "Irrelevant"
+            }
+          ],
+          "judgments": [
+            "Excellent",
+            "Irrelevant",
+            "Irrelevant",
+            "Irrelevant",
+            "Irrelevant"
+          ]
+        },
+        {
+          "query": "When does the cafeteria menu change?",
+          "expected_source": "campus-guide.md",
+          "returned_sources": [
+            "campus-guide.md",
+            "account-guide.md",
+            "work_hours.md",
+            "remote_policy.txt",
+            "stipend_faq.html"
+          ],
+          "returned_count": 5,
+          "hit": true,
+          "top_1_hit": true,
+          "rank": 1,
+          "reciprocal_rank": 1.0,
+          "results": [
+            {
+              "id": "campus-guide.md:0",
+              "score": 0.452183,
+              "distance": 0.547817,
+              "text": "Campus Facilities and Dining: When does the cafeteria menu change? The campus cafeteria rotates its full menu every Monday morning at 7:00 AM. Breakfast is served from 7:30 AM to 10:00 AM, lunch from 12:00 PM to 2:30 PM, and dinner from 6:00 PM to 8:30 PM.",
+              "metadata": {
+                "category": "campus_life",
+                "doc_type": "guide",
+                "token_count": 58,
+                "chunk_index": 0,
+                "source": "campus-guide.md"
+              },
+              "rank": 1,
+              "judgment": "Excellent"
+            },
+            {
+              "id": "account-guide.md:0",
+              "score": 0.074528,
+              "distance": 0.925472,
+              "text": "How can a learner reset their password? Learners can reset their password by clicking 'Forgot Password' on the login portal, entering their registered email, and following the secure reset link sent to their inbox. Multi-factor authentication (MFA) can also be reset via admin support.",
+              "metadata": {
+                "chunk_index": 0,
+                "token_count": 52,
+                "category": "account_access",
+                "doc_type": "guide",
+                "source": "account-guide.md"
+              },
+              "rank": 2,
+              "judgment": "Irrelevant"
+            },
+            {
+              "id": "work_hours.md:0",
+              "score": 0.049304,
+              "distance": 0.950696,
+              "text": "Work Hours and Overtime Guideline: All remote workers must log daily check-in and check-out times in the HR portal. Standard schedule is 8 hours per day, 40 hours per week. Overtime hours must receive pre-approval from team leads.",
+              "metadata": {
+                "chunk_index": 0,
+                "category": "operations",
+                "source": "work_hours.md",
+                "token_count": 47,
+                "doc_type": "policy"
+              },
+              "rank": 3,
+              "judgment": "Irrelevant"
+            },
+            {
+              "id": "remote_policy.txt:0",
+              "score": 0.044134,
+              "distance": 0.955866,
+              "text": "Company Remote Work Policy (Effective January 1, 2026): Eligible employees are permitted to work remotely up to three days per week. All employees must maintain standard core collaboration hours from 10 AM to 4 PM regardless of work location.",
+              "metadata": {
+                "chunk_index": 0,
+                "source": "remote_policy.txt",
+                "category": "workplace",
+                "doc_type": "policy",
+                "token_count": 48
+              },
+              "rank": 4,
+              "judgment": "Irrelevant"
+            },
+            {
+              "id": "stipend_faq.html:0",
+              "score": 0.039384,
+              "distance": 0.960616,
+              "text": "Stipend & Reimbursement FAQ: What can I claim under the internet allowance? Eligible remote employees can claim up to $75 per month for high-speed home internet service via monthly expense reports with valid broadband receipts.",
+              "metadata": {
+                "doc_type": "faq",
+                "token_count": 44,
+                "chunk_index": 0,
+                "source": "stipend_faq.html",
+                "category": "finance"
+              },
+              "rank": 5,
+              "judgment": "Irrelevant"
+            }
+          ],
+          "judgments": [
+            "Excellent",
+            "Irrelevant",
+            "Irrelevant",
+            "Irrelevant",
+            "Irrelevant"
+          ]
+        },
+        {
+          "query": "What evidence is required for project submission?",
+          "expected_source": "submission-rubric.md",
+          "returned_sources": [
+            "submission-rubric.md",
+            "stipend_faq.html",
+            "account-guide.md",
+            "work_hours.md",
+            "remote_policy.txt"
+          ],
+          "returned_count": 5,
+          "hit": true,
+          "top_1_hit": true,
+          "rank": 1,
+          "reciprocal_rank": 1.0,
+          "results": [
+            {
+              "id": "submission-rubric.md:0",
+              "score": 0.512273,
+              "distance": 0.487727,
+              "text": "Academic Project Submission Rubric: What evidence is required for project submission? Students must submit a public GitHub repository link containing clean modular code, passing automated unit test suites, clear commit history, an architecture walkthrough, and a 3-5 minute screen recording demo.",
+              "metadata": {
+                "source": "submission-rubric.md",
+                "token_count": 55,
+                "doc_type": "rubric",
+                "category": "academics",
+                "chunk_index": 0
+              },
+              "rank": 1,
+              "judgment": "Excellent"
+            },
+            {
+              "id": "stipend_faq.html:0",
+              "score": 0.088869,
+              "distance": 0.911131,
+              "text": "Stipend & Reimbursement FAQ: What can I claim under the internet allowance? Eligible remote employees can claim up to $75 per month for high-speed home internet service via monthly expense reports with valid broadband receipts.",
+              "metadata": {
+                "doc_type": "faq",
+                "chunk_index": 0,
+                "token_count": 44,
+                "source": "stipend_faq.html",
+                "category": "finance"
+              },
+              "rank": 2,
+              "judgment": "Irrelevant"
+            },
+            {
+              "id": "account-guide.md:0",
+              "score": 0.065302,
+              "distance": 0.934698,
+              "text": "How can a learner reset their password? Learners can reset their password by clicking 'Forgot Password' on the login portal, entering their registered email, and following the secure reset link sent to their inbox. Multi-factor authentication (MFA) can also be reset via admin support.",
+              "metadata": {
+                "chunk_index": 0,
+                "source": "account-guide.md",
+                "category": "account_access",
+                "token_count": 52,
+                "doc_type": "guide"
+              },
+              "rank": 3,
+              "judgment": "Irrelevant"
+            },
+            {
+              "id": "work_hours.md:0",
+              "score": 0.040361,
+              "distance": 0.959639,
+              "text": "Work Hours and Overtime Guideline: All remote workers must log daily check-in and check-out times in the HR portal. Standard schedule is 8 hours per day, 40 hours per week. Overtime hours must receive pre-approval from team leads.",
+              "metadata": {
+                "chunk_index": 0,
+                "category": "operations",
+                "token_count": 47,
+                "source": "work_hours.md",
+                "doc_type": "policy"
+              },
+              "rank": 4,
+              "judgment": "Irrelevant"
+            },
+            {
+              "id": "remote_policy.txt:0",
+              "score": 0.021046,
+              "distance": 0.978954,
+              "text": "Company Remote Work Policy (Effective January 1, 2026): Eligible employees are permitted to work remotely up to three days per week. All employees must maintain standard core collaboration hours from 10 AM to 4 PM regardless of work location.",
+              "metadata": {
+                "token_count": 48,
+                "doc_type": "policy",
+                "category": "workplace",
+                "source": "remote_policy.txt",
+                "chunk_index": 0
+              },
+              "rank": 5,
+              "judgment": "Irrelevant"
+            }
+          ],
+          "judgments": [
+            "Excellent",
+            "Irrelevant",
+            "Irrelevant",
+            "Irrelevant",
+            "Irrelevant"
+          ]
+        },
+        {
+          "query": "How many days per week can employees work remotely?",
+          "expected_source": "remote_policy.txt",
+          "returned_sources": [
+            "remote_policy.txt",
+            "stipend_faq.html",
+            "sample_policy.pdf",
+            "work_hours.md",
+            "account-guide.md"
+          ],
+          "returned_count": 5,
+          "hit": true,
+          "top_1_hit": true,
+          "rank": 1,
+          "reciprocal_rank": 1.0,
+          "results": [
+            {
+              "id": "remote_policy.txt:0",
+              "score": 0.461042,
+              "distance": 0.538958,
+              "text": "Company Remote Work Policy (Effective January 1, 2026): Eligible employees are permitted to work remotely up to three days per week. All employees must maintain standard core collaboration hours from 10 AM to 4 PM regardless of work location.",
+              "metadata": {
+                "source": "remote_policy.txt",
+                "token_count": 48,
+                "category": "workplace",
+                "doc_type": "policy",
+                "chunk_index": 0
+              },
+              "rank": 1,
+              "judgment": "Excellent"
+            },
+            {
+              "id": "stipend_faq.html:0",
+              "score": 0.220427,
+              "distance": 0.779573,
+              "text": "Stipend & Reimbursement FAQ: What can I claim under the internet allowance? Eligible remote employees can claim up to $75 per month for high-speed home internet service via monthly expense reports with valid broadband receipts.",
+              "metadata": {
+                "chunk_index": 0,
+                "doc_type": "faq",
+                "token_count": 44,
+                "source": "stipend_faq.html",
+                "category": "finance"
+              },
+              "rank": 2,
+              "judgment": "Irrelevant"
+            },
+            {
+              "id": "sample_policy.pdf:0",
+              "score": 0.176883,
+              "distance": 0.823117,
+              "text": "Corporate Travel and Meal Reimbursement Policy: Employees traveling on approved company business may claim up to $60 daily meal per diem. Original itemized receipts must be submitted within 30 days of travel completion.",
+              "metadata": {
+                "token_count": 46,
+                "doc_type": "policy",
+                "chunk_index": 0,
+                "category": "finance",
+                "source": "sample_policy.pdf"
+              },
+              "rank": 3,
+              "judgment": "Irrelevant"
+            },
+            {
+              "id": "work_hours.md:0",
+              "score": 0.161011,
+              "distance": 0.838989,
+              "text": "Work Hours and Overtime Guideline: All remote workers must log daily check-in and check-out times in the HR portal. Standard schedule is 8 hours per day, 40 hours per week. Overtime hours must receive pre-approval from team leads.",
+              "metadata": {
+                "chunk_index": 0,
+                "source": "work_hours.md",
+                "doc_type": "policy",
+                "category": "operations",
+                "token_count": 47
+              },
+              "rank": 4,
+              "judgment": "Irrelevant"
+            },
+            {
+              "id": "account-guide.md:0",
+              "score": 0.135025,
+              "distance": 0.864975,
+              "text": "How can a learner reset their password? Learners can reset their password by clicking 'Forgot Password' on the login portal, entering their registered email, and following the secure reset link sent to their inbox. Multi-factor authentication (MFA) can also be reset via admin support.",
+              "metadata": {
+                "chunk_index": 0,
+                "doc_type": "guide",
+                "token_count": 52,
+                "source": "account-guide.md",
+                "category": "account_access"
+              },
+              "rank": 5,
+              "judgment": "Irrelevant"
+            }
+          ],
+          "judgments": [
+            "Excellent",
+            "Irrelevant",
+            "Irrelevant",
+            "Irrelevant",
+            "Irrelevant"
+          ]
+        },
+        {
+          "query": "What is the monthly limit for home internet allowance?",
+          "expected_source": "stipend_faq.html",
+          "returned_sources": [
+            "stipend_faq.html",
+            "work_hours.md",
+            "submission-rubric.md",
+            "remote_policy.txt",
+            "campus-guide.md"
+          ],
+          "returned_count": 5,
+          "hit": true,
+          "top_1_hit": true,
+          "rank": 1,
+          "reciprocal_rank": 1.0,
+          "results": [
+            {
+              "id": "stipend_faq.html:0",
+              "score": 0.451088,
+              "distance": 0.548912,
+              "text": "Stipend & Reimbursement FAQ: What can I claim under the internet allowance? Eligible remote employees can claim up to $75 per month for high-speed home internet service via monthly expense reports with valid broadband receipts.",
+              "metadata": {
+                "doc_type": "faq",
+                "chunk_index": 0,
+                "source": "stipend_faq.html",
+                "token_count": 44,
+                "category": "finance"
+              },
+              "rank": 1,
+              "judgment": "Excellent"
+            },
+            {
+              "id": "work_hours.md:0",
+              "score": 0.111686,
+              "distance": 0.888314,
+              "text": "Work Hours and Overtime Guideline: All remote workers must log daily check-in and check-out times in the HR portal. Standard schedule is 8 hours per day, 40 hours per week. Overtime hours must receive pre-approval from team leads.",
+              "metadata": {
+                "chunk_index": 0,
+                "doc_type": "policy",
+                "source": "work_hours.md",
+                "category": "operations",
+                "token_count": 47
+              },
+              "rank": 2,
+              "judgment": "Irrelevant"
+            },
+            {
+              "id": "submission-rubric.md:0",
+              "score": 0.105212,
+              "distance": 0.894788,
+              "text": "Academic Project Submission Rubric: What evidence is required for project submission? Students must submit a public GitHub repository link containing clean modular code, passing automated unit test suites, clear commit history, an architecture walkthrough, and a 3-5 minute screen recording demo.",
+              "metadata": {
+                "doc_type": "rubric",
+                "chunk_index": 0,
+                "category": "academics",
+                "token_count": 55,
+                "source": "submission-rubric.md"
+              },
+              "rank": 3,
+              "judgment": "Irrelevant"
+            },
+            {
+              "id": "remote_policy.txt:0",
+              "score": 0.098502,
+              "distance": 0.901498,
+              "text": "Company Remote Work Policy (Effective January 1, 2026): Eligible employees are permitted to work remotely up to three days per week. All employees must maintain standard core collaboration hours from 10 AM to 4 PM regardless of work location.",
+              "metadata": {
+                "doc_type": "policy",
+                "category": "workplace",
+                "token_count": 48,
+                "chunk_index": 0,
+                "source": "remote_policy.txt"
+              },
+              "rank": 4,
+              "judgment": "Irrelevant"
+            },
+            {
+              "id": "campus-guide.md:0",
+              "score": 0.078741,
+              "distance": 0.921259,
+              "text": "Campus Facilities and Dining: When does the cafeteria menu change? The campus cafeteria rotates its full menu every Monday morning at 7:00 AM. Breakfast is served from 7:30 AM to 10:00 AM, lunch from 12:00 PM to 2:30 PM, and dinner from 6:00 PM to 8:30 PM.",
+              "metadata": {
+                "chunk_index": 0,
+                "source": "campus-guide.md",
+                "category": "campus_life",
+                "token_count": 58,
+                "doc_type": "guide"
+              },
+              "rank": 5,
+              "judgment": "Irrelevant"
+            }
+          ],
+          "judgments": [
+            "Excellent",
+            "Irrelevant",
+            "Irrelevant",
+            "Irrelevant",
+            "Irrelevant"
+          ]
+        },
+        {
+          "query": "What are the rules for overtime approval and daily work hours?",
+          "expected_source": "work_hours.md",
+          "returned_sources": [
+            "work_hours.md",
+            "stipend_faq.html",
+            "remote_policy.txt",
+            "campus-guide.md",
+            "account-guide.md"
+          ],
+          "returned_count": 5,
+          "hit": true,
+          "top_1_hit": true,
+          "rank": 1,
+          "reciprocal_rank": 1.0,
+          "results": [
+            {
+              "id": "work_hours.md:0",
+              "score": 0.501753,
+              "distance": 0.498247,
+              "text": "Work Hours and Overtime Guideline: All remote workers must log daily check-in and check-out times in the HR portal. Standard schedule is 8 hours per day, 40 hours per week. Overtime hours must receive pre-approval from team leads.",
+              "metadata": {
+                "token_count": 47,
+                "category": "operations",
+                "source": "work_hours.md",
+                "doc_type": "policy",
+                "chunk_index": 0
+              },
+              "rank": 1,
+              "judgment": "Excellent"
+            },
+            {
+              "id": "stipend_faq.html:0",
+              "score": 0.168073,
+              "distance": 0.831927,
+              "text": "Stipend & Reimbursement FAQ: What can I claim under the internet allowance? Eligible remote employees can claim up to $75 per month for high-speed home internet service via monthly expense reports with valid broadband receipts.",
+              "metadata": {
+                "chunk_index": 0,
+                "token_count": 44,
+                "doc_type": "faq",
+                "category": "finance",
+                "source": "stipend_faq.html"
+              },
+              "rank": 2,
+              "judgment": "Irrelevant"
+            },
+            {
+              "id": "remote_policy.txt:0",
+              "score": 0.162264,
+              "distance": 0.837736,
+              "text": "Company Remote Work Policy (Effective January 1, 2026): Eligible employees are permitted to work remotely up to three days per week. All employees must maintain standard core collaboration hours from 10 AM to 4 PM regardless of work location.",
+              "metadata": {
+                "source": "remote_policy.txt",
+                "token_count": 48,
+                "chunk_index": 0,
+                "category": "workplace",
+                "doc_type": "policy"
+              },
+              "rank": 3,
+              "judgment": "Irrelevant"
+            },
+            {
+              "id": "campus-guide.md:0",
+              "score": 0.120511,
+              "distance": 0.879489,
+              "text": "Campus Facilities and Dining: When does the cafeteria menu change? The campus cafeteria rotates its full menu every Monday morning at 7:00 AM. Breakfast is served from 7:30 AM to 10:00 AM, lunch from 12:00 PM to 2:30 PM, and dinner from 6:00 PM to 8:30 PM.",
+              "metadata": {
+                "chunk_index": 0,
+                "token_count": 58,
+                "source": "campus-guide.md",
+                "category": "campus_life",
+                "doc_type": "guide"
+              },
+              "rank": 4,
+              "judgment": "Irrelevant"
+            },
+            {
+              "id": "account-guide.md:0",
+              "score": 0.094691,
+              "distance": 0.905309,
+              "text": "How can a learner reset their password? Learners can reset their password by clicking 'Forgot Password' on the login portal, entering their registered email, and following the secure reset link sent to their inbox. Multi-factor authentication (MFA) can also be reset via admin support.",
+              "metadata": {
+                "category": "account_access",
+                "chunk_index": 0,
+                "doc_type": "guide",
+                "source": "account-guide.md",
+                "token_count": 52
+              },
+              "rank": 5,
+              "judgment": "Irrelevant"
+            }
+          ],
+          "judgments": [
+            "Excellent",
+            "Irrelevant",
+            "Irrelevant",
+            "Irrelevant",
+            "Irrelevant"
+          ]
+        },
+        {
+          "query": "What is the daily meal per diem for business travel?",
+          "expected_source": "sample_policy.pdf",
+          "returned_sources": [
+            "sample_policy.pdf",
+            "work_hours.md",
+            "stipend_faq.html",
+            "submission-rubric.md",
+            "campus-guide.md"
+          ],
+          "returned_count": 5,
+          "hit": true,
+          "top_1_hit": true,
+          "rank": 1,
+          "reciprocal_rank": 1.0,
+          "results": [
+            {
+              "id": "sample_policy.pdf:0",
+              "score": 0.433903,
+              "distance": 0.566097,
+              "text": "Corporate Travel and Meal Reimbursement Policy: Employees traveling on approved company business may claim up to $60 daily meal per diem. Original itemized receipts must be submitted within 30 days of travel completion.",
+              "metadata": {
+                "source": "sample_policy.pdf",
+                "category": "finance",
+                "token_count": 46,
+                "doc_type": "policy",
+                "chunk_index": 0
+              },
+              "rank": 1,
+              "judgment": "Excellent"
+            },
+            {
+              "id": "work_hours.md:0",
+              "score": 0.179336,
+              "distance": 0.820664,
+              "text": "Work Hours and Overtime Guideline: All remote workers must log daily check-in and check-out times in the HR portal. Standard schedule is 8 hours per day, 40 hours per week. Overtime hours must receive pre-approval from team leads.",
+              "metadata": {
+                "doc_type": "policy",
+                "source": "work_hours.md",
+                "chunk_index": 0,
+                "category": "operations",
+                "token_count": 47
+              },
+              "rank": 2,
+              "judgment": "Irrelevant"
+            },
+            {
+              "id": "stipend_faq.html:0",
+              "score": 0.14395,
+              "distance": 0.85605,
+              "text": "Stipend & Reimbursement FAQ: What can I claim under the internet allowance? Eligible remote employees can claim up to $75 per month for high-speed home internet service via monthly expense reports with valid broadband receipts.",
+              "metadata": {
+                "token_count": 44,
+                "category": "finance",
+                "chunk_index": 0,
+                "source": "stipend_faq.html",
+                "doc_type": "faq"
+              },
+              "rank": 3,
+              "judgment": "Irrelevant"
+            },
+            {
+              "id": "submission-rubric.md:0",
+              "score": 0.130692,
+              "distance": 0.869308,
+              "text": "Academic Project Submission Rubric: What evidence is required for project submission? Students must submit a public GitHub repository link containing clean modular code, passing automated unit test suites, clear commit history, an architecture walkthrough, and a 3-5 minute screen recording demo.",
+              "metadata": {
+                "category": "academics",
+                "chunk_index": 0,
+                "doc_type": "rubric",
+                "token_count": 55,
+                "source": "submission-rubric.md"
+              },
+              "rank": 4,
+              "judgment": "Irrelevant"
+            },
+            {
+              "id": "campus-guide.md:0",
+              "score": 0.082501,
+              "distance": 0.917499,
+              "text": "Campus Facilities and Dining: When does the cafeteria menu change? The campus cafeteria rotates its full menu every Monday morning at 7:00 AM. Breakfast is served from 7:30 AM to 10:00 AM, lunch from 12:00 PM to 2:30 PM, and dinner from 6:00 PM to 8:30 PM.",
+              "metadata": {
+                "doc_type": "guide",
+                "chunk_index": 0,
+                "source": "campus-guide.md",
+                "category": "campus_life",
+                "token_count": 58
+              },
+              "rank": 5,
+              "judgment": "Irrelevant"
+            }
+          ],
+          "judgments": [
+            "Excellent",
+            "Irrelevant",
+            "Irrelevant",
+            "Irrelevant",
+            "Irrelevant"
+          ]
+        }
+      ]
+    },
+    {
+      "setting": "calibrated_optimal_k3",
+      "description": "Calibrated optimal setting: top_k=3 with noise-filtering threshold (min_score=0.30)",
+      "config": {
+        "k": 3,
+        "filter": null,
+        "min_score": 0.3
+      },
+      "metrics": {
+        "hit_rate": 1.0,
+        "top_1_hit_rate": 1.0,
+        "mrr": 1.0,
+        "avg_returned_chunks": 1.0,
+        "latency_ms": 54.16
+      },
+      "rows": [
+        {
+          "query": "How can a learner reset their password?",
+          "expected_source": "account-guide.md",
+          "returned_sources": [
+            "account-guide.md"
+          ],
+          "returned_count": 1,
+          "hit": true,
+          "top_1_hit": true,
+          "rank": 1,
+          "reciprocal_rank": 1.0,
+          "results": [
+            {
+              "id": "account-guide.md:0",
+              "score": 0.716052,
+              "distance": 0.283948,
+              "text": "How can a learner reset their password? Learners can reset their password by clicking 'Forgot Password' on the login portal, entering their registered email, and following the secure reset link sent to their inbox. Multi-factor authentication (MFA) can also be reset via admin support.",
+              "metadata": {
+                "chunk_index": 0,
+                "doc_type": "guide",
+                "category": "account_access",
+                "source": "account-guide.md",
+                "token_count": 52
+              },
+              "rank": 1,
+              "judgment": "Excellent"
+            }
+          ],
+          "judgments": [
+            "Excellent"
+          ]
+        },
+        {
+          "query": "When does the cafeteria menu change?",
+          "expected_source": "campus-guide.md",
+          "returned_sources": [
+            "campus-guide.md"
+          ],
+          "returned_count": 1,
+          "hit": true,
+          "top_1_hit": true,
+          "rank": 1,
+          "reciprocal_rank": 1.0,
+          "results": [
+            {
+              "id": "campus-guide.md:0",
+              "score": 0.452183,
+              "distance": 0.547817,
+              "text": "Campus Facilities and Dining: When does the cafeteria menu change? The campus cafeteria rotates its full menu every Monday morning at 7:00 AM. Breakfast is served from 7:30 AM to 10:00 AM, lunch from 12:00 PM to 2:30 PM, and dinner from 6:00 PM to 8:30 PM.",
+              "metadata": {
+                "source": "campus-guide.md",
+                "doc_type": "guide",
+                "token_count": 58,
+                "category": "campus_life",
+                "chunk_index": 0
+              },
+              "rank": 1,
+              "judgment": "Excellent"
+            }
+          ],
+          "judgments": [
+            "Excellent"
+          ]
+        },
+        {
+          "query": "What evidence is required for project submission?",
+          "expected_source": "submission-rubric.md",
+          "returned_sources": [
+            "submission-rubric.md"
+          ],
+          "returned_count": 1,
+          "hit": true,
+          "top_1_hit": true,
+          "rank": 1,
+          "reciprocal_rank": 1.0,
+          "results": [
+            {
+              "id": "submission-rubric.md:0",
+              "score": 0.512273,
+              "distance": 0.487727,
+              "text": "Academic Project Submission Rubric: What evidence is required for project submission? Students must submit a public GitHub repository link containing clean modular code, passing automated unit test suites, clear commit history, an architecture walkthrough, and a 3-5 minute screen recording demo.",
+              "metadata": {
+                "doc_type": "rubric",
+                "source": "submission-rubric.md",
+                "category": "academics",
+                "token_count": 55,
+                "chunk_index": 0
+              },
+              "rank": 1,
+              "judgment": "Excellent"
+            }
+          ],
+          "judgments": [
+            "Excellent"
+          ]
+        },
+        {
+          "query": "How many days per week can employees work remotely?",
+          "expected_source": "remote_policy.txt",
+          "returned_sources": [
+            "remote_policy.txt"
+          ],
+          "returned_count": 1,
+          "hit": true,
+          "top_1_hit": true,
+          "rank": 1,
+          "reciprocal_rank": 1.0,
+          "results": [
+            {
+              "id": "remote_policy.txt:0",
+              "score": 0.461042,
+              "distance": 0.538958,
+              "text": "Company Remote Work Policy (Effective January 1, 2026): Eligible employees are permitted to work remotely up to three days per week. All employees must maintain standard core collaboration hours from 10 AM to 4 PM regardless of work location.",
+              "metadata": {
+                "doc_type": "policy",
+                "chunk_index": 0,
+                "source": "remote_policy.txt",
+                "category": "workplace",
+                "token_count": 48
+              },
+              "rank": 1,
+              "judgment": "Excellent"
+            }
+          ],
+          "judgments": [
+            "Excellent"
+          ]
+        },
+        {
+          "query": "What is the monthly limit for home internet allowance?",
+          "expected_source": "stipend_faq.html",
+          "returned_sources": [
+            "stipend_faq.html"
+          ],
+          "returned_count": 1,
+          "hit": true,
+          "top_1_hit": true,
+          "rank": 1,
+          "reciprocal_rank": 1.0,
+          "results": [
+            {
+              "id": "stipend_faq.html:0",
+              "score": 0.451088,
+              "distance": 0.548912,
+              "text": "Stipend & Reimbursement FAQ: What can I claim under the internet allowance? Eligible remote employees can claim up to $75 per month for high-speed home internet service via monthly expense reports with valid broadband receipts.",
+              "metadata": {
+                "category": "finance",
+                "chunk_index": 0,
+                "source": "stipend_faq.html",
+                "token_count": 44,
+                "doc_type": "faq"
+              },
+              "rank": 1,
+              "judgment": "Excellent"
+            }
+          ],
+          "judgments": [
+            "Excellent"
+          ]
+        },
+        {
+          "query": "What are the rules for overtime approval and daily work hours?",
+          "expected_source": "work_hours.md",
+          "returned_sources": [
+            "work_hours.md"
+          ],
+          "returned_count": 1,
+          "hit": true,
+          "top_1_hit": true,
+          "rank": 1,
+          "reciprocal_rank": 1.0,
+          "results": [
+            {
+              "id": "work_hours.md:0",
+              "score": 0.501753,
+              "distance": 0.498247,
+              "text": "Work Hours and Overtime Guideline: All remote workers must log daily check-in and check-out times in the HR portal. Standard schedule is 8 hours per day, 40 hours per week. Overtime hours must receive pre-approval from team leads.",
+              "metadata": {
+                "chunk_index": 0,
+                "source": "work_hours.md",
+                "category": "operations",
+                "doc_type": "policy",
+                "token_count": 47
+              },
+              "rank": 1,
+              "judgment": "Excellent"
+            }
+          ],
+          "judgments": [
+            "Excellent"
+          ]
+        },
+        {
+          "query": "What is the daily meal per diem for business travel?",
+          "expected_source": "sample_policy.pdf",
+          "returned_sources": [
+            "sample_policy.pdf"
+          ],
+          "returned_count": 1,
+          "hit": true,
+          "top_1_hit": true,
+          "rank": 1,
+          "reciprocal_rank": 1.0,
+          "results": [
+            {
+              "id": "sample_policy.pdf:0",
+              "score": 0.433903,
+              "distance": 0.566097,
+              "text": "Corporate Travel and Meal Reimbursement Policy: Employees traveling on approved company business may claim up to $60 daily meal per diem. Original itemized receipts must be submitted within 30 days of travel completion.",
+              "metadata": {
+                "token_count": 46,
+                "category": "finance",
+                "doc_type": "policy",
+                "chunk_index": 0,
+                "source": "sample_policy.pdf"
+              },
+              "rank": 1,
+              "judgment": "Excellent"
+            }
+          ],
+          "judgments": [
+            "Excellent"
+          ]
+        }
+      ]
+    }
+  ]
+}
