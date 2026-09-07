@@ -25,6 +25,8 @@ outputs/*
 !outputs/retrieval_eval_queries.json
 !outputs/retrieval_tuning_results.json
 !outputs/retrieval_tuning_report.md
+!outputs/reranking_results.json
+!outputs/reranking_report.md
 
 
 # Python cache

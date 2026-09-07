@@ -1,0 +1,293 @@
+{
+  "timestamp": "2026-09-07 13:54:33",
+  "candidate_k": 10,
+  "final_k": 3,
+  "primary_query_evaluation": {
+    "query": "What evidence is required for project submission?",
+    "before_top_k": [
+      {
+        "id": "submission-rubric.md:0",
+        "score": 0.541905,
+        "distance": 0.458095,
+        "text": "Academic Project Submission Rubric: What evidence is required for project submission? Required evidence includes a public GitHub repository URL, modular and clean source code, passing automated unit test suite reports, granular git commit history showing iterative development, an architecture walkthrough document, and a 3-5 minute video screen recording demonstrating core workflows.",
+        "metadata": {
+          "doc_type": "rubric",
+          "category": "academics",
+          "section": "required_evidence",
+          "source": "submission-rubric.md"
+        },
+        "rank": 1
+      },
+      {
+        "id": "submission-rubric.md:1",
+        "score": 0.233139,
+        "distance": 0.766861,
+        "text": "Project Submission Deadlines and Extensions: All project milestone deliverables must be uploaded to the LMS before Sunday 11:59 PM IST. Late submissions incur a 10% penalty per calendar day unless pre-approved by the academic coordinator.",
+        "metadata": {
+          "doc_type": "rubric",
+          "source": "submission-rubric.md",
+          "category": "academics",
+          "section": "deadlines"
+        },
+        "rank": 2
+      },
+      {
+        "id": "team-project-policy.md:0",
+        "score": 0.182309,
+        "distance": 0.817691,
+        "text": "Collaborative Team Project Guidelines: Team projects require evidence of equitable task distribution via individual git branch contributions and PR review approvals on GitHub.",
+        "metadata": {
+          "section": "collaboration",
+          "category": "academics",
+          "source": "team-project-policy.md",
+          "doc_type": "policy"
+        },
+        "rank": 3
+      }
+    ],
+    "after_top_k": [
+      {
+        "id": "submission-rubric.md:0",
+        "score": 0.541905,
+        "distance": 0.458095,
+        "text": "Academic Project Submission Rubric: What evidence is required for project submission? Required evidence includes a public GitHub repository URL, modular and clean source code, passing automated unit test suite reports, granular git commit history showing iterative development, an architecture walkthrough document, and a 3-5 minute video screen recording demonstrating core workflows.",
+        "metadata": {
+          "doc_type": "rubric",
+          "category": "academics",
+          "section": "required_evidence",
+          "source": "submission-rubric.md"
+        },
+        "rank": 1,
+        "rerank_score": 7.9,
+        "rerank_rank": 1
+      },
+      {
+        "id": "submission-rubric.md:1",
+        "score": 0.233139,
+        "distance": 0.766861,
+        "text": "Project Submission Deadlines and Extensions: All project milestone deliverables must be uploaded to the LMS before Sunday 11:59 PM IST. Late submissions incur a 10% penalty per calendar day unless pre-approved by the academic coordinator.",
+        "metadata": {
+          "doc_type": "rubric",
+          "source": "submission-rubric.md",
+          "category": "academics",
+          "section": "deadlines"
+        },
+        "rank": 2,
+        "rerank_score": 4.71,
+        "rerank_rank": 2
+      },
+      {
+        "id": "team-project-policy.md:0",
+        "score": 0.182309,
+        "distance": 0.817691,
+        "text": "Collaborative Team Project Guidelines: Team projects require evidence of equitable task distribution via individual git branch contributions and PR review approvals on GitHub.",
+        "metadata": {
+          "section": "collaboration",
+          "category": "academics",
+          "source": "team-project-policy.md",
+          "doc_type": "policy"
+        },
+        "rank": 3,
+        "rerank_score": 3.21,
+        "rerank_rank": 3
+      }
+    ],
+    "candidates_all": [
+      {
+        "id": "submission-rubric.md:0",
+        "score": 0.541905,
+        "distance": 0.458095,
+        "text": "Academic Project Submission Rubric: What evidence is required for project submission? Required evidence includes a public GitHub repository URL, modular and clean source code, passing automated unit test suite reports, granular git commit history showing iterative development, an architecture walkthrough document, and a 3-5 minute video screen recording demonstrating core workflows.",
+        "metadata": {
+          "doc_type": "rubric",
+          "category": "academics",
+          "section": "required_evidence",
+          "source": "submission-rubric.md"
+        },
+        "rank": 1
+      },
+      {
+        "id": "submission-rubric.md:1",
+        "score": 0.233139,
+        "distance": 0.766861,
+        "text": "Project Submission Deadlines and Extensions: All project milestone deliverables must be uploaded to the LMS before Sunday 11:59 PM IST. Late submissions incur a 10% penalty per calendar day unless pre-approved by the academic coordinator.",
+        "metadata": {
+          "doc_type": "rubric",
+          "source": "submission-rubric.md",
+          "category": "academics",
+          "section": "deadlines"
+        },
+        "rank": 2
+      },
+      {
+        "id": "team-project-policy.md:0",
+        "score": 0.182309,
+        "distance": 0.817691,
+        "text": "Collaborative Team Project Guidelines: Team projects require evidence of equitable task distribution via individual git branch contributions and PR review approvals on GitHub.",
+        "metadata": {
+          "section": "collaboration",
+          "category": "academics",
+          "source": "team-project-policy.md",
+          "doc_type": "policy"
+        },
+        "rank": 3
+      },
+      {
+        "id": "grading-guidelines.md:0",
+        "score": 0.137039,
+        "distance": 0.862961,
+        "text": "Project Grading Criteria: Total score of 100 points is distributed across Code Quality (30%), Test Coverage (25%), Architectural Design (20%), Documentation (15%), and Demonstration Quality (10%).",
+        "metadata": {
+          "source": "grading-guidelines.md",
+          "category": "academics",
+          "doc_type": "guide",
+          "section": "grading_scale"
+        },
+        "rank": 4
+      },
+      {
+        "id": "stipend_faq.html:0",
+        "score": 0.111162,
+        "distance": 0.888838,
+        "text": "Stipend & Reimbursement FAQ: Remote employees can claim an internet broadband stipend of up to $75 per month by attaching itemized service provider bills to their monthly expense submission.",
+        "metadata": {
+          "category": "finance",
+          "section": "internet_stipend",
+          "doc_type": "faq",
+          "source": "stipend_faq.html"
+        },
+        "rank": 5
+      },
+      {
+        "id": "academic-integrity.md:0",
+        "score": 0.10447,
+        "distance": 0.89553,
+        "text": "Academic Integrity and Plagiarism Policy: Code submissions must represent the student's original individual work. Any third-party libraries or generative AI assistance must be explicitly cited in the project README.",
+        "metadata": {
+          "category": "academics",
+          "doc_type": "policy",
+          "source": "academic-integrity.md",
+          "section": "plagiarism"
+        },
+        "rank": 6
+      },
+      {
+        "id": "account-guide.md:0",
+        "score": 0.067459,
+        "distance": 0.932541,
+        "text": "Learner Account and Portal Access: How can a learner reset their password? Click 'Forgot Password' on the login portal, enter your registered email address, and follow the secure reset instructions sent to your inbox.",
+        "metadata": {
+          "section": "password_reset",
+          "doc_type": "guide",
+          "source": "account-guide.md",
+          "category": "account_access"
+        },
+        "rank": 7
+      },
+      {
+        "id": "work_hours.md:0",
+        "score": 0.04065,
+        "distance": 0.95935,
+        "text": "Work Hours and Overtime Guideline: Remote workers must log daily check-in and check-out timestamps. Standard work week is 40 hours (8 hours/day). Overtime hours require manager pre-approval.",
+        "metadata": {
+          "category": "operations",
+          "source": "work_hours.md",
+          "doc_type": "policy",
+          "section": "work_hours"
+        },
+        "rank": 8
+      },
+      {
+        "id": "sample_policy.pdf:0",
+        "score": 0.010479,
+        "distance": 0.989521,
+        "text": "Corporate Business Travel & Expense Policy: Employees on authorized business trips may claim up to $60 daily meal per diem and must submit itemized receipts within 30 days of trip conclusion.",
+        "metadata": {
+          "category": "finance",
+          "doc_type": "policy",
+          "section": "travel_expenses",
+          "source": "sample_policy.pdf"
+        },
+        "rank": 9
+      },
+      {
+        "id": "remote_policy.txt:0",
+        "score": 0.007021,
+        "distance": 0.992979,
+        "text": "Company Remote Work Policy (Effective January 1, 2026): Eligible employees may work remotely up to three days per week while maintaining standard core collaboration hours from 10 AM to 4 PM.",
+        "metadata": {
+          "source": "remote_policy.txt",
+          "doc_type": "policy",
+          "category": "workplace",
+          "section": "remote_work"
+        },
+        "rank": 10
+      }
+    ],
+    "latency_retrieval_ms": 2.09,
+    "latency_rerank_ms": 0.17,
+    "total_latency_ms": 2.26
+  },
+  "benchmark_evaluations": [
+    {
+      "query": "What evidence is required for project submission?",
+      "domain": "Academic Rubrics",
+      "expected_id": "submission-rubric.md:0",
+      "before_top_id": "submission-rubric.md:0",
+      "after_top_id": "submission-rubric.md:0",
+      "after_rerank_score": 7.9,
+      "success": true,
+      "latency_retrieval_ms": 1.89,
+      "latency_rerank_ms": 0.17,
+      "total_latency_ms": 2.06
+    },
+    {
+      "query": "What is the penalty for late project milestone submission?",
+      "domain": "Academic Policies & Deadlines",
+      "expected_id": "submission-rubric.md:1",
+      "before_top_id": "submission-rubric.md:1",
+      "after_top_id": "submission-rubric.md:1",
+      "after_rerank_score": 7.93,
+      "success": true,
+      "latency_retrieval_ms": 1.95,
+      "latency_rerank_ms": 0.17,
+      "total_latency_ms": 2.12
+    },
+    {
+      "query": "What is the daily meal per diem for business travel?",
+      "domain": "Corporate Expense Policies",
+      "expected_id": "sample_policy.pdf:0",
+      "before_top_id": "sample_policy.pdf:0",
+      "after_top_id": "sample_policy.pdf:0",
+      "after_rerank_score": 10.0,
+      "success": true,
+      "latency_retrieval_ms": 1.78,
+      "latency_rerank_ms": 0.17,
+      "total_latency_ms": 1.96
+    },
+    {
+      "query": "How many days per week can employees work from home?",
+      "domain": "Remote Work Guidelines",
+      "expected_id": "remote_policy.txt:0",
+      "before_top_id": "remote_policy.txt:0",
+      "after_top_id": "remote_policy.txt:0",
+      "after_rerank_score": 8.69,
+      "success": true,
+      "latency_retrieval_ms": 1.74,
+      "latency_rerank_ms": 0.17,
+      "total_latency_ms": 1.91
+    },
+    {
+      "query": "What is the monthly stipend limit for home internet allowance?",
+      "domain": "Broadband Reimbursements",
+      "expected_id": "stipend_faq.html:0",
+      "before_top_id": "stipend_faq.html:0",
+      "after_top_id": "stipend_faq.html:0",
+      "after_rerank_score": 3.71,
+      "success": true,
+      "latency_retrieval_ms": 1.72,
+      "latency_rerank_ms": 0.17,
+      "total_latency_ms": 1.89
+    }
+  ]
+}
