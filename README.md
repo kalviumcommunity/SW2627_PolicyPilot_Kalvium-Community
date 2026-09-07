@@ -278,18 +278,71 @@ pytest
 
 ---
 
+## Chunk Re-Ranking for Precision (Sprint 2 - Concept 3.35)
+
+PolicyPilot implements a high-precision **two-stage retrieval and re-ranking pipeline** (`src/services/reranking_service.py`):
+1. **Stage 1 (Vector Candidate Retrieval):** Quickly retrieves an expanded pool of candidates ($k_{\text{candidates}}=10$) using fast nearest-neighbor embedding search.
+2. **Stage 2 (Cross-Attention & LLM Re-Ranking):** Jointly scores each query-chunk pair on a $0–10$ relevance scale, promoting the exact factual answer to Rank 1 and selecting the top $k_{\text{final}}=3$ chunks for the LLM context.
+
+### 1. Sample Query: *"What evidence is required for project submission?"*
+
+#### Before Re-Ranking (Initial Vector Retrieval — Top 3 of 10):
+```text
+rank: 1 | vector_score: 0.5419 | rerank_score: None | source: submission-rubric.md
+text: Academic Project Submission Rubric: What evidence is required for project submission? Required evidence includes a public GitHub...
+rank: 2 | vector_score: 0.2331 | rerank_score: None | source: submission-rubric.md
+text: Project Submission Deadlines and Extensions: All project milestone deliverables must be uploaded to the LMS before Sunday...
+rank: 3 | vector_score: 0.1823 | rerank_score: None | source: team-project-policy.md
+text: Collaborative Team Project Guidelines: Team projects require evidence of equitable task distribution via individual git...
+```
+
+#### After Re-Ranking (Cross-Scored Precision Order — Final Context 3):
+```text
+rank: 1 | vector_score: 0.5419 | rerank_score: 7.90 | source: submission-rubric.md
+text: Academic Project Submission Rubric: What evidence is required for project submission? Required evidence includes a public GitHub...
+rank: 2 | vector_score: 0.2331 | rerank_score: 4.71 | source: submission-rubric.md
+text: Project Submission Deadlines and Extensions: All project milestone deliverables must be uploaded to the LMS before Sunday...
+rank: 3 | vector_score: 0.1823 | rerank_score: 3.21 | source: team-project-policy.md
+text: Collaborative Team Project Guidelines: Team projects require evidence of equitable task distribution via individual git...
+```
+
+### 2. Cost & Latency Trade-Off Analysis
+
+| Stage | Mechanism | Computational Complexity | Latency | Primary Role |
+| --- | --- | --- | --- | --- |
+| **Stage 1: Retrieval** | Dense Bi-Encoder HNSW | $O(\log N)$ dot products | ~2 ms | **High Recall:** Narrows entire corpus to top 10 candidates |
+| **Stage 2: Re-Ranking** | Joint Cross-Scorer / LLM | $O(K \cdot L^2)$ cross-scoring | ~0.2–20 ms | **High Precision:** Ranks exact evidence at the top |
+
+**When is Re-Ranking worth the extra latency?**
+- In compliance, academic evaluation, and policy QA where answering with a generic clause causes errors.
+- When knowledge bases contain dense keyword overlap across different sections.
+- To reduce generative LLM costs by sending only 3 verified chunks instead of 10 unranked chunks.
+
+### 3. Running the Re-Ranking Demo
+
+```bash
+python src/run_reranking_demo.py
+```
+
+Generated outputs:
+- `outputs/reranking_results.json`: Complete machine-readable pipeline trace.
+- `outputs/reranking_report.md`: Detailed before-and-after evaluation report.
+
+---
+
 ## 3-5 Minute Video Demonstration Guide
 
 For the video submission walkthrough:
-1. **Introduction (0:00 - 0:45):** Define retrieval relevance (retrieving chunks that are useful, authoritative, and factually sufficient to answer user queries).
-2. **Settings Compared (0:45 - 1:45):** Explain why $k$, metadata filters, and score thresholds were chosen.
-3. **Execution & Metrics (1:45 - 2:45):** Run `python src/run_retrieval_tuning_demo.py` and explain Hit Rate, Top-1 Hit, MRR, and Manual Judgment.
-4. **Biggest Effect & Winner (2:45 - 3:45):** Justify `calibrated_optimal_k3` (filters noise, avoids token bloating, guarantees 100% Hit Rate).
-5. **Follow-Up Analysis (3:45 - 4:45):** How poor retrieval affects final answers (hallucinations, incomplete responses, vague generalizations).
+1. **Why Re-Ranking is Useful (0:00 - 0:45):** Bi-encoders encode queries and documents independently; re-ranking performs joint attention to capture exact semantic alignment.
+2. **Difference Between Retrieval and Re-Ranking (0:45 - 1:30):** Retrieval searches the whole database quickly; re-ranking deeply scores a small candidate pool ($k=10$).
+3. **Live Execution & Before/After (1:30 - 2:45):** Run `python src/run_reranking_demo.py` and show `show("before re-ranking", candidates[:final_k])` vs `show("after re-ranking", final_context)`.
+4. **Cost Trade-Offs (2:45 - 3:45):** Re-ranking adds minimal compute on 10 chunks while saving LLM prompt context tokens.
+5. **Follow-Up Analysis (3:45 - 4:45):** When is re-ranking worth it? (High-stakes precision, overlapping document vocabularies, context compression).
 
 ---
 
 **Project:** PolicyPilot  
 **Repository:** `SW2627_PolicyPilot_Kalvium-Community`  
-**Branch:** `feature/retrieval-tuning`  
-**Purpose:** Empirical retrieval tuning, evaluation metrics, and noise reduction for RAG knowledge bases
+**Branch:** `feature/chunk-reranking`  
+**Purpose:** Two-stage retrieval and precision re-ranking for RAG assistants
+
