@@ -1,0 +1,295 @@
+{
+  "run_timestamp": "2026-09-08T07:58:37.515031+00:00",
+  "total_tests_evaluated": 8,
+  "passed_tests_count": 7,
+  "failed_tests_count": 1,
+  "overall_quality_score_percent": 86.08,
+  "average_correctness_percent": 80.08,
+  "average_grounding_percent": 92.66,
+  "average_citation_accuracy_percent": 87.5,
+  "results": [
+    {
+      "id": "EVAL-01",
+      "category": "In-Scope Direct Fact",
+      "query": "How many days per week can eligible employees work remotely?",
+      "expected_answer": "Eligible employees are allowed to work remotely up to three days per week.",
+      "expected_sources": [
+        "remote_policy.txt"
+      ],
+      "generated_answer": "Eligible employees are allowed to work remotely up to three days per week, maintaining core collaboration hours from 10 AM to 4 PM. [Source: remote_policy.txt]",
+      "cited_sources": [
+        "remote_policy.txt"
+      ],
+      "retrieved_sources": [
+        "remote_policy.txt",
+        "work_hours.md",
+        "stipend_faq.html"
+      ],
+      "is_fallback": false,
+      "expect_fallback": false,
+      "correctness_score": 0.85,
+      "grounding_score": 0.8889,
+      "citation_score": 1.0,
+      "citation_evaluation": {
+        "citation_score": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "valid_citations": [
+          "remote_policy.txt"
+        ],
+        "status": "EXACT_CITATION_MATCH"
+      },
+      "overall_score": 0.9067,
+      "passed": true,
+      "description": "Tests direct factual retrieval and response generation for remote work days policy."
+    },
+    {
+      "id": "EVAL-02",
+      "category": "In-Scope Direct Fact",
+      "query": "What is the maximum monthly claim limit for home internet allowance?",
+      "expected_answer": "Employees can claim up to $75 per month for high-speed home internet service.",
+      "expected_sources": [
+        "stipend_faq.html"
+      ],
+      "generated_answer": "Employees can claim up to $75 per month for high-speed home internet service under the internet allowance. [Source: stipend_faq.html]",
+      "cited_sources": [
+        "stipend_faq.html"
+      ],
+      "retrieved_sources": [
+        "stipend_faq.html",
+        "work_hours.md",
+        "sample_policy.pdf"
+      ],
+      "is_fallback": false,
+      "expect_fallback": false,
+      "correctness_score": 0.91,
+      "grounding_score": 0.8571,
+      "citation_score": 1.0,
+      "citation_evaluation": {
+        "citation_score": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "valid_citations": [
+          "stipend_faq.html"
+        ],
+        "status": "EXACT_CITATION_MATCH"
+      },
+      "overall_score": 0.9211,
+      "passed": true,
+      "description": "Tests numerical claim extraction and source citation for internet stipend allowance."
+    },
+    {
+      "id": "EVAL-03",
+      "category": "In-Scope Multi-Clause",
+      "query": "What are the standard daily/weekly work hours and what is required for overtime?",
+      "expected_answer": "Standard work hours are 8 hours per day and 40 hours per week. Overtime must be pre-approved by your team lead.",
+      "expected_sources": [
+        "work_hours.md"
+      ],
+      "generated_answer": "Standard work hours are 8 hours per day and 40 hours per week, with daily check-in logged in HR and overtime pre-approved by team lead. [Source: work_hours.md]",
+      "cited_sources": [
+        "work_hours.md"
+      ],
+      "retrieved_sources": [
+        "work_hours.md",
+        "remote_policy.txt",
+        "stipend_faq.html"
+      ],
+      "is_fallback": false,
+      "expect_fallback": false,
+      "correctness_score": 0.8714,
+      "grounding_score": 0.8333,
+      "citation_score": 1.0,
+      "citation_evaluation": {
+        "citation_score": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "valid_citations": [
+          "work_hours.md"
+        ],
+        "status": "EXACT_CITATION_MATCH"
+      },
+      "overall_score": 0.8985,
+      "passed": true,
+      "description": "Tests multi-clause retrieval and factual grounding for working hours and overtime approval."
+    },
+    {
+      "id": "EVAL-04",
+      "category": "In-Scope Multi-Clause",
+      "query": "What is the deadline for submitting travel expenses and what class flight is required?",
+      "expected_answer": "Travel expenses must be submitted within 30 days of returning, and all flights must be booked in economy class unless approved by a VP.",
+      "expected_sources": [
+        "sample_policy.pdf"
+      ],
+      "generated_answer": "Travel expenses must be submitted within 30 days of returning, and all flights must be booked in economy class unless approved by a VP. [Source: sample_policy.pdf]",
+      "cited_sources": [
+        "sample_policy.pdf"
+      ],
+      "retrieved_sources": [
+        "stipend_faq.html",
+        "sample_policy.pdf",
+        "work_hours.md"
+      ],
+      "is_fallback": false,
+      "expect_fallback": false,
+      "correctness_score": 0.964,
+      "grounding_score": 0.9444,
+      "citation_score": 1.0,
+      "citation_evaluation": {
+        "citation_score": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "valid_citations": [
+          "sample_policy.pdf"
+        ],
+        "status": "EXACT_CITATION_MATCH"
+      },
+      "overall_score": 0.9689,
+      "passed": true,
+      "description": "Tests travel policy extraction for submission deadlines and flight class guidelines."
+    },
+    {
+      "id": "EVAL-05",
+      "category": "In-Scope Boundary Rule",
+      "query": "What hours must remote employees maintain for daily core collaboration?",
+      "expected_answer": "Employees must maintain standard core collaboration hours from 10 AM to 4 PM.",
+      "expected_sources": [
+        "remote_policy.txt"
+      ],
+      "generated_answer": "Eligible employees are allowed to work remotely up to three days per week, maintaining core collaboration hours from 10 AM to 4 PM. [Source: remote_policy.txt]",
+      "cited_sources": [
+        "remote_policy.txt"
+      ],
+      "retrieved_sources": [
+        "remote_policy.txt",
+        "work_hours.md",
+        "sample_policy.pdf"
+      ],
+      "is_fallback": false,
+      "expect_fallback": false,
+      "correctness_score": 0.8111,
+      "grounding_score": 0.8889,
+      "citation_score": 1.0,
+      "citation_evaluation": {
+        "citation_score": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "valid_citations": [
+          "remote_policy.txt"
+        ],
+        "status": "EXACT_CITATION_MATCH"
+      },
+      "overall_score": 0.8911,
+      "passed": true,
+      "description": "Tests boundary condition retrieval differentiating collaboration hours from general work hours."
+    },
+    {
+      "id": "EVAL-06",
+      "category": "Out-of-Scope Fallback",
+      "query": "Are employees allowed to bring pets to the office?",
+      "expected_answer": "I am unable to answer this question as it is not specified in the official policy guidelines.",
+      "expected_sources": [],
+      "generated_answer": "I am unable to answer this question as it is not specified in the official policy guidelines.",
+      "cited_sources": [],
+      "retrieved_sources": [
+        "remote_policy.txt",
+        "stipend_faq.html",
+        "work_hours.md"
+      ],
+      "is_fallback": true,
+      "expect_fallback": true,
+      "correctness_score": 1.0,
+      "grounding_score": 1.0,
+      "citation_score": 1.0,
+      "citation_evaluation": {
+        "citation_score": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "valid_citations": [],
+        "status": "CORRECT_NO_CITATION"
+      },
+      "overall_score": 1.0,
+      "passed": true,
+      "description": "Tests fallback refusal mechanism when user query asks about out-of-scope pet policies."
+    },
+    {
+      "id": "EVAL-07",
+      "category": "Out-of-Scope Fallback",
+      "query": "How much does the company reimburse for monthly gym memberships?",
+      "expected_answer": "I am unable to answer this question as it is not specified in the official policy guidelines.",
+      "expected_sources": [],
+      "generated_answer": "I am unable to answer this question as it is not specified in the official policy guidelines.",
+      "cited_sources": [],
+      "retrieved_sources": [
+        "stipend_faq.html",
+        "work_hours.md",
+        "remote_policy.txt"
+      ],
+      "is_fallback": true,
+      "expect_fallback": true,
+      "correctness_score": 1.0,
+      "grounding_score": 1.0,
+      "citation_score": 1.0,
+      "citation_evaluation": {
+        "citation_score": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "valid_citations": [],
+        "status": "CORRECT_NO_CITATION"
+      },
+      "overall_score": 1.0,
+      "passed": true,
+      "description": "Tests fallback refusal mechanism when user query asks about non-existent gym membership reimbursements."
+    },
+    {
+      "id": "EVAL-08",
+      "category": "Morphological Retrieval Edge Case",
+      "query": "What are the rules for travel expense submission and flight bookings?",
+      "expected_answer": "Travel expenses must be submitted within 30 days of returning and flights booked in economy class.",
+      "expected_sources": [
+        "sample_policy.pdf"
+      ],
+      "generated_answer": "I am unable to answer this question as it is not specified in the official policy guidelines.",
+      "cited_sources": [],
+      "retrieved_sources": [
+        "work_hours.md",
+        "stipend_faq.html",
+        "sample_policy.pdf"
+      ],
+      "is_fallback": true,
+      "expect_fallback": false,
+      "correctness_score": 0.0,
+      "grounding_score": 1.0,
+      "citation_score": 0.0,
+      "citation_evaluation": {
+        "citation_score": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "valid_citations": [],
+        "status": "MISSING_CITATION"
+      },
+      "overall_score": 0.3,
+      "passed": false,
+      "description": "Tests system behavior on inflected query terms ('submission', 'bookings') vs source terms ('submitted', 'booked')."
+    }
+  ],
+  "notable_failures": [
+    {
+      "id": "EVAL-08",
+      "query": "What are the rules for travel expense submission and flight bookings?",
+      "expected_sources": [
+        "sample_policy.pdf"
+      ],
+      "retrieved_sources": [
+        "work_hours.md",
+        "stipend_faq.html",
+        "sample_policy.pdf"
+      ],
+      "cited_sources": [],
+      "generated_answer": "I am unable to answer this question as it is not specified in the official policy guidelines.",
+      "overall_score": 0.3,
+      "failure_reason": "Citation Mismatch: Cited sources [] do not match expected sources ['sample_policy.pdf'].",
+      "likely_cause": "Morphological Inflection Miss / Hash Vector Orthogonality: Query terms ('submission', 'bookings') failed to match source text ('submitted', 'booked') due to un-stemmed hash embeddings, causing target source to drop out of top-k retrieval."
+    }
+  ]
+}

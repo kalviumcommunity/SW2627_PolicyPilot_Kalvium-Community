@@ -24,6 +24,8 @@ outputs/*
 !outputs/embedded_chunks.json
 !outputs/sanity_report.*
 !outputs/filtered_retrieval_*
+!outputs/evaluation_*
+!data/rag_eval_testset.json
 !outputs/retrieval_results.json
 !outputs/retrieval_demo_report.md
 
