@@ -1,0 +1,221 @@
+{
+  "scenario_1_filtered_vs_unfiltered": {
+    "query": "What is the maximum reimbursement amount for home internet allowance?",
+    "metadata_filter": {
+      "doc_type": "html"
+    },
+    "top_k": 3,
+    "unfiltered_precision_percent": 33.33,
+    "filtered_precision_percent": 100.0,
+    "unfiltered_target_matches": "1/3",
+    "filtered_target_matches": "1/1",
+    "unfiltered_results": [
+      {
+        "chunk_id": "f788fe9ba6017e33cca0a4adb8fb983e",
+        "score": 0.3895,
+        "vector_score": 0.3895,
+        "keyword_score": 0.0,
+        "source": "stipend_faq.html",
+        "chunk_index": 0,
+        "content": "Stipend FAQ Stipend & Reimbursement FAQ Q: What can I claim under the internet allowance? A: You can claim up to $75 per month for high-speed home internet service.",
+        "metadata": {
+          "source": "stipend_faq.html",
+          "chunk_index": 0,
+          "token_count": 0,
+          "doc_type": "html"
+        },
+        "rank": 1
+      },
+      {
+        "chunk_id": "36d908be766e83207d1772944bcac430",
+        "score": 0.0551,
+        "vector_score": 0.0551,
+        "keyword_score": 0.0,
+        "source": "sample_policy.pdf",
+        "chunk_index": 0,
+        "content": "PolicyPilot Official Travel Reimbursement Guidelines\n1. Travel expenses must be submitted within 30 days of returning.\n2. All flights must be booked in economy class unless approved by a VP.",
+        "metadata": {
+          "source": "sample_policy.pdf",
+          "chunk_index": 0,
+          "token_count": 0,
+          "doc_type": "pdf"
+        },
+        "rank": 2
+      },
+      {
+        "chunk_id": "7c6aa93b2b08adfed829a227fc373d88",
+        "score": 0.0532,
+        "vector_score": 0.0532,
+        "keyword_score": 0.0,
+        "source": "work_hours.md",
+        "chunk_index": 0,
+        "content": "# Work Hours and Overtime Guideline\n\nAll remote workers must log their daily check-in and check-out times in the HR system.\n- Standard hours: 8 hours per day, 40 hours per week.\n- Overtime must be pre-approved by your team lead.",
+        "metadata": {
+          "source": "work_hours.md",
+          "chunk_index": 0,
+          "token_count": 0,
+          "doc_type": "md"
+        },
+        "rank": 3
+      }
+    ],
+    "filtered_results": [
+      {
+        "chunk_id": "f788fe9ba6017e33cca0a4adb8fb983e",
+        "score": 0.3895,
+        "vector_score": 0.3895,
+        "keyword_score": 0.0,
+        "source": "stipend_faq.html",
+        "chunk_index": 0,
+        "content": "Stipend FAQ Stipend & Reimbursement FAQ Q: What can I claim under the internet allowance? A: You can claim up to $75 per month for high-speed home internet service.",
+        "metadata": {
+          "source": "stipend_faq.html",
+          "chunk_index": 0,
+          "token_count": 0,
+          "doc_type": "html"
+        },
+        "rank": 1
+      }
+    ]
+  },
+  "scenario_2_precision_demonstration": {
+    "query": "What are the rules and deadlines for travel expense reimbursement?",
+    "metadata_filter": {
+      "source": "sample_policy.pdf"
+    },
+    "top_k": 3,
+    "unfiltered_precision_percent": 33.33,
+    "filtered_precision_percent": 100.0,
+    "unfiltered_target_matches": "1/3",
+    "filtered_target_matches": "1/1",
+    "unfiltered_results": [
+      {
+        "chunk_id": "f788fe9ba6017e33cca0a4adb8fb983e",
+        "score": 0.1985,
+        "vector_score": 0.1985,
+        "keyword_score": 0.0,
+        "source": "stipend_faq.html",
+        "chunk_index": 0,
+        "content": "Stipend FAQ Stipend & Reimbursement FAQ Q: What can I claim under the internet allowance? A: You can claim up to $75 per month for high-speed home internet service.",
+        "metadata": {
+          "source": "stipend_faq.html",
+          "chunk_index": 0,
+          "token_count": 0,
+          "doc_type": "html"
+        },
+        "rank": 1
+      },
+      {
+        "chunk_id": "36d908be766e83207d1772944bcac430",
+        "score": 0.1834,
+        "vector_score": 0.1834,
+        "keyword_score": 0.0,
+        "source": "sample_policy.pdf",
+        "chunk_index": 0,
+        "content": "PolicyPilot Official Travel Reimbursement Guidelines\n1. Travel expenses must be submitted within 30 days of returning.\n2. All flights must be booked in economy class unless approved by a VP.",
+        "metadata": {
+          "source": "sample_policy.pdf",
+          "chunk_index": 0,
+          "token_count": 0,
+          "doc_type": "pdf"
+        },
+        "rank": 2
+      },
+      {
+        "chunk_id": "7c6aa93b2b08adfed829a227fc373d88",
+        "score": 0.1628,
+        "vector_score": 0.1628,
+        "keyword_score": 0.0,
+        "source": "work_hours.md",
+        "chunk_index": 0,
+        "content": "# Work Hours and Overtime Guideline\n\nAll remote workers must log their daily check-in and check-out times in the HR system.\n- Standard hours: 8 hours per day, 40 hours per week.\n- Overtime must be pre-approved by your team lead.",
+        "metadata": {
+          "source": "work_hours.md",
+          "chunk_index": 0,
+          "token_count": 0,
+          "doc_type": "md"
+        },
+        "rank": 3
+      }
+    ],
+    "filtered_results": [
+      {
+        "chunk_id": "36d908be766e83207d1772944bcac430",
+        "score": 0.1834,
+        "vector_score": 0.1834,
+        "keyword_score": 0.0,
+        "source": "sample_policy.pdf",
+        "chunk_index": 0,
+        "content": "PolicyPilot Official Travel Reimbursement Guidelines\n1. Travel expenses must be submitted within 30 days of returning.\n2. All flights must be booked in economy class unless approved by a VP.",
+        "metadata": {
+          "source": "sample_policy.pdf",
+          "chunk_index": 0,
+          "token_count": 0,
+          "doc_type": "pdf"
+        },
+        "rank": 1
+      }
+    ]
+  },
+  "scenario_3_hybrid_search": {
+    "query": "How many hours per day and week are standard work hours?",
+    "keywords": [
+      "standard",
+      "hours",
+      "8",
+      "40",
+      "overtime"
+    ],
+    "alpha": 0.6,
+    "top_k_results": [
+      {
+        "chunk_id": "7c6aa93b2b08adfed829a227fc373d88",
+        "score": 0.7393,
+        "vector_score": 0.5655,
+        "keyword_score": 1.0,
+        "source": "work_hours.md",
+        "chunk_index": 0,
+        "content": "# Work Hours and Overtime Guideline\n\nAll remote workers must log their daily check-in and check-out times in the HR system.\n- Standard hours: 8 hours per day, 40 hours per week.\n- Overtime must be pre-approved by your team lead.",
+        "metadata": {
+          "source": "work_hours.md",
+          "chunk_index": 0,
+          "token_count": 0,
+          "doc_type": "md"
+        },
+        "rank": 1
+      },
+      {
+        "chunk_id": "14803b5a924840a2ba163d069b654c01",
+        "score": 0.6058,
+        "vector_score": 0.343,
+        "keyword_score": 1.0,
+        "source": "remote_policy.txt",
+        "chunk_index": 0,
+        "content": "Company Remote Work Policy Effective: January 1, 2026\n\nEligible employees are allowed to work remotely up to three days per week. Employees must maintain standard core collaboration hours from 10 AM to 4 PM.",
+        "metadata": {
+          "source": "remote_policy.txt",
+          "chunk_index": 0,
+          "token_count": 0,
+          "doc_type": "txt"
+        },
+        "rank": 2
+      },
+      {
+        "chunk_id": "f788fe9ba6017e33cca0a4adb8fb983e",
+        "score": 0.087,
+        "vector_score": 0.0783,
+        "keyword_score": 0.1,
+        "source": "stipend_faq.html",
+        "chunk_index": 0,
+        "content": "Stipend FAQ Stipend & Reimbursement FAQ Q: What can I claim under the internet allowance? A: You can claim up to $75 per month for high-speed home internet service.",
+        "metadata": {
+          "source": "stipend_faq.html",
+          "chunk_index": 0,
+          "token_count": 0,
+          "doc_type": "html"
+        },
+        "rank": 3
+      }
+    ]
+  }
+}
