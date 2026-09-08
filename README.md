@@ -359,6 +359,68 @@ Content-Type: application/json
 }
 ```
 
+## Streaming Responses & Citation Display (`POST /query/stream`)
+
+PolicyPilot supports real-time streaming RAG responses using Server-Sent Events (SSE).
+
+### 1. Endpoint & Endpoint Derivation
+- **Endpoint**: `POST /query/stream`
+- **Content-Type**: `text/event-stream`
+- **Endpoint Derivation**: The frontend helper (`streamQuestion`) dynamically derives `/query/stream` from `NEXT_PUBLIC_RAG_API_URL` (e.g. `http://localhost:8000/query` becomes `http://localhost:8000/query/stream`).
+
+### 2. SSE Event Schema
+Each stream chunk is sent as a `data: <JSON>\n\n` block using the following event types:
+
+1. **`citations`**: Sent first when relevant policy sources are retrieved.
+```json
+{
+  "type": "citations",
+  "sources": [
+    {
+      "id": "source-1",
+      "label": "[1]",
+      "document": "official_ecommerce_policies.txt",
+      "chunk_id": "policy-doc:0",
+      "section": "Return Window",
+      "text": "Customers can request a refund for eligible catalog items within 30 days of delivery."
+    }
+  ]
+}
+```
+
+2. **`token`**: Sent progressively as answer text is generated.
+```json
+{
+  "type": "token",
+  "text": "Customers "
+}
+```
+
+3. **`done`**: Sent when the answer stream finishes successfully.
+```json
+{
+  "type": "done"
+}
+```
+
+4. **`error`**: Sent if an unhandled generation or pipeline error occurs mid-stream.
+```json
+{
+  "type": "error",
+  "message": "The answer stopped streaming. Please retry."
+}
+```
+
+### 3. Citation UI Display
+Cited sources are presented in an accessible, expandable `<details>`/`<summary>` list under the **Cited Policy Sources** section:
+- **Summary**: Displays citation marker `[1]`, document name, and chunk ID.
+- **Details Body**: Displays the section name and full source snippet upon expansion.
+- **Interruption Preservation**: Received citations remain visible even if the answer stream is interrupted by a network failure.
+
+### 4. Stream Interruption & Retry Flow
+- **Partial Output**: If a stream is interrupted mid-way, partial output is preserved and flagged with an `⚠️ Incomplete Response (Stream Interrupted)` indicator.
+- **Retry Button**: A `🔄 Retry Question` button automatically re-submits the last submitted question when an error occurs.
+
 ---
 
 **Project:** PolicyPilot

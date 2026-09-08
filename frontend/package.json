@@ -7,7 +7,7 @@
     "dev": "next dev -p 3000",
     "build": "next build",
     "start": "next start",
-    "test": "node --test tests/api.test.js"
+    "test": "node --test tests/api.test.js tests/streaming.test.js"
   },
   "dependencies": {
     "next": "^14.2.5",

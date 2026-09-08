@@ -208,6 +208,74 @@ class CitationService:
             "citations": citations,
         }
 
+    def stream_answer_with_citations(
+        self,
+        question: str,
+        chunks: Optional[List[Dict[str, Any]]] = None,
+        top_k: int = 4,
+    ):
+        """Stream RAG response events progressively (citations -> answer tokens -> done/error).
+
+        Yields dicts representing SSE events:
+        - {"type": "citations", "sources": [...]}
+        - {"type": "token", "text": "..."}
+        - {"type": "done"}
+        - {"type": "error", "message": "..."}
+        """
+        import re
+
+        if not question or not str(question).strip():
+            yield {
+                "type": "error",
+                "message": "Question is required and cannot be empty.",
+            }
+            return
+
+        try:
+            res = self.answer_with_citations(str(question), chunks=chunks, top_k=top_k)
+            citations = res.get("citations", {})
+
+            sources_list = []
+            for idx, (marker, meta) in enumerate(citations.items(), start=1):
+                chunk_id = meta.get("chunk_id")
+                if chunk_id is None:
+                    chunk_id = meta.get("id") or f"chunk-{idx}"
+
+                sources_list.append({
+                    "id": f"source-{idx}",
+                    "label": marker,
+                    "document": meta.get("source") or "unknown",
+                    "chunk_id": str(chunk_id),
+                    "section": meta.get("section") or "",
+                    "text": meta.get("text") or "",
+                })
+
+            # 1. Send citations event
+            yield {
+                "type": "citations",
+                "sources": sources_list,
+            }
+
+            # 2. Progressively stream answer tokens
+            answer_text = res.get("answer", "")
+            if answer_text:
+                tokens = re.findall(r"\S+\s*", answer_text)
+                for token in tokens:
+                    yield {
+                        "type": "token",
+                        "text": token,
+                    }
+
+            # 3. Send done event
+            yield {
+                "type": "done",
+            }
+        except Exception:
+            yield {
+                "type": "error",
+                "message": "The answer stopped streaming. Please retry.",
+            }
+
     def verify_citation(
         self, result: Dict[str, Any], citation_marker: str
     ) -> Optional[Dict[str, Any]]:

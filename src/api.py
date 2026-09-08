@@ -107,8 +107,8 @@ class QueryRequestHandler(BaseHTTPRequestHandler):
             self.end_headers()
 
     def do_POST(self):
-        """Handle POST /query endpoint."""
-        if self.path != "/query":
+        """Handle POST /query and POST /query/stream endpoints."""
+        if self.path not in ("/query", "/query/stream"):
             self.send_response(404)
             self.send_header("Content-Type", "application/json")
             self._set_cors_headers()
@@ -145,8 +145,27 @@ class QueryRequestHandler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps({"error": "Question is required and cannot be empty."}).encode("utf-8"))
             return
 
-        # Execute citation RAG pipeline
         citation_svc = self.get_citation_service()
+
+        if self.path == "/query/stream":
+            self.send_response(200)
+            self.send_header("Content-Type", "text/event-stream")
+            self.send_header("Cache-Control", "no-cache")
+            self.send_header("Connection", "keep-alive")
+            self._set_cors_headers()
+            self.end_headers()
+
+            for event in citation_svc.stream_answer_with_citations(str(question)):
+                sse_line = f"data: {json.dumps(event)}\n\n"
+                self.wfile.write(sse_line.encode("utf-8"))
+                if hasattr(self.wfile, "flush"):
+                    try:
+                        self.wfile.flush()
+                    except Exception:
+                        pass
+            return
+
+        # Execute citation RAG pipeline for non-streaming /query
         res = citation_svc.answer_with_citations(str(question))
 
         citations = res.get("citations", {})
@@ -183,6 +202,9 @@ class DummyWfile:
 
     def write(self, b: bytes):
         self.bytes_written.extend(b)
+
+    def flush(self):
+        pass
 
     def getvalue(self) -> bytes:
         return bytes(self.bytes_written)
