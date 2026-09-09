@@ -29,6 +29,8 @@ outputs/*
 !outputs/reranking_report.md
 !outputs/prompt_augmentation_results.json
 !outputs/prompt_augmentation_report.md
+!outputs/grounded_generation_results.json
+!outputs/grounded_generation_report.md
 
 
 # Python cache
