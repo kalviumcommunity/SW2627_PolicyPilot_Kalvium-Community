@@ -4,8 +4,10 @@ venv/
 
 # Environment variables and secrets
 .env
+.env.local
 .env.*
 !.env.example
+*.pem
 
 # Local data
 data/*
@@ -31,7 +33,6 @@ outputs/*
 !outputs/prompt_augmentation_report.md
 !outputs/guardrail_refusal_results.json
 !outputs/guardrail_refusal_report.md
-
 
 # Python cache
 __pycache__/
