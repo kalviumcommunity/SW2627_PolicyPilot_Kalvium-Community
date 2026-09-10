@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { streamQuestion, askQuestion } from "../lib/api";
+import { askQuestion } from "../lib/api";
 
 function sourceLabel(source) {
   return source.document || source.metadata?.filename || source.filename || source.source || source.id || "Document";
@@ -27,7 +27,6 @@ export default function ChatInterface() {
   ]);
   const [inputQuestion, setInputQuestion] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isStreaming, setIsStreaming] = useState(false);
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -66,103 +65,36 @@ export default function ChatInterface() {
 
     setIsLoading(true);
 
-    if (isStreaming) {
-      let fullContent = "";
-      let fetchedSources = [];
-
-      try {
-        await streamQuestion(questionText, {
-          onToken: (token) => {
-            fullContent += token;
-            setMessages((prev) =>
-              prev.map((msg) =>
-                msg.id === assistantMessageId
-                  ? { ...msg, content: fullContent }
-                  : msg
-              )
-            );
-          },
-          onCitations: (sources) => {
-            fetchedSources = sources;
-            setMessages((prev) =>
-              prev.map((msg) =>
-                msg.id === assistantMessageId
-                  ? { ...msg, sources: fetchedSources }
-                  : msg
-              )
-            );
-          },
-          onDone: () => {
-            setMessages((prev) =>
-              prev.map((msg) =>
-                msg.id === assistantMessageId
-                  ? { ...msg, complete: true }
-                  : msg
-              )
-            );
-            setIsLoading(false);
-          },
-          onError: (errMessage) => {
-            setMessages((prev) =>
-              prev.map((msg) =>
-                msg.id === assistantMessageId
-                  ? {
-                      ...msg,
-                      complete: false,
-                      error: errMessage || "The answer stopped streaming. Please retry.",
-                    }
-                  : msg
-              )
-            );
-            setIsLoading(false);
-          },
-        });
-      } catch (err) {
-        setMessages((prev) =>
-          prev.map((msg) =>
-            msg.id === assistantMessageId
-              ? {
-                  ...msg,
-                  complete: false,
-                  error: err.message || "Failed to query PolicyPilot API.",
-                }
-              : msg
-          )
-        );
-        setIsLoading(false);
-      }
-    } else {
-      try {
-        const res = await askQuestion(questionText);
-        setMessages((prev) =>
-          prev.map((msg) =>
-            msg.id === assistantMessageId
-              ? {
-                  ...msg,
-                  content: res.answer || res.text || "",
-                  sources: res.sources || res.citations || [],
-                  complete: true,
-                  usage: res.usage || res.metadata,
-                  status: res.status,
-                }
-              : msg
-          )
-        );
-      } catch (err) {
-        setMessages((prev) =>
-          prev.map((msg) =>
-            msg.id === assistantMessageId
-              ? {
-                  ...msg,
-                  complete: false,
-                  error: err.message || "Failed to query PolicyPilot API.",
-                }
-              : msg
-          )
-        );
-      } finally {
-        setIsLoading(false);
-      }
+    try {
+      const res = await askQuestion(questionText);
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === assistantMessageId
+            ? {
+                ...msg,
+                content: res.answer || res.text || "",
+                sources: res.sources || res.citations || [],
+                complete: true,
+                usage: res.usage || res.metadata,
+                status: res.status,
+              }
+            : msg
+        )
+      );
+    } catch (err) {
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === assistantMessageId
+            ? {
+                ...msg,
+                complete: false,
+                error: err.message || "Failed to query PolicyPilot API.",
+              }
+            : msg
+        )
+      );
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -187,18 +119,7 @@ export default function ChatInterface() {
             <p className="brand-subtitle">Enterprise Internal Policy & Document Q&A</p>
           </div>
         </div>
-        <div className="mode-toggle">
-          <label className="toggle-label">
-            <input
-              type="checkbox"
-              checked={isStreaming}
-              onChange={(e) => setIsStreaming(e.target.checked)}
-            />
-            <span className="toggle-text">
-              {isStreaming ? "⚡ Real-time SSE Streaming" : "📦 Standard Response"}
-            </span>
-          </label>
-        </div>
+        <span className="api-status">● Grounded answers</span>
       </header>
 
       <div className="chat-history">
