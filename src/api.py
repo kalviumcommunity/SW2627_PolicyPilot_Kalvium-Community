@@ -6,7 +6,9 @@ import logging
 import os
 import time
 import inspect
+import re
 from functools import lru_cache
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from dotenv import load_dotenv
@@ -15,6 +17,7 @@ from pydantic import BaseModel, Field
 
 from src.services.response_service import ResponseService
 from src.services.retrieval_service import RetrievalService
+from src.services.document_service import DocumentService
 
 load_dotenv()
 
@@ -99,15 +102,47 @@ def _retrieve_chunks(
     top_k: int,
 ) -> List[Dict[str, Any]]:
     """Retrieve chunks across the supported retrieval service interfaces."""
-    search = getattr(retrieval_service, "search", None)
-    if callable(search):
-        return search(question, top_k=top_k)
+    try:
+        search = getattr(retrieval_service, "search", None)
+        if callable(search):
+            chunks = search(question, top_k=top_k)
+        else:
+            retrieve = getattr(retrieval_service, "retrieve", None)
+            if not callable(retrieve):
+                raise AttributeError("RetrievalService must provide search or retrieve.")
+            chunks = retrieve(question, k=top_k)
+        if chunks:
+            return chunks
+    except (AttributeError, RuntimeError, ValueError) as exc:
+        logger.warning("Primary retrieval unavailable (%s); using document fallback.", exc)
 
-    retrieve = getattr(retrieval_service, "retrieve", None)
-    if callable(retrieve):
-        return retrieve(question, k=top_k)
+    return _retrieve_from_documents(question, top_k)
 
-    raise AttributeError("RetrievalService must provide search or retrieve.")
+
+def _retrieve_from_documents(question: str, top_k: int) -> List[Dict[str, Any]]:
+    """Provide lexical retrieval when generated/vector indexes are unavailable."""
+    query_terms = set(re.findall(r"\b\w+\b", question.lower()))
+    documents = DocumentService().load_and_chunk_documents(
+        data_dir=str(Path(__file__).resolve().parents[1] / "data")
+    )
+    ranked: List[Dict[str, Any]] = []
+    for index, chunk in enumerate(documents):
+        text = chunk.get("text") or chunk.get("content") or ""
+        terms = set(re.findall(r"\b\w+\b", text.lower()))
+        score = len(query_terms & terms) / max(1, len(query_terms))
+        if score <= 0:
+            continue
+        ranked.append({
+            "id": chunk.get("chunk_id", f"fallback-{index}"),
+            "score": score,
+            "text": text,
+            "content": text,
+            "source": chunk.get("source", "unknown"),
+            "chunk_index": chunk.get("index", index),
+            "metadata": {"source": chunk.get("source", "unknown"), "chunk_index": chunk.get("index", index)},
+        })
+    ranked.sort(key=lambda item: item["score"], reverse=True)
+    return ranked[:top_k]
 
 
 @app.get("/health")
