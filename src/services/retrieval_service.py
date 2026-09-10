@@ -489,6 +489,7 @@ class RetrievalService:
         self.default_collection = default_collection
         self.dimension = dimension
         self.embedding_fn = embedding_fn
+        self.embedding_cache_file = PROJECT_ROOT / "outputs" / "embedded_chunks.json"
 
     def embed_query(self, query: str) -> List[float]:
         """Generate an embedding vector for a query string.
@@ -557,6 +558,12 @@ class RetrievalService:
             filter_metadata=metadata_filter,
             collection_name=col_name,
         )
+        if not raw_hits:
+            raw_hits = self._query_embedded_cache(
+                query_vector=query_vector,
+                top_k=k,
+                metadata_filter=metadata_filter,
+            )
 
         results: List[Dict[str, Any]] = []
         rank = 1
@@ -577,6 +584,55 @@ class RetrievalService:
             rank += 1
 
         return results
+
+    def _query_embedded_cache(
+        self,
+        query_vector: List[float],
+        top_k: int,
+        metadata_filter: Optional[Dict[str, Any]] = None,
+    ) -> List[Dict[str, Any]]:
+        """Use the exported embedding cache when the vector collection is empty."""
+        if not self.embedding_cache_file.exists():
+            return []
+
+        with open(self.embedding_cache_file, "r", encoding="utf-8") as cache_file:
+            cached_chunks = json.load(cache_file)
+
+        if not isinstance(cached_chunks, dict):
+            return []
+
+        ranked_hits: List[Dict[str, Any]] = []
+        for chunk_id, chunk in cached_chunks.items():
+            if not isinstance(chunk, dict):
+                continue
+
+            metadata = chunk.get("metadata", {})
+            if not isinstance(metadata, dict):
+                metadata = {}
+            if metadata_filter and any(
+                str(metadata.get(key, chunk.get(key, ""))).lower() != str(value).lower()
+                for key, value in metadata_filter.items()
+            ):
+                continue
+
+            embedding = chunk.get("embedding")
+            if not isinstance(embedding, list) or len(embedding) != len(query_vector):
+                continue
+
+            similarity = self.embedding_service.cosine_similarity(query_vector, embedding)
+            ranked_hits.append({
+                "id": str(chunk.get("chunk_id", chunk_id)),
+                "similarity": float(similarity),
+                "distance": 1.0 - float(similarity),
+                "text": chunk.get("content") or chunk.get("text", ""),
+                "metadata": {
+                    **metadata,
+                    "source": chunk.get("source") or metadata.get("source", "unknown"),
+                },
+            })
+
+        ranked_hits.sort(key=lambda hit: hit["similarity"], reverse=True)
+        return ranked_hits[:top_k]
 
     def evaluate_setting(
         self,

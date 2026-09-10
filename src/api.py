@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 import os
 import time
+import inspect
 from functools import lru_cache
 from typing import Any, Dict, List, Optional
 
@@ -51,9 +52,12 @@ def _sources_from_chunks(chunks: List[Dict[str, Any]]) -> List[Source]:
     """Convert retrieved chunks into deduplicated, frontend-friendly source records."""
     grouped: Dict[str, Source] = {}
     for chunk in chunks:
-        document = str(chunk.get("source", "unknown"))
+        metadata = chunk.get("metadata", {})
+        if not isinstance(metadata, dict):
+            metadata = {}
+        document = str(chunk.get("source") or metadata.get("source") or chunk.get("id", "unknown"))
         source = grouped.get(document)
-        chunk_index = int(chunk.get("chunk_index", 0))
+        chunk_index = int(chunk.get("chunk_index", metadata.get("chunk_index", 0)))
         score = float(chunk.get("score", 0.0))
         if source is None:
             grouped[document] = Source(document=document, score=score, chunks=[chunk_index])
@@ -62,6 +66,48 @@ def _sources_from_chunks(chunks: List[Dict[str, Any]]) -> List[Source]:
             if chunk_index not in source.chunks:
                 source.chunks.append(chunk_index)
     return list(grouped.values())
+
+
+def _generate_response(
+    response_service: ResponseService,
+    question: str,
+    chunks: List[Dict[str, Any]],
+) -> Dict[str, Any]:
+    """Generate an answer across the supported response service interfaces."""
+    generate_parameters = inspect.signature(response_service.generate).parameters
+    if "context_chunks" in generate_parameters:
+        result = response_service.generate(question, context_chunks=chunks)
+        if isinstance(result, dict):
+            return result
+        return {
+            "generated_answer": str(result),
+            "context_chunks": chunks,
+            "is_fallback": False,
+        }
+
+    answer = response_service.generate(question, chunks)
+    return {
+        "generated_answer": str(answer),
+        "context_chunks": chunks,
+        "is_fallback": not bool(answer),
+    }
+
+
+def _retrieve_chunks(
+    retrieval_service: RetrievalService,
+    question: str,
+    top_k: int,
+) -> List[Dict[str, Any]]:
+    """Retrieve chunks across the supported retrieval service interfaces."""
+    search = getattr(retrieval_service, "search", None)
+    if callable(search):
+        return search(question, top_k=top_k)
+
+    retrieve = getattr(retrieval_service, "retrieve", None)
+    if callable(retrieve):
+        return retrieve(question, k=top_k)
+
+    raise AttributeError("RetrievalService must provide search or retrieve.")
 
 
 @app.get("/health")
@@ -82,8 +128,8 @@ def query(request: QueryRequest) -> Dict[str, Any]:
 
     try:
         retrieval_service, response_service = get_pipeline()
-        chunks = retrieval_service.search(question, top_k=top_k)
-        result = response_service.generate(question, context_chunks=chunks)
+        chunks = _retrieve_chunks(retrieval_service, question, top_k)
+        result = _generate_response(response_service, question, chunks)
     except Exception:
         logger.exception("RAG query failed")
         raise HTTPException(
