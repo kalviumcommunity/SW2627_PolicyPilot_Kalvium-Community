@@ -4,8 +4,10 @@ venv/
 
 # Environment variables and secrets
 .env
+.env.local
 .env.*
 !.env.example
+*.pem
 
 # Local data
 data/*
@@ -30,6 +32,19 @@ outputs/*
 !outputs/retrieval_demo_report.md
 
 
+!outputs/embedding_records.json
+!outputs/embedding_demo_report.md
+!outputs/vector_store_readback.json
+!outputs/vector_database_report.md
+!outputs/retrieval_eval_queries.json
+!outputs/retrieval_tuning_results.json
+!outputs/retrieval_tuning_report.md
+!outputs/reranking_results.json
+!outputs/reranking_report.md
+!outputs/prompt_augmentation_results.json
+!outputs/prompt_augmentation_report.md
+!outputs/guardrail_refusal_results.json
+!outputs/guardrail_refusal_report.md
 
 # Python cache
 __pycache__/
@@ -43,3 +58,4 @@ __pycache__/
 # OS
 .DS_Store
 Thumbs.db
+frontend/node_modules/

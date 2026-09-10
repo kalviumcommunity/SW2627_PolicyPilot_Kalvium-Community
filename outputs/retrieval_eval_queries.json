@@ -1,0 +1,51 @@
+[
+  {
+    "id": "Q1",
+    "query": "How can a learner reset their password?",
+    "expected_source": "account-guide.md",
+    "expected_doc_type": "guide",
+    "domain": "Authentication & Account Support"
+  },
+  {
+    "id": "Q2",
+    "query": "When does the cafeteria menu change?",
+    "expected_source": "campus-guide.md",
+    "expected_doc_type": "guide",
+    "domain": "Campus Life & Dining"
+  },
+  {
+    "id": "Q3",
+    "query": "What evidence is required for project submission?",
+    "expected_source": "submission-rubric.md",
+    "expected_doc_type": "rubric",
+    "domain": "Academic Evaluation"
+  },
+  {
+    "id": "Q4",
+    "query": "How many days per week can employees work remotely?",
+    "expected_source": "remote_policy.txt",
+    "expected_doc_type": "policy",
+    "domain": "HR & Remote Work Policy"
+  },
+  {
+    "id": "Q5",
+    "query": "What is the monthly limit for home internet allowance?",
+    "expected_source": "stipend_faq.html",
+    "expected_doc_type": "faq",
+    "domain": "Finance & Reimbursements"
+  },
+  {
+    "id": "Q6",
+    "query": "What are the rules for overtime approval and daily work hours?",
+    "expected_source": "work_hours.md",
+    "expected_doc_type": "policy",
+    "domain": "Operations & Working Hours"
+  },
+  {
+    "id": "Q7",
+    "query": "What is the daily meal per diem for business travel?",
+    "expected_source": "sample_policy.pdf",
+    "expected_doc_type": "policy",
+    "domain": "Travel & Expense Policies"
+  }
+]
