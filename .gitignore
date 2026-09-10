@@ -43,8 +43,13 @@ outputs/*
 !outputs/reranking_report.md
 !outputs/prompt_augmentation_results.json
 !outputs/prompt_augmentation_report.md
+!outputs/grounded_generation_results.json
+!outputs/grounded_generation_report.md
 !outputs/guardrail_refusal_results.json
 !outputs/guardrail_refusal_report.md
+!outputs/conversational_rag_results.json
+!outputs/conversational_rag_report.md
+!outputs/conversational_rag_dialogue.json
 
 # Python cache
 __pycache__/

@@ -149,3 +149,23 @@ def summarize_history(
     
     logger.info("Summarization complete. Final token count: %d", total_tokens(messages))
     return messages
+
+
+def rewrite_followup(*args, **kwargs):
+    """Proxy for conversational query rewriting (CSA 3.42)."""
+    from src.services.conversational_rag_service import rewrite_followup as _rf
+    return _rf(*args, **kwargs)
+
+
+def conversational_answer(*args, **kwargs):
+    """Proxy for conversational answer generation (CSA 3.42)."""
+    from src.services.conversational_rag_service import conversational_answer as _ca
+    return _ca(*args, **kwargs)
+
+
+def ConversationalRAGService(*args, **kwargs):
+    """Proxy factory for ConversationalRAGService (CSA 3.42)."""
+    from src.services.conversational_rag_service import ConversationalRAGService as _CRAG
+    return _CRAG(*args, **kwargs)
+
+
