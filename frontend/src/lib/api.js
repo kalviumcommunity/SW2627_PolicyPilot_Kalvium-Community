@@ -27,11 +27,11 @@ export async function askQuestion(question) {
       let errorMsg = `API request failed with status ${response.status}`;
       try {
         const errorData = await response.json();
-        if (errorData && errorData.error) {
-          errorMsg = errorData.error;
+        if (errorData) {
+          errorMsg = errorData.error || errorData.detail || errorMsg;
         }
-      } catch (e) {
-        // Fallback
+      } catch {
+        // Keep the status-based message when the response is not JSON.
       }
       throw new Error(errorMsg);
     }
@@ -100,11 +100,11 @@ export async function streamQuestion(question, handlers = {}) {
     let errorMsg = `API request failed with status ${response.status}`;
     try {
       const errorData = await response.json();
-      if (errorData && errorData.error) {
-        errorMsg = errorData.error;
+      if (errorData) {
+        errorMsg = errorData.error || errorData.detail || errorMsg;
       }
-    } catch (e) {
-      // Fallback
+    } catch {
+      // Keep the status-based message when the response is not JSON.
     }
     throw new Error(errorMsg);
   }

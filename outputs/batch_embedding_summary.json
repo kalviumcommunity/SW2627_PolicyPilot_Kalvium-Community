@@ -1,0 +1,12 @@
+{
+  "total_chunks": 4,
+  "already_embedded_skipped": 4,
+  "newly_embedded": 0,
+  "failed_batches_count": 0,
+  "failed_batch_indices": [],
+  "batch_size": 5,
+  "total_tokens_processed": 0,
+  "estimated_cost_usd": 0.0,
+  "cost_rate": "$0.00002 per 1,000 tokens",
+  "cache_store_path": "C:\\Users\\Sushmitha Malleboina\\Desktop\\privacypolicy\\SW2627_PolicyPilot_Kalvium-Community\\outputs\\embedded_chunks.json"
+}
