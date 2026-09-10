@@ -1,0 +1,166 @@
+{
+  "sample_query": "How many days per week can eligible employees work remotely?",
+  "query_embedding_dimension": 1536,
+  "query_embedding_sample": [
+    -0.006321453835152901,
+    0.01733607853805788,
+    -0.03482276818259047,
+    0.028349150547193988,
+    0.0055313549820008865,
+    0.014887728042545038,
+    -0.006273880562622649,
+    -0.027199602487481392,
+    -0.01170186753309943,
+    0.0155079334427766
+  ],
+  "k_values_evaluated": [
+    2,
+    5
+  ],
+  "results_by_k": {
+    "k_2": {
+      "k": 2,
+      "retrieved_count": 2,
+      "max_score": 0.4406,
+      "min_score": 0.1776,
+      "results": [
+        {
+          "chunk_id": "14803b5a924840a2ba163d069b654c01",
+          "score": 0.4406,
+          "source": "remote_policy.txt",
+          "chunk_index": 0,
+          "content": "Company Remote Work Policy Effective: January 1, 2026\n\nEligible employees are allowed to work remotely up to three days per week. Employees must maintain standard core collaboration hours from 10 AM to 4 PM.",
+          "metadata": {
+            "source": "remote_policy.txt",
+            "chunk_index": 0,
+            "token_count": 0,
+            "doc_type": "txt"
+          },
+          "rank": 1
+        },
+        {
+          "chunk_id": "7c6aa93b2b08adfed829a227fc373d88",
+          "score": 0.1776,
+          "source": "work_hours.md",
+          "chunk_index": 0,
+          "content": "# Work Hours and Overtime Guideline\n\nAll remote workers must log their daily check-in and check-out times in the HR system.\n- Standard hours: 8 hours per day, 40 hours per week.\n- Overtime must be pre-approved by your team lead.",
+          "metadata": {
+            "source": "work_hours.md",
+            "chunk_index": 0,
+            "token_count": 0,
+            "doc_type": "md"
+          },
+          "rank": 2
+        }
+      ]
+    },
+    "k_5": {
+      "k": 5,
+      "retrieved_count": 4,
+      "max_score": 0.4406,
+      "min_score": 0.0856,
+      "results": [
+        {
+          "chunk_id": "14803b5a924840a2ba163d069b654c01",
+          "score": 0.4406,
+          "source": "remote_policy.txt",
+          "chunk_index": 0,
+          "content": "Company Remote Work Policy Effective: January 1, 2026\n\nEligible employees are allowed to work remotely up to three days per week. Employees must maintain standard core collaboration hours from 10 AM to 4 PM.",
+          "metadata": {
+            "source": "remote_policy.txt",
+            "chunk_index": 0,
+            "token_count": 0,
+            "doc_type": "txt"
+          },
+          "rank": 1
+        },
+        {
+          "chunk_id": "7c6aa93b2b08adfed829a227fc373d88",
+          "score": 0.1776,
+          "source": "work_hours.md",
+          "chunk_index": 0,
+          "content": "# Work Hours and Overtime Guideline\n\nAll remote workers must log their daily check-in and check-out times in the HR system.\n- Standard hours: 8 hours per day, 40 hours per week.\n- Overtime must be pre-approved by your team lead.",
+          "metadata": {
+            "source": "work_hours.md",
+            "chunk_index": 0,
+            "token_count": 0,
+            "doc_type": "md"
+          },
+          "rank": 2
+        },
+        {
+          "chunk_id": "f788fe9ba6017e33cca0a4adb8fb983e",
+          "score": 0.1553,
+          "source": "stipend_faq.html",
+          "chunk_index": 0,
+          "content": "Stipend FAQ Stipend & Reimbursement FAQ Q: What can I claim under the internet allowance? A: You can claim up to $75 per month for high-speed home internet service.",
+          "metadata": {
+            "source": "stipend_faq.html",
+            "chunk_index": 0,
+            "token_count": 0,
+            "doc_type": "html"
+          },
+          "rank": 3
+        },
+        {
+          "chunk_id": "36d908be766e83207d1772944bcac430",
+          "score": 0.0856,
+          "source": "sample_policy.pdf",
+          "chunk_index": 0,
+          "content": "PolicyPilot Official Travel Reimbursement Guidelines\n1. Travel expenses must be submitted within 30 days of returning.\n2. All flights must be booked in economy class unless approved by a VP.",
+          "metadata": {
+            "source": "sample_policy.pdf",
+            "chunk_index": 0,
+            "token_count": 0,
+            "doc_type": "pdf"
+          },
+          "rank": 4
+        }
+      ]
+    }
+  },
+  "top_k_retrieved_chunks": [
+    {
+      "chunk_id": "14803b5a924840a2ba163d069b654c01",
+      "score": 0.4406,
+      "source": "remote_policy.txt",
+      "chunk_index": 0,
+      "content": "Company Remote Work Policy Effective: January 1, 2026\n\nEligible employees are allowed to work remotely up to three days per week. Employees must maintain standard core collaboration hours from 10 AM to 4 PM.",
+      "metadata": {
+        "source": "remote_policy.txt",
+        "chunk_index": 0,
+        "token_count": 0,
+        "doc_type": "txt"
+      },
+      "rank": 1
+    },
+    {
+      "chunk_id": "7c6aa93b2b08adfed829a227fc373d88",
+      "score": 0.1776,
+      "source": "work_hours.md",
+      "chunk_index": 0,
+      "content": "# Work Hours and Overtime Guideline\n\nAll remote workers must log their daily check-in and check-out times in the HR system.\n- Standard hours: 8 hours per day, 40 hours per week.\n- Overtime must be pre-approved by your team lead.",
+      "metadata": {
+        "source": "work_hours.md",
+        "chunk_index": 0,
+        "token_count": 0,
+        "doc_type": "md"
+      },
+      "rank": 2
+    },
+    {
+      "chunk_id": "f788fe9ba6017e33cca0a4adb8fb983e",
+      "score": 0.1553,
+      "source": "stipend_faq.html",
+      "chunk_index": 0,
+      "content": "Stipend FAQ Stipend & Reimbursement FAQ Q: What can I claim under the internet allowance? A: You can claim up to $75 per month for high-speed home internet service.",
+      "metadata": {
+        "source": "stipend_faq.html",
+        "chunk_index": 0,
+        "token_count": 0,
+        "doc_type": "html"
+      },
+      "rank": 3
+    }
+  ]
+}
