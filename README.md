@@ -221,6 +221,22 @@ The `.env.example` file is safe to commit because it contains variable names onl
 
 This repository establishes the foundation for the PolicyPilot RAG assistant.
 
+## Query API
+
+Install the API dependency and start the HTTP service:
+
+```powershell
+pip install -r requirements-api.txt
+python -m uvicorn src.api:app --host 127.0.0.1 --port 8000
+```
+
+Send a `POST /query` request with a JSON body containing a `question` field. The
+response includes a grounded `answer`, structured `sources`, a `status`, and
+pipeline metadata. See [docs/api-example.md](docs/api-example.md) for a sample
+request and response. Configuration such as provider credentials, model names,
+retrieval count, and server settings is loaded from environment variables
+documented in `.env.example`.
+
 The next stages of development can include:
 
 * Document ingestion
