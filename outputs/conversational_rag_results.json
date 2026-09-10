@@ -1,0 +1,247 @@
+{
+  "metadata": {
+    "assignment": "CSA 3.42 Conversational RAG & Follow-Up Context",
+    "system": "PolicyPilot RAG Assistant",
+    "total_turns": 5,
+    "guardrail_threshold": 0.4
+  },
+  "turns": [
+    {
+      "turn": 1,
+      "question_type": "initial_query",
+      "description": "Initial standalone query establishing project submission context",
+      "user_question": "What evidence is required for project submission?",
+      "rewritten_query": "What evidence is required for project submission?",
+      "answer": "Academic Project Submission Rubric: What evidence is required for project submission? [1] Stipend & Reimbursement FAQ: What can I claim under the internet allowance? [2]",
+      "status": "answered",
+      "is_grounded": true,
+      "top_score": 0.434449,
+      "sources": [
+        {
+          "chunk_index": 0,
+          "category": "academics",
+          "source": "submission-rubric.md",
+          "doc_type": "rubric"
+        }
+      ],
+      "history_length": 2
+    },
+    {
+      "turn": 2,
+      "question_type": "pronoun_followup",
+      "description": "Follow-up question with ambiguous pronoun/subject reference",
+      "user_question": "What about the video?",
+      "rewritten_query": "What video explanation is required for project submission?",
+      "answer": "Academic Project Submission Rubric: What evidence is required for project submission? [1] Stipend & Reimbursement FAQ: What can I claim under the internet allowance? [2]",
+      "status": "answered",
+      "is_grounded": true,
+      "top_score": 0.385903,
+      "sources": [
+        {
+          "chunk_index": 0,
+          "category": "academics",
+          "doc_type": "rubric",
+          "source": "submission-rubric.md"
+        }
+      ],
+      "history_length": 4
+    },
+    {
+      "turn": 3,
+      "question_type": "constraint_followup",
+      "description": "Constraint follow-up depending on video context from turn 2",
+      "user_question": "How long should it be?",
+      "rewritten_query": "What is the required duration and format for the project submission video demonstration?",
+      "answer": "Academic Project Submission Rubric: What evidence is required for project submission? [1] Stipend & Reimbursement FAQ: What can I claim under the internet allowance? [2]",
+      "status": "answered",
+      "is_grounded": true,
+      "top_score": 0.342613,
+      "sources": [
+        {
+          "chunk_index": 0,
+          "source": "submission-rubric.md",
+          "category": "academics",
+          "doc_type": "rubric"
+        }
+      ],
+      "history_length": 6
+    },
+    {
+      "turn": 4,
+      "question_type": "topic_shift",
+      "description": "Topic shift inquiring about remote work policy applicability",
+      "user_question": "Does the remote work policy apply during Sprint 2?",
+      "rewritten_query": "Do the project submission evidence and video requirements apply to Sprint 2?",
+      "answer": "Academic Project Submission Rubric: What evidence is required for project submission? [1] Company Remote Work Policy (Effective January 1, 2026): Eligible employees are permitted to work remotely up to three days per week with manager approval. [2]",
+      "status": "answered",
+      "is_grounded": true,
+      "top_score": 0.334878,
+      "sources": [
+        {
+          "source": "submission-rubric.md",
+          "chunk_index": 0,
+          "category": "academics",
+          "doc_type": "rubric"
+        }
+      ],
+      "history_length": 8
+    },
+    {
+      "turn": 5,
+      "question_type": "out_of_domain",
+      "description": "Out-of-domain follow-up verifying hallucination guardrail safe refusal",
+      "user_question": "Can I get reimbursed for personal pet grooming during remote work?",
+      "rewritten_query": "Can I get reimbursed for personal pet grooming during remote work?",
+      "answer": "I don't have enough reliable context to answer that.",
+      "status": "refused_weak_context",
+      "is_grounded": false,
+      "top_score": 0.183445,
+      "sources": [],
+      "history_length": 10
+    }
+  ],
+  "retrieval_comparisons": [
+    {
+      "turn": 1,
+      "question_type": "initial_query",
+      "user_question": "What evidence is required for project submission?",
+      "naive_query": "What evidence is required for project submission?",
+      "naive_top_score": 0.4344,
+      "naive_sources": [
+        "submission-rubric.md",
+        "stipend_faq.html",
+        "work_hours.md"
+      ],
+      "rewritten_query": "What evidence is required for project submission?",
+      "rewritten_top_score": 0.4344,
+      "rewritten_sources": [
+        "submission-rubric.md",
+        "stipend_faq.html",
+        "work_hours.md"
+      ],
+      "score_improvement": 0.0
+    },
+    {
+      "turn": 2,
+      "question_type": "pronoun_followup",
+      "user_question": "What about the video?",
+      "naive_query": "What about the video?",
+      "naive_top_score": 0.1492,
+      "naive_sources": [
+        "stipend_faq.html",
+        "submission-rubric.md",
+        "work_hours.md"
+      ],
+      "rewritten_query": "What video explanation is required for project submission?",
+      "rewritten_top_score": 0.3859,
+      "rewritten_sources": [
+        "submission-rubric.md",
+        "stipend_faq.html",
+        "work_hours.md"
+      ],
+      "score_improvement": 0.2367
+    },
+    {
+      "turn": 3,
+      "question_type": "constraint_followup",
+      "user_question": "How long should it be?",
+      "naive_query": "How long should it be?",
+      "naive_top_score": 0.0587,
+      "naive_sources": [
+        "sample_policy.pdf",
+        "submission-rubric.md",
+        "remote_policy.txt"
+      ],
+      "rewritten_query": "What is the required duration and format for the project submission video demonstration?",
+      "rewritten_top_score": 0.3426,
+      "rewritten_sources": [
+        "submission-rubric.md",
+        "stipend_faq.html",
+        "work_hours.md"
+      ],
+      "score_improvement": 0.2839
+    },
+    {
+      "turn": 4,
+      "question_type": "topic_shift",
+      "user_question": "Does the remote work policy apply during Sprint 2?",
+      "naive_query": "Does the remote work policy apply during Sprint 2?",
+      "naive_top_score": 0.2446,
+      "naive_sources": [
+        "remote_policy.txt",
+        "work_hours.md",
+        "stipend_faq.html"
+      ],
+      "rewritten_query": "Do the project submission evidence and video requirements apply to Sprint 2?",
+      "rewritten_top_score": 0.3349,
+      "rewritten_sources": [
+        "submission-rubric.md",
+        "remote_policy.txt",
+        "stipend_faq.html"
+      ],
+      "score_improvement": 0.0903
+    },
+    {
+      "turn": 5,
+      "question_type": "out_of_domain",
+      "user_question": "Can I get reimbursed for personal pet grooming during remote work?",
+      "naive_query": "Can I get reimbursed for personal pet grooming during remote work?",
+      "naive_top_score": 0.1834,
+      "naive_sources": [
+        "stipend_faq.html",
+        "remote_policy.txt",
+        "work_hours.md"
+      ],
+      "rewritten_query": "Can I get reimbursed for personal pet grooming during remote work?",
+      "rewritten_top_score": 0.1834,
+      "rewritten_sources": [
+        "stipend_faq.html",
+        "remote_policy.txt",
+        "work_hours.md"
+      ],
+      "score_improvement": 0.0
+    }
+  ],
+  "full_dialogue_history": [
+    {
+      "role": "user",
+      "content": "What evidence is required for project submission?"
+    },
+    {
+      "role": "assistant",
+      "content": "Academic Project Submission Rubric: What evidence is required for project submission? [1] Stipend & Reimbursement FAQ: What can I claim under the internet allowance? [2]"
+    },
+    {
+      "role": "user",
+      "content": "What about the video?"
+    },
+    {
+      "role": "assistant",
+      "content": "Academic Project Submission Rubric: What evidence is required for project submission? [1] Stipend & Reimbursement FAQ: What can I claim under the internet allowance? [2]"
+    },
+    {
+      "role": "user",
+      "content": "How long should it be?"
+    },
+    {
+      "role": "assistant",
+      "content": "Academic Project Submission Rubric: What evidence is required for project submission? [1] Stipend & Reimbursement FAQ: What can I claim under the internet allowance? [2]"
+    },
+    {
+      "role": "user",
+      "content": "Does the remote work policy apply during Sprint 2?"
+    },
+    {
+      "role": "assistant",
+      "content": "Academic Project Submission Rubric: What evidence is required for project submission? [1] Company Remote Work Policy (Effective January 1, 2026): Eligible employees are permitted to work remotely up to three days per week with manager approval. [2]"
+    },
+    {
+      "role": "user",
+      "content": "Can I get reimbursed for personal pet grooming during remote work?"
+    },
+    {
+      "role": "assistant",
+      "content": "I don't have enough reliable context to answer that."
+    }
+  ]
+}

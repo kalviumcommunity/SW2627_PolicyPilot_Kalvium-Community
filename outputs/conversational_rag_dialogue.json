@@ -1,0 +1,42 @@
+[
+  {
+    "role": "user",
+    "content": "What evidence is required for project submission?"
+  },
+  {
+    "role": "assistant",
+    "content": "Academic Project Submission Rubric: What evidence is required for project submission? [1] Stipend & Reimbursement FAQ: What can I claim under the internet allowance? [2]"
+  },
+  {
+    "role": "user",
+    "content": "What about the video?"
+  },
+  {
+    "role": "assistant",
+    "content": "Academic Project Submission Rubric: What evidence is required for project submission? [1] Stipend & Reimbursement FAQ: What can I claim under the internet allowance? [2]"
+  },
+  {
+    "role": "user",
+    "content": "How long should it be?"
+  },
+  {
+    "role": "assistant",
+    "content": "Academic Project Submission Rubric: What evidence is required for project submission? [1] Stipend & Reimbursement FAQ: What can I claim under the internet allowance? [2]"
+  },
+  {
+    "role": "user",
+    "content": "Does the remote work policy apply during Sprint 2?"
+  },
+  {
+    "role": "assistant",
+    "content": "Academic Project Submission Rubric: What evidence is required for project submission? [1] Company Remote Work Policy (Effective January 1, 2026): Eligible employees are permitted to work remotely up to three days per week with manager approval. [2]"
+  },
+  {
+    "role": "user",
+    "content": "Can I get reimbursed for personal pet grooming during remote work?"
+  },
+  {
+    "role": "assistant",
+    "content": "I don't have enough reliable context to answer that."
+  }
+]
