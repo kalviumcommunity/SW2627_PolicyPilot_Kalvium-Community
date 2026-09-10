@@ -3,6 +3,18 @@
 import React, { useState, useRef, useEffect } from "react";
 import { streamQuestion, askQuestion } from "../lib/api";
 
+function sourceLabel(source) {
+  return source.document || source.metadata?.filename || source.filename || source.source || source.id || "Document";
+}
+
+function sourceChunks(source) {
+  if (Array.isArray(source.chunks)) return source.chunks;
+  if (source.chunk_id || source.chunk_index != null) {
+    return [source.chunk_id || source.chunk_index];
+  }
+  return [];
+}
+
 export default function ChatInterface() {
   const [messages, setMessages] = useState([
     {
@@ -15,7 +27,7 @@ export default function ChatInterface() {
   ]);
   const [inputQuestion, setInputQuestion] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isStreaming, setIsStreaming] = useState(true);
+  const [isStreaming, setIsStreaming] = useState(false);
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -130,7 +142,8 @@ export default function ChatInterface() {
                   content: res.answer || res.text || "",
                   sources: res.sources || res.citations || [],
                   complete: true,
-                  usage: res.usage,
+                  usage: res.usage || res.metadata,
+                  status: res.status,
                 }
               : msg
           )
@@ -236,25 +249,40 @@ export default function ChatInterface() {
                 <div className="citations-section">
                   <details className="citations-details">
                     <summary className="citations-summary">
-                      📚 Referenced Sources & Citations ({msg.sources.length})
+                      📚 Retrieved sources ({msg.sources.length})
                     </summary>
                     <ul className="sources-list">
                       {msg.sources.map((src, idx) => (
                         <li key={src.id || idx} className="source-item">
                           <div className="source-header">
                             <span className="source-index">[{src.citation_num || idx + 1}]</span>
-                            <span className="source-filename">
-                              {src.metadata?.filename || src.filename || src.id || "Document"}
-                            </span>
+                            <span className="source-filename">{sourceLabel(src)}</span>
                             {src.score != null && (
                               <span className="source-score">
                                 Score: {(src.score * 100).toFixed(1)}%
                               </span>
                             )}
                           </div>
-                          <p className="source-text">
-                            "{src.text || src.chunk_text || "Context excerpt"}"
-                          </p>
+                          {sourceChunks(src).length > 0 && (
+                            <p className="source-metadata">
+                              Chunk ID{sourceChunks(src).length > 1 ? "s" : ""}: {sourceChunks(src).join(", ")}
+                            </p>
+                          )}
+                          {(src.url || src.link || src.metadata?.url) && (
+                            <a
+                              className="source-link"
+                              href={src.url || src.link || src.metadata.url}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              Open source
+                            </a>
+                          )}
+                          {(src.text || src.chunk_text || src.content) && (
+                            <p className="source-text">
+                              "{src.text || src.chunk_text || src.content}"
+                            </p>
+                          )}
                         </li>
                       ))}
                     </ul>
@@ -265,7 +293,7 @@ export default function ChatInterface() {
               {msg.usage && (
                 <div className="usage-metadata">
                   <small>
-                    Tokens: {msg.usage.total_tokens || 0} | Cost: ${msg.usage.estimated_cost_usd?.toFixed(6) || "0.000000"} | Latency: {msg.usage.latency_ms || 0}ms {msg.usage.cached ? "(Cached)" : ""}
+                    Retrieved chunks: {msg.usage.retrieved_chunks || 0} | Latency: {msg.usage.latency_ms || 0}ms
                   </small>
                 </div>
               )}
