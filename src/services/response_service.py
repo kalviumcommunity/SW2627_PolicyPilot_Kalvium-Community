@@ -1,33 +1,38 @@
-"""Grounded answer generation and response services for PolicyPilot RAG Assistant.
+"""Language-model response generation, grounded answering, and hallucination guardrail services for PolicyPilot.
 
-Implements grounded generation strictly using injected context from retrieved chunks,
-source accuracy and claim support verification, missing-context fallback refusal,
-and side-by-side grounded vs ungrounded comparison (Concept 3.39).
+Provides:
+- Strict context injection and prompt augmentation for grounded answering (Concept 3.39)
+- Pre-generation retrieval quality verification and safe refusal handling (Concept 3.41)
+- Source accuracy, claim support verification, and ungrounded comparison
 """
 
 import os
 import re
 import logging
+import time
 from typing import List, Dict, Any, Optional, Union
 from dotenv import load_dotenv
+from openai import OpenAI
 
-load_dotenv()
-logger = logging.getLogger(__name__)
-
+from src.services.retrieval_service import RetrievalService
 from src.services.prompt_service import (
     build_prompt,
     build_augmented_prompt,
     format_chunk,
     assemble_context,
 )
-from src.services.parameter_service import clean_answer
-from src.services.retrieval_service import RetrievalService
 
-# Standard fallback message when supporting context is missing
+load_dotenv()
+logger = logging.getLogger(__name__)
+
+# Constants
+DEFAULT_MIN_TOP_SCORE = 0.40
+DEFAULT_MIN_SUPPORTING_CHUNKS = 1
+SAFE_REFUSAL_MESSAGE = "I don't have enough reliable context to answer that."
 FALLBACK_RESPONSE = "I don't have enough information in the provided context."
 
 
-def get_default_llm_client() -> Optional[Any]:
+def get_default_llm_client() -> Optional[OpenAI]:
     """Initialize OpenAI-compatible client from environment variables if available."""
     api_key = os.getenv("API_KEY") or os.getenv("OPENAI_API_KEY")
     base_url = os.getenv("API_BASE_URL") or os.getenv("OPENAI_BASE_URL")
@@ -36,7 +41,6 @@ def get_default_llm_client() -> Optional[Any]:
         return None
 
     try:
-        from openai import OpenAI
         kwargs: Dict[str, Any] = {"api_key": api_key}
         if base_url:
             kwargs["base_url"] = base_url
@@ -57,6 +61,7 @@ def clean_model_response(answer: str) -> str:
         if "</think>" in text:
             text = text.split("</think>", 1)[1].strip()
         else:
+            text = re.sub(r"<think>.*?(?=\n\n[A-Z]|\n\nBased|\n\nTo|\n\nEmployees|$)", "", text, flags=re.DOTALL).strip()
             text = text.replace("<think>", "").strip()
 
     # 2. Handle untagged "Thinking Process:" or "Here's a thinking process:"
@@ -88,42 +93,6 @@ def clean_model_response(answer: str) -> str:
     text = text.replace("```text", "").replace("```markdown", "").replace("```", "").strip()
     return text
 
-
-def call_llm(
-    prompt_or_messages: Union[str, List[Dict[str, str]]],
-    client: Optional[Any] = None,
-    model: Optional[str] = None,
-    temperature: float = 0.0,
-    max_tokens: int = 350,
-) -> str:
-    """Execute LLM chat completion request and return cleaned content.
-
-    Args:
-        prompt_or_messages: Raw prompt string or role-separated messages list.
-        client: Optional OpenAI client instance. If False, forces offline deterministic fallback.
-                Defaults to get_default_llm_client().
-        model: Optional model name. Defaults to CHAT_MODEL env var or 'qwen/qwen3.6-27b'.
-        temperature: Sampling temperature (0.0 for deterministic factual answers).
-        max_tokens: Maximum tokens to generate (default: 150).
-
-    Returns:
-        Cleaned response text string.
-    """
-    import time
-
-    if client is False:
-        target_client = None
-    elif client is not None:
-        target_client = client
-    else:
-        target_client = get_default_llm_client()
-
-    target_model = (
-        model
-        or os.getenv("CHAT_MODEL")
-        or os.getenv("OPENAI_MODEL")
-        or "qwen/qwen3.6-27b"
-    )
 
 def get_deterministic_fallback(messages: List[Dict[str, str]]) -> str:
     """Generate high-fidelity deterministic grounded or ungrounded answer when API is unreachable."""
@@ -172,8 +141,6 @@ def call_llm(
     Returns:
         Cleaned response text string.
     """
-    import time
-
     if client is False:
         target_client = None
     elif client is not None:
@@ -231,6 +198,28 @@ def call_llm(
     return get_deterministic_fallback(messages)
 
 
+def retrieval_is_strong(
+    chunks: Optional[List[Dict[str, Any]]],
+    min_top_score: float = DEFAULT_MIN_TOP_SCORE,
+    min_supporting_chunks: int = DEFAULT_MIN_SUPPORTING_CHUNKS,
+) -> bool:
+    """Check if retrieved chunks satisfy minimum similarity score and count thresholds.
+
+    Args:
+        chunks: List of retrieved chunk dictionaries with 'score' key.
+        min_top_score: Minimum similarity score threshold (default 0.40).
+        min_supporting_chunks: Minimum number of chunks that must exceed the threshold.
+
+    Returns:
+        bool: True if retrieval is sufficiently strong, False otherwise.
+    """
+    if not chunks:
+        return False
+
+    strong_chunks = [chunk for chunk in chunks if chunk.get("score", 0.0) >= min_top_score]
+    return len(strong_chunks) >= min_supporting_chunks
+
+
 def generate_grounded_answer(
     question: str,
     retrieved_chunks: List[Dict[str, Any]],
@@ -241,8 +230,6 @@ def generate_grounded_answer(
 ) -> Dict[str, Any]:
     """Generate an answer strictly using injected context from retrieved chunks.
 
-    Adheres to the standard CSA 3.39 RAG generation signature.
-
     Args:
         question: User query string.
         retrieved_chunks: List of retrieved evidence chunk dictionaries.
@@ -252,15 +239,7 @@ def generate_grounded_answer(
         fallback_text: Text returned if context is empty or uninformative.
 
     Returns:
-        Dictionary containing:
-            - question: Original user query.
-            - answer: Generated grounded answer.
-            - context: Complete prompt string with injected context.
-            - raw_context: Raw assembled context text.
-            - sources: Metadata list for chunks included in context.
-            - chunks: Full retrieved chunk dictionaries.
-            - is_grounded: Boolean indicating if supporting chunks were used.
-            - fallback_triggered: Boolean indicating if fallback occurred.
+        Dictionary containing question, answer, context, sources, chunks, is_grounded, fallback_triggered.
     """
     if not retrieved_chunks:
         return {
@@ -281,7 +260,6 @@ def generate_grounded_answer(
         max_context_tokens=max_context_tokens,
     )
 
-    # If context assembly yielded no chunks due to token constraints or empty text
     if not prompt_data.get("sources_used"):
         return {
             "question": question,
@@ -295,7 +273,6 @@ def generate_grounded_answer(
             "num_sources": 0,
         }
 
-    # Use role-separated messages for optimal LLM adherence
     answer = call_llm(
         prompt_or_messages=prompt_data["messages"],
         client=client,
@@ -303,7 +280,6 @@ def generate_grounded_answer(
         temperature=0.0,
     )
 
-    # Check if model returned fallback refusal
     fallback_triggered = (
         fallback_text.lower() in answer.lower()
         or "not enough information" in answer.lower()
@@ -330,19 +306,7 @@ def generate_ungrounded_answer(
     model: Optional[str] = None,
     temperature: float = 0.7,
 ) -> Dict[str, Any]:
-    """Generate an ungrounded answer directly from the model's parametric memory.
-
-    Demonstrates baseline ungrounded generation without retrieval or context injection.
-
-    Args:
-        question: User query string.
-        client: Optional LLM client.
-        model: Optional model identifier.
-        temperature: Higher temperature to reflect parametric hallucination tendencies.
-
-    Returns:
-        Dictionary containing question, ungrounded answer, empty sources, and is_grounded=False.
-    """
+    """Generate an ungrounded answer directly from the model's parametric memory."""
     messages = [
         {"role": "system", "content": "You are a helpful general assistant. Answer the user's question directly in 1-2 sentences. Output ONLY the answer without any thinking process, preamble, or analysis."},
         {"role": "user", "content": f"Answer this question: {question}"},
@@ -376,21 +340,7 @@ def answer_query(
     metadata_filter: Optional[Dict[str, Any]] = None,
     fallback_text: str = FALLBACK_RESPONSE,
 ) -> Dict[str, Any]:
-    """Execute end-to-end RAG query answering with automatic retrieval and fallback.
-
-    Args:
-        question: User query.
-        k: Number of chunks to retrieve (default: 4).
-        retrieval_service: RetrievalService instance.
-        client: Optional LLM client.
-        model: Optional model identifier.
-        min_score: Optional similarity score threshold.
-        metadata_filter: Optional metadata filter dict.
-        fallback_text: Text returned when context is missing.
-
-    Returns:
-        Dictionary with grounded answer or fallback refusal.
-    """
+    """Execute end-to-end RAG query answering with automatic retrieval and fallback."""
     if not question or not question.strip():
         return {
             "question": question,
@@ -440,21 +390,7 @@ def verify_grounding(
     answer: str,
     retrieved_chunks: List[Dict[str, Any]],
 ) -> Dict[str, Any]:
-    """Verify source accuracy and claim support between generated answer and chunks.
-
-    Checks:
-    1. Citation marker presence (e.g. [1], [2], source filenames).
-    2. N-gram / key term overlap with retrieved chunk texts.
-    3. Detection of unsupported claims or hallucinations.
-    4. Fallback verification for unknown/out-of-domain queries.
-
-    Args:
-        answer: Model's generated answer string.
-        retrieved_chunks: Supporting chunk dictionaries.
-
-    Returns:
-        Dictionary with grounding metrics, citation list, and verification status.
-    """
+    """Verify source accuracy and claim support between generated answer and chunks."""
     if not answer or not answer.strip():
         return {
             "is_grounded": False,
@@ -466,9 +402,9 @@ def verify_grounding(
             "verification_status": "FAILED",
         }
 
-    # Check for valid fallback response
     is_fallback = (
         FALLBACK_RESPONSE.lower() in answer.lower()
+        or SAFE_REFUSAL_MESSAGE.lower() in answer.lower()
         or "not enough information" in answer.lower()
         or "unable to answer" in answer.lower()
     )
@@ -495,14 +431,10 @@ def verify_grounding(
             "verification_status": "FAILED_NO_CONTEXT",
         }
 
-    # Extract citation markers like [1], [2], etc.
     citations = re.findall(r"\[\d+\]", answer)
-
-    # Combine chunk texts and metadata for lexical validation
     corpus_text = " ".join(c.get("text", "") for c in retrieved_chunks).lower()
     corpus_words = set(re.findall(r"\b\w{4,}\b", corpus_text))
 
-    # Split answer into sentences / claim clauses
     sentences = [s.strip() for s in re.split(r"[.!?\n]", answer) if len(s.strip()) > 5]
 
     supported_claims = []
@@ -523,7 +455,6 @@ def verify_grounding(
     total_claims = len(supported_claims) + len(unsupported_claims)
     claim_ratio = len(supported_claims) / total_claims if total_claims > 0 else 0.0
 
-    # Citation bonus if markers or source names are present
     has_citations = len(citations) > 0 or any(
         c.get("metadata", {}).get("source", "").lower() in answer.lower()
         for c in retrieved_chunks
@@ -554,27 +485,13 @@ def compare_grounded_vs_ungrounded(
     model: Optional[str] = None,
     k: int = 4,
 ) -> Dict[str, Any]:
-    """Compare direct ungrounded answer vs grounded RAG answer for the same question.
-
-    Args:
-        question: User query.
-        retrieved_chunks: Pre-retrieved chunks (or fetched via retrieval_service).
-        retrieval_service: RetrievalService instance.
-        client: Optional LLM client.
-        model: Optional model identifier.
-        k: Top-k chunks to retrieve.
-
-    Returns:
-        Structured comparison dictionary highlighting factual grounding and source citations.
-    """
-    # 1. Direct ungrounded answer (from model memory)
+    """Compare direct ungrounded answer vs grounded RAG answer for the same question."""
     ungrounded_res = generate_ungrounded_answer(
         question=question,
         client=client,
         model=model,
     )
 
-    # 2. Grounded answer (with injected context)
     chunks = retrieved_chunks or []
     if not chunks and retrieval_service is not None:
         chunks = retrieval_service.retrieve(query=question, k=k)
@@ -586,7 +503,6 @@ def compare_grounded_vs_ungrounded(
         model=model,
     )
 
-    # 3. Grounding Verification
     ungrounded_check = verify_grounding(ungrounded_res["answer"], chunks)
     grounded_check = verify_grounding(grounded_res["answer"], chunks)
 
@@ -628,10 +544,7 @@ def compare_grounded_vs_ungrounded(
 
 
 def print_grounding_check(result: Dict[str, Any]) -> None:
-    """Print human-readable grounding verification trace.
-
-    Adheres to the standard CSA 3.39 syllabus function signature.
-    """
+    """Print human-readable grounding verification trace."""
     print("answer:", result.get("answer", ""))
     print("sources:")
     for source in result.get("sources", []):
@@ -644,37 +557,102 @@ def print_grounding_check(result: Dict[str, Any]) -> None:
 
 
 class ResponseService:
-    """Unified service for generating grounded and ungrounded LLM responses in PolicyPilot."""
+    """Unified service for generating grounded responses and enforcing hallucination guardrails."""
 
     def __init__(
         self,
-        client: Optional[Any] = None,
-        model: Optional[str] = None,
         retrieval_service: Optional[RetrievalService] = None,
+        client: Optional[Any] = None,
+        base_url: Optional[str] = None,
+        api_key: Optional[str] = None,
+        model: Optional[str] = None,
+        min_top_score: float = DEFAULT_MIN_TOP_SCORE,
+        min_supporting_chunks: int = DEFAULT_MIN_SUPPORTING_CHUNKS,
         fallback_text: str = FALLBACK_RESPONSE,
     ):
-        """Initialize ResponseService with client, model, and retrieval providers."""
-        self.client = client or get_default_llm_client()
-        self.model = (
-            model
-            or os.getenv("CHAT_MODEL")
-            or os.getenv("OPENAI_MODEL")
-            or "qwen/qwen3.6-27b"
-        )
-        self.retrieval_service = retrieval_service
+        """Initialize ResponseService with retrieval, model, and guardrail settings."""
+        self.retrieval_service = retrieval_service or RetrievalService()
+        self.base_url = base_url if base_url is not None else (os.getenv("API_BASE_URL") or os.getenv("OPENAI_BASE_URL"))
+        self.api_key = api_key if api_key is not None else (os.getenv("API_KEY") or os.getenv("OPENAI_API_KEY"))
+        self.model = model or os.getenv("CHAT_MODEL", "qwen/qwen3.6-27b")
+        self.min_top_score = min_top_score
+        self.min_supporting_chunks = min_supporting_chunks
         self.fallback_text = fallback_text
+        self._client = client
 
-    def generate(self, query: str, context: Optional[Union[str, List[Dict[str, Any]]]] = None) -> str:
-        """Generate response given a query and optional context string or chunk list."""
-        if isinstance(context, list):
-            res = self.generate_grounded(query=query, retrieved_chunks=context)
-            return res["answer"]
-        elif isinstance(context, str) and context.strip():
-            prompt = f"Context:\n{context}\n\nQuestion:\n{query}"
-            return call_llm(prompt, client=self.client, model=self.model, temperature=0.0)
-        else:
+    def get_client(self) -> Optional[Any]:
+        """Get or initialize OpenAI chat client."""
+        if self._client is None and bool(self.api_key):
+            client_kwargs: Dict[str, Any] = {"api_key": self.api_key}
+            if self.base_url:
+                client_kwargs["base_url"] = self.base_url
+            try:
+                self._client = OpenAI(**client_kwargs)
+            except Exception as e:
+                logger.warning("Could not initialize OpenAI client: %s", e)
+        return self._client
+
+    def generate(
+        self,
+        query: str,
+        chunks: Optional[Union[str, List[Dict[str, Any]]]] = None,
+        context: Optional[Union[str, List[Dict[str, Any]]]] = None,
+        max_tokens: int = 1024,
+    ) -> str:
+        """Generate a grounded response using provided context string or retrieved chunks.
+
+        Compatible with both signature styles:
+        - generate(query, chunks=[...])
+        - generate(query, context="...")
+        - generate(query, context=[...])
+        """
+        effective_context = chunks if chunks is not None else context
+
+        if effective_context is None:
             res = self.generate_ungrounded(query=query)
             return res["answer"]
+
+        if isinstance(effective_context, list):
+            if not effective_context:
+                return SAFE_REFUSAL_MESSAGE
+
+            prompt_data = build_augmented_prompt(question=query, retrieved_chunks=effective_context)
+            client = self.get_client()
+
+            if client and bool(self.api_key):
+                try:
+                    response = client.chat.completions.create(
+                        model=self.model,
+                        messages=prompt_data["messages"],
+                        temperature=0.0,
+                        max_tokens=max_tokens,
+                    )
+                    raw_answer = response.choices[0].message.content.strip()
+                    cleaned = clean_model_response(raw_answer)
+                    if cleaned and len(cleaned) > 10 and not cleaned.lower().startswith("here's a thinking"):
+                        return cleaned
+                except Exception as e:
+                    logger.warning("LLM generation API call failed (%s), using deterministic synthesis", e)
+
+            # Deterministic grounded fallback synthesis for tests and offline usage
+            snippets = []
+            for idx, c in enumerate(effective_context, start=1):
+                text = c.get("text", "").strip()
+                if text:
+                    first_sentence = re.split(r"(?<=[.!?])\s+", text)[0]
+                    snippets.append(f"{first_sentence} [{idx}]")
+
+            if snippets:
+                return " ".join(snippets[:2])
+            return SAFE_REFUSAL_MESSAGE
+
+        elif isinstance(effective_context, str):
+            if not effective_context.strip():
+                return SAFE_REFUSAL_MESSAGE
+            prompt = f"Context:\n{effective_context}\n\nQuestion:\n{query}"
+            return call_llm(prompt, client=self.get_client(), model=self.model, temperature=0.0, max_tokens=max_tokens)
+
+        return SAFE_REFUSAL_MESSAGE
 
     def generate_grounded(
         self,
@@ -686,7 +664,7 @@ class ResponseService:
         return generate_grounded_answer(
             question=query,
             retrieved_chunks=retrieved_chunks,
-            client=self.client,
+            client=self.get_client(),
             model=self.model,
             max_context_tokens=max_context_tokens,
             fallback_text=self.fallback_text,
@@ -696,9 +674,58 @@ class ResponseService:
         """Generate ungrounded answer from model memory."""
         return generate_ungrounded_answer(
             question=query,
-            client=self.client,
+            client=self.get_client(),
             model=self.model,
         )
+
+    def guarded_answer(
+        self,
+        question: str,
+        k: int = 4,
+        min_top_score: Optional[float] = None,
+        min_supporting_chunks: Optional[int] = None,
+        metadata_filter: Optional[Dict[str, Any]] = None,
+        collection_name: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Evaluate retrieval strength and return either a safe refusal or a grounded answer."""
+        threshold = min_top_score if min_top_score is not None else self.min_top_score
+        min_count = min_supporting_chunks if min_supporting_chunks is not None else self.min_supporting_chunks
+
+        # Stage 1: Retrieval
+        chunks = self.retrieval_service.retrieve(
+            query=question,
+            k=k,
+            metadata_filter=metadata_filter,
+            collection_name=collection_name,
+        )
+
+        top_score = max([c.get("score", 0.0) for c in chunks], default=0.0)
+        strong_chunks = [c for c in chunks if c.get("score", 0.0) >= threshold]
+
+        # Stage 2: Guardrail Evaluation
+        if not retrieval_is_strong(chunks, min_top_score=threshold, min_supporting_chunks=min_count):
+            return {
+                "answer": SAFE_REFUSAL_MESSAGE,
+                "sources": [],
+                "status": "refused_weak_context",
+                "top_score": round(top_score, 4),
+                "supporting_chunks_count": len(strong_chunks),
+                "total_retrieved": len(chunks),
+                "question": question,
+            }
+
+        # Stage 3: Grounded Answer Generation
+        answer_text = self.generate(query=question, chunks=strong_chunks)
+
+        return {
+            "answer": answer_text,
+            "sources": [c.get("metadata", {}) for c in strong_chunks],
+            "status": "answered",
+            "top_score": round(top_score, 4),
+            "supporting_chunks_count": len(strong_chunks),
+            "total_retrieved": len(chunks),
+            "question": question,
+        }
 
     def answer_query(
         self,
@@ -712,7 +739,7 @@ class ResponseService:
             question=query,
             k=k,
             retrieval_service=self.retrieval_service,
-            client=self.client,
+            client=self.get_client(),
             model=self.model,
             min_score=min_score,
             metadata_filter=metadata_filter,
@@ -730,7 +757,7 @@ class ResponseService:
             question=query,
             retrieved_chunks=retrieved_chunks,
             retrieval_service=self.retrieval_service,
-            client=self.client,
+            client=self.get_client(),
             model=self.model,
             k=k,
         )

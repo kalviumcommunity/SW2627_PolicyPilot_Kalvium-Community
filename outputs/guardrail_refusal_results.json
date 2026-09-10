@@ -1,0 +1,92 @@
+{
+  "timestamp": "2026-09-07 15:48:16",
+  "threshold_min_score": 0.35,
+  "min_supporting_chunks": 1,
+  "safe_refusal_message": "I don't have enough reliable context to answer that.",
+  "test_cases": [
+    {
+      "test_id": "TC1",
+      "type": "answer_case",
+      "question": "What evidence is required for project submission?",
+      "description": "Valid academic query with explicit matching rubric chunk",
+      "expected_status": "answered",
+      "actual_status": "answered",
+      "top_score": 0.6445,
+      "supporting_chunks": 1,
+      "answer": "Based on the provided context, the required evidence for project submission includes:\n- A public GitHub repository link\n- Clean and modular code\n- Passing automated test suite reports\n- Granular commit history\n- A 3-5 minute video screen recording [1].",
+      "sources": [
+        "submission-rubric.md"
+      ],
+      "passed": true
+    },
+    {
+      "test_id": "TC2",
+      "type": "answer_case",
+      "question": "How can a learner reset their password?",
+      "description": "Valid account access query with explicit guide chunk",
+      "expected_status": "answered",
+      "actual_status": "answered",
+      "top_score": 0.6183,
+      "supporting_chunks": 1,
+      "answer": "To reset their password, a learner should navigate to the login portal, select 'Forgot Password', enter their registered email address, and follow the secure reset instructions [1].",
+      "sources": [
+        "account-guide.md"
+      ],
+      "passed": true
+    },
+    {
+      "test_id": "TC3",
+      "type": "answer_case",
+      "question": "How many days per week are employees permitted to work remotely?",
+      "description": "Valid workplace policy query with explicit remote policy chunk",
+      "expected_status": "answered",
+      "actual_status": "answered",
+      "top_score": 0.571,
+      "supporting_chunks": 1,
+      "answer": "Employees are permitted to work remotely up to three days per week [1].",
+      "sources": [
+        "remote_policy.txt"
+      ],
+      "passed": true
+    },
+    {
+      "test_id": "TC4",
+      "type": "refusal_case",
+      "question": "What is the refund policy for a product not in this corpus?",
+      "description": "Completely out-of-domain query with zero supporting evidence",
+      "expected_status": "refused_weak_context",
+      "actual_status": "refused_weak_context",
+      "top_score": 0.2041,
+      "supporting_chunks": 0,
+      "answer": "I don't have enough reliable context to answer that.",
+      "sources": [],
+      "passed": true
+    },
+    {
+      "test_id": "TC5",
+      "type": "refusal_case",
+      "question": "What are the health insurance dental coverage tiers and copay amounts?",
+      "description": "Healthcare benefits query missing from internal policy corpus",
+      "expected_status": "refused_weak_context",
+      "actual_status": "refused_weak_context",
+      "top_score": 0.1909,
+      "supporting_chunks": 0,
+      "answer": "I don't have enough reliable context to answer that.",
+      "sources": [],
+      "passed": true
+    },
+    {
+      "test_id": "TC6",
+      "type": "refusal_case",
+      "question": "How do employees book international flights using the Concur travel portal?",
+      "description": "Specific airline reservation query not covered in the travel policy",
+      "expected_status": "refused_weak_context",
+      "actual_status": "refused_weak_context",
+      "top_score": 0.1564,
+      "supporting_chunks": 0,
+      "answer": "I don't have enough reliable context to answer that.",
+      "sources": [],
+      "passed": true
+    }
+  ]
+}
