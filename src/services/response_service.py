@@ -597,7 +597,7 @@ class ResponseService:
         query: str,
         chunks: Optional[Union[str, List[Dict[str, Any]]]] = None,
         context: Optional[Union[str, List[Dict[str, Any]]]] = None,
-        max_tokens: int = 1024,
+        max_tokens: int = 350,
     ) -> str:
         """Generate a grounded response using provided context string or retrieved chunks.
 

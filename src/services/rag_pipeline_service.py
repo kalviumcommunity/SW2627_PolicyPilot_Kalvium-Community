@@ -161,6 +161,28 @@ class RAGPipelineService:
             "sources": sources,
         }
 
+    def conversational_query(
+        self,
+        query: str,
+        history: Optional[List[Dict[str, str]]] = None,
+        k: int = 4,
+        chunks: Optional[List[Dict[str, Any]]] = None,
+    ) -> Dict[str, Any]:
+        """Orchestrate conversational RAG query with query rewriting based on history."""
+        from src.services.conversational_rag_service import rewrite_followup
+
+        active_history = history if history is not None else []
+        standalone_query = rewrite_followup(active_history, query) if active_history else query
+        result = self.answer_query(query=standalone_query, k=k, chunks=chunks)
+        result["rewritten_query"] = standalone_query
+        result["original_query"] = query
+
+        active_history.append({"role": "user", "content": query})
+        active_history.append({"role": "assistant", "content": result.get("answer", "")})
+        result["history"] = active_history
+        return result
+
 
 # Alias for compatibility
 RagPipelineService = RAGPipelineService
+

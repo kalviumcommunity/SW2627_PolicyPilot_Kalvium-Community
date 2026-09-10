@@ -173,6 +173,43 @@ class RetrievalService:
 
         return results
 
+    def retrieve_ranked_chunks(
+        self,
+        query: str,
+        candidate_chunks: List[Dict[str, Any]],
+        top_k: int = 4,
+    ) -> List[Dict[str, Any]]:
+        """Rank and return top_k candidate chunks by similarity to query embedding."""
+        if not query or not query.strip() or not candidate_chunks:
+            return []
+
+        query_vec = self.embed_query(query)
+        scored = []
+        for c in candidate_chunks:
+            chunk_copy = dict(c)
+            chunk_vec = c.get("embedding")
+            if not chunk_vec:
+                text = c.get("text") or c.get("content") or ""
+                try:
+                    chunk_vec = self.embedding_service.embed_query(text)
+                except Exception:
+                    chunk_vec = generate_deterministic_vector(text, dim=self.dimension)
+            
+            # Compute cosine similarity
+            if query_vec and chunk_vec and len(query_vec) == len(chunk_vec):
+                dot = sum(a * b for a, b in zip(query_vec, chunk_vec))
+                norm_q = math.sqrt(sum(a * a for a in query_vec))
+                norm_c = math.sqrt(sum(b * b for b in chunk_vec))
+                sim = dot / (norm_q * norm_c) if norm_q > 0 and norm_c > 0 else 0.0
+            else:
+                sim = 0.0
+            chunk_copy["score"] = round(sim, 4)
+            scored.append(chunk_copy)
+
+        scored.sort(key=lambda x: x["score"], reverse=True)
+        return scored[:top_k] if top_k else scored
+
+
     def evaluate_setting(
         self,
         setting: Dict[str, Any],
