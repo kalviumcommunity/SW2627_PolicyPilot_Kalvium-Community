@@ -94,6 +94,10 @@ def get_deterministic_rewrite_fallback(history: List[Dict[str, str]], question: 
 
     # Rule 4: "Does it apply to Sprint 2?" / sprint applicability
     if "sprint 2" in q_lower or "sprint" in q_lower:
+        if "remote" in q_lower:
+            return "Does the remote work policy apply during Sprint 2?"
+        if "video" in q_lower:
+            return "Do the project submission video requirements apply to Sprint 2?"
         if "evidence" in history_text or "rubric" in history_text or "video" in history_text:
             return "Do the project submission evidence and video requirements apply to Sprint 2?"
         elif "remote" in history_text or "work from home" in history_text:

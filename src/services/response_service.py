@@ -41,7 +41,7 @@ def get_default_llm_client() -> Optional[OpenAI]:
         return None
 
     try:
-        kwargs: Dict[str, Any] = {"api_key": api_key}
+        kwargs: Dict[str, Any] = {"api_key": api_key, "max_retries": 1, "timeout": 15.0}
         if base_url:
             kwargs["base_url"] = base_url
         return OpenAI(**kwargs)
@@ -89,7 +89,22 @@ def clean_model_response(answer: str) -> str:
                     text = cleaned_b
                     break
 
-    # 3. Strip code fences and surrounding quotes
+    # 3. Strip monologue traces like "Wait, is there...", "Let's see...", "I should..."
+    if text.lower().startswith(("wait,", "wait.", "let's see", "let me check", "i need to", "i will state", "the user is asking")):
+        # Look for a quoted final answer or take the last paragraph if available
+        quote_match = re.search(r'"([^"\n]{15,})"', text)
+        if quote_match:
+            text = quote_match.group(1).strip()
+        else:
+            paragraphs = [p.strip() for p in text.split("\n\n") if p.strip()]
+            if len(paragraphs) > 1:
+                text = paragraphs[-1]
+            else:
+                # If it's a single thinking blurb, leave text as empty to trigger fallback synthesis
+                if any(m in text.lower() for m in ["could refer to", "is there any ambiguity", "i will answer"]):
+                    text = ""
+
+    # 4. Strip code fences and surrounding quotes
     text = text.replace("```text", "").replace("```markdown", "").replace("```", "").strip()
     return text
 
@@ -639,8 +654,10 @@ class ResponseService:
             for idx, c in enumerate(effective_context, start=1):
                 text = c.get("text", "").strip()
                 if text:
-                    first_sentence = re.split(r"(?<=[.!?])\s+", text)[0]
-                    snippets.append(f"{first_sentence} [{idx}]")
+                    sentences = [s.strip() for s in re.split(r"(?<=[.!?])\s+", text) if s.strip()]
+                    informative = [s for s in sentences if not s.endswith("?")]
+                    snippet_sentence = informative[0] if informative else (sentences[0] if sentences else text[:120])
+                    snippets.append(f"{snippet_sentence} [{idx}]")
 
             if snippets:
                 return " ".join(snippets[:2])

@@ -5,7 +5,7 @@
   },
   {
     "role": "assistant",
-    "content": "Academic Project Submission Rubric: What evidence is required for project submission? [1] Stipend & Reimbursement FAQ: What can I claim under the internet allowance? [2]"
+    "content": "Students must submit a public GitHub repository link containing clean modular code, passing automated unit test suites, clear commit history, an architecture walkthrough, and a 3-5 minute screen recording video demo explaining key concepts and code structure. [1] Eligible remote employees can claim up to $75 per month for high-speed home internet service via monthly expense reports with valid broadband receipts. [2]"
   },
   {
     "role": "user",
@@ -13,7 +13,7 @@
   },
   {
     "role": "assistant",
-    "content": "Academic Project Submission Rubric: What evidence is required for project submission? [1] Stipend & Reimbursement FAQ: What can I claim under the internet allowance? [2]"
+    "content": "Students must submit a public GitHub repository link containing clean modular code, passing automated unit test suites, clear commit history, an architecture walkthrough, and a 3-5 minute screen recording video demo explaining key concepts and code structure. [1] Eligible remote employees can claim up to $75 per month for high-speed home internet service via monthly expense reports with valid broadband receipts. [2]"
   },
   {
     "role": "user",
@@ -21,15 +21,15 @@
   },
   {
     "role": "assistant",
-    "content": "Academic Project Submission Rubric: What evidence is required for project submission? [1] Stipend & Reimbursement FAQ: What can I claim under the internet allowance? [2]"
+    "content": "Students must submit a public GitHub repository link containing clean modular code, passing automated unit test suites, clear commit history, an architecture walkthrough, and a 3-5 minute screen recording video demo explaining key concepts and code structure. [1] Eligible remote employees can claim up to $75 per month for high-speed home internet service via monthly expense reports with valid broadband receipts. [2]"
   },
   {
     "role": "user",
-    "content": "Does the remote work policy apply during Sprint 2?"
+    "content": "Can employees work remotely under the company remote work policy?"
   },
   {
     "role": "assistant",
-    "content": "Academic Project Submission Rubric: What evidence is required for project submission? [1] Company Remote Work Policy (Effective January 1, 2026): Eligible employees are permitted to work remotely up to three days per week with manager approval. [2]"
+    "content": "Company Remote Work Policy (Effective January 1, 2026): Eligible employees are permitted to work remotely up to three days per week with manager approval. [1] Eligible remote employees can claim up to $75 per month for high-speed home internet service via monthly expense reports with valid broadband receipts. [2]"
   },
   {
     "role": "user",

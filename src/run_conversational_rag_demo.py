@@ -175,8 +175,8 @@ def run_demo() -> Dict[str, Any]:
         {
             "turn": 4,
             "type": "topic_shift",
-            "question": "Does the remote work policy apply during Sprint 2?",
-            "description": "Topic shift inquiring about remote work policy applicability",
+            "question": "Can employees work remotely under the company remote work policy?",
+            "description": "Topic shift inquiring about remote work policy guidelines",
         },
         {
             "turn": 5,
