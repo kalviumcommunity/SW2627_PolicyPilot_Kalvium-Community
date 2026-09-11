@@ -50,18 +50,21 @@ export default function ChatInterface() {
     const userMessageId = `user-${Date.now()}`;
     const assistantMessageId = `assistant-${Date.now()}`;
 
-    setMessages((prev) => [
-      ...prev.filter((m) => m.id !== "welcome" || prev.length > 1),
-      { id: userMessageId, role: "user", content: questionText },
-      {
+    setMessages((prev) => {
+      const next = [...prev.filter((m) => m.id !== "welcome" || prev.length > 1)];
+      if (!retryQuestion) {
+        next.push({ id: userMessageId, role: "user", content: questionText });
+      }
+      next.push({
         id: assistantMessageId,
         role: "assistant",
         content: "",
         sources: [],
         complete: false,
         error: null,
-      },
-    ]);
+      });
+      return next;
+    });
 
     setIsLoading(true);
 
@@ -161,7 +164,7 @@ export default function ChatInterface() {
                   </div>
                 )}
 
-                {!msg.complete && msg.content && !msg.error && (
+                {msg.role === "assistant" && !msg.complete && msg.content && !msg.error && (
                   <span className="incomplete-badge">Streaming...</span>
                 )}
               </div>

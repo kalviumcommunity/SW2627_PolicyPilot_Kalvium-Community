@@ -1,6 +1,6 @@
 # PolicyPilot Full RAG System Evaluation & Quality Report
 
-- **Run Timestamp (UTC):** `2026-09-08T07:58:37.515031+00:00`
+- **Run Timestamp (UTC):** `2026-09-09T08:59:21.150572+00:00`
 - **Total Test Cases Evaluated:** `8`
 - **Passed Tests (Score >= 70%):** `7` | **Notable Failures:** `1`
 - **Overall RAG System Quality Score:** `86.08%`
