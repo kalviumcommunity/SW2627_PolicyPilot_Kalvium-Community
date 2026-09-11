@@ -218,7 +218,8 @@ def build_augmented_prompt(
     system_instruction = (
         "You are a grounded assistant. Answer the question using only the provided context. "
         "If the answer is not in the context, say: \"I don't have enough information in the provided context.\"\n"
-        "When possible, cite sources using the markers like [1] or [2]."
+        "When possible, cite sources using the markers like [1] or [2].\n"
+        "Output ONLY the direct answer. Do not include thinking steps or preamble."
     )
 
     user_content = f"Context:\n{context}\n\nQuestion:\n{question}"

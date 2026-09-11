@@ -1,0 +1,361 @@
+{
+  "timestamp": "2026-09-09 14:49:06",
+  "task_1_and_2_grounded_generation": [
+    {
+      "query": "What evidence is required for project submission?",
+      "answer": "Students must submit a public GitHub repository link containing clean modular code, passing automated unit test suites, clear commit history, an architecture walkthrough, and a 3-5 minute screen recording demo [1].",
+      "sources": [
+        {
+          "category": "academics",
+          "chunk_index": 0,
+          "doc_type": "rubric",
+          "source": "submission-rubric.md",
+          "citation_index": 1
+        },
+        {
+          "doc_type": "guide",
+          "category": "account_access",
+          "source": "account-guide.md",
+          "chunk_index": 0,
+          "citation_index": 2
+        }
+      ],
+      "is_grounded": true,
+      "verification": {
+        "is_grounded": true,
+        "grounding_score": 1.0,
+        "citations_found": [
+          "[1]"
+        ],
+        "supported_claims": [
+          "Students must submit a public GitHub repository link containing clean modular code, passing automated unit test suites, clear commit history, an architecture walkthrough, and a 3-5 minute screen recording demo [1]"
+        ],
+        "unsupported_claims": [],
+        "fallback_detected": false,
+        "verification_status": "PASSED"
+      }
+    },
+    {
+      "query": "How can a learner reset their password?",
+      "answer": "Learners can reset their password by clicking",
+      "sources": [
+        {
+          "doc_type": "guide",
+          "chunk_index": 0,
+          "category": "account_access",
+          "source": "account-guide.md",
+          "citation_index": 1
+        },
+        {
+          "category": "academics",
+          "chunk_index": 0,
+          "source": "submission-rubric.md",
+          "doc_type": "rubric",
+          "citation_index": 2
+        }
+      ],
+      "is_grounded": true,
+      "verification": {
+        "is_grounded": true,
+        "grounding_score": 0.875,
+        "citations_found": [],
+        "supported_claims": [
+          "Learners can reset their password by clicking"
+        ],
+        "unsupported_claims": [],
+        "fallback_detected": false,
+        "verification_status": "PASSED"
+      }
+    },
+    {
+      "query": "When does the cafeteria menu change?",
+      "answer": "Learners can reset their password by clicking 'Forgot Password' on the login portal, entering their registered email, and following the secure reset link sent to their inbox. Multi-factor authentication (MFA) recovery can also be initiated through admin support [1].",
+      "sources": [
+        {
+          "source": "campus-guide.md",
+          "doc_type": "guide",
+          "chunk_index": 0,
+          "category": "campus_life",
+          "citation_index": 1
+        },
+        {
+          "chunk_index": 0,
+          "source": "account-guide.md",
+          "doc_type": "guide",
+          "category": "account_access",
+          "citation_index": 2
+        }
+      ],
+      "is_grounded": true,
+      "verification": {
+        "is_grounded": true,
+        "grounding_score": 1.0,
+        "citations_found": [
+          "[1]"
+        ],
+        "supported_claims": [
+          "Learners can reset their password by clicking 'Forgot Password' on the login portal, entering their registered email, and following the secure reset link sent to their inbox",
+          "Multi-factor authentication (MFA) recovery can also be initiated through admin support [1]"
+        ],
+        "unsupported_claims": [],
+        "fallback_detected": false,
+        "verification_status": "PASSED"
+      }
+    },
+    {
+      "query": "How many days per week are employees permitted to work remotely?",
+      "answer": "Up to three days per week [1].",
+      "sources": [
+        {
+          "source": "remote_policy.txt",
+          "category": "workplace",
+          "chunk_index": 0,
+          "doc_type": "policy",
+          "citation_index": 1
+        },
+        {
+          "source": "account-guide.md",
+          "category": "account_access",
+          "doc_type": "guide",
+          "chunk_index": 0,
+          "citation_index": 2
+        }
+      ],
+      "is_grounded": true,
+      "verification": {
+        "is_grounded": true,
+        "grounding_score": 1.0,
+        "citations_found": [
+          "[1]"
+        ],
+        "supported_claims": [
+          "Up to three days per week [1]"
+        ],
+        "unsupported_claims": [],
+        "fallback_detected": false,
+        "verification_status": "PASSED"
+      }
+    }
+  ],
+  "task_3_missing_context_fallback": [
+    {
+      "query": "What is the policy for tuition reimbursement for PhD programs?",
+      "answer": "I don't have enough information in the provided context.",
+      "fallback_triggered": true,
+      "sources": [],
+      "verification": {
+        "is_grounded": true,
+        "grounding_score": 1.0,
+        "citations_found": [],
+        "supported_claims": [
+          "Properly acknowledged absence of supporting context"
+        ],
+        "unsupported_claims": [],
+        "fallback_detected": true,
+        "verification_status": "PASSED_FALLBACK"
+      }
+    },
+    {
+      "query": "Can employees bring pets to the office?",
+      "answer": "I don't have enough information in the provided context.",
+      "fallback_triggered": true,
+      "sources": [],
+      "verification": {
+        "is_grounded": true,
+        "grounding_score": 1.0,
+        "citations_found": [],
+        "supported_claims": [
+          "Properly acknowledged absence of supporting context"
+        ],
+        "unsupported_claims": [],
+        "fallback_detected": true,
+        "verification_status": "PASSED_FALLBACK"
+      }
+    },
+    {
+      "query": "What is the company stock option vesting schedule?",
+      "answer": "I don't have enough information in the provided context.",
+      "fallback_triggered": true,
+      "sources": [],
+      "verification": {
+        "is_grounded": true,
+        "grounding_score": 1.0,
+        "citations_found": [],
+        "supported_claims": [
+          "Properly acknowledged absence of supporting context"
+        ],
+        "unsupported_claims": [],
+        "fallback_detected": true,
+        "verification_status": "PASSED_FALLBACK"
+      }
+    }
+  ],
+  "task_4_grounded_vs_ungrounded_comparison": [
+    {
+      "question": "What evidence is required for project submission?",
+      "without_retrieval": {
+        "answer": "Thinking Process:\n\n1.  **Analyze the Request:**\n    *   User asks: \"What evidence is required for project submission?\"\n    *   Constraint: Answer directly in 1-2 sentences.\n    *   Constraint: Output ONLY the answer without thinking process, preamble, or analysis.\n\n2.  **Analyze the Question:**\n    *   \"What evidence is required for project submission?\" is a highly context-dependent question. It depends entirely on *which* project, *which* organization, *which* class, or *which* grant the user is referring to.\n    *   Since I don't have the specific context (e.g., \"For the XYZ grant,\" or \"For my CS101 class\"), I must provide a general answer stating that the required evidence depends on the specific guidelines of the project, organization, or institution, or list common examples (like reports, code, presentations, receipts) while noting the variability.\n\n3.  **Formulate the Answer:**\n    *   *Draft 1:* The evidence required for project submission depends entirely on the specific guidelines provided by your organization, institution, or client, but it typically includes a final report, deliverables, source code, and documentation.\n    *   *Draft 2 (more direct):* The specific evidence required depends on the guidelines of your particular organization or institution, but it typically includes a final report, project deliverables, documentation, and proof of completion.\n    *   *Draft 3 (shorter):* The required evidence depends on the specific guidelines of your organization or institution, but it typically includes a final report, project deliverables, documentation, and proof of completion.",
+        "sources": [],
+        "grounding_score": 0.225,
+        "is_grounded": false,
+        "citations": [],
+        "characteristics": [
+          "Generated purely from LLM parametric memory",
+          "No verifiable source citations attached",
+          "High risk of hallucination on private/organizational policies"
+        ]
+      },
+      "with_retrieval": {
+        "answer": "Students must submit a public GitHub repository link containing clean modular code, passing automated unit test suites, clear commit history, an architecture walkthrough, and a 3-5 minute screen recording demo [1].",
+        "sources": [
+          {
+            "chunk_index": 0,
+            "source": "submission-rubric.md",
+            "doc_type": "rubric",
+            "category": "academics",
+            "citation_index": 1
+          },
+          {
+            "category": "account_access",
+            "doc_type": "guide",
+            "source": "account-guide.md",
+            "chunk_index": 0,
+            "citation_index": 2
+          }
+        ],
+        "grounding_score": 1.0,
+        "is_grounded": true,
+        "citations": [
+          "[1]"
+        ],
+        "characteristics": [
+          "Strictly grounded in injected retrieved chunks",
+          "Traceable citations [1], [2] linked to source metadata",
+          "Explicit fallback refusal if supporting context is missing"
+        ]
+      },
+      "supporting_chunks": [
+        {
+          "id": "submission-rubric.md:0",
+          "source": "submission-rubric.md",
+          "text": "Academic Project Submission Rubric: What evidence is required for project submission? Students must submit a public GitHub repository link containing clean modular code, passing automated unit test suites, clear commit history, an architecture walkthrough, and a 3-5 minute screen recording demo."
+        },
+        {
+          "id": "account-guide.md:0",
+          "source": "account-guide.md",
+          "text": "How can a learner reset their password? Learners can reset their password by clicking 'Forgot Password' on the login portal, entering their registered email, and following the secure reset link sent to their inbox. Multi-factor authentication (MFA) recovery can also be initiated through admin support."
+        }
+      ]
+    },
+    {
+      "question": "When does the cafeteria menu change?",
+      "without_retrieval": {
+        "answer": "* The schedule for when a cafeteria menu changes varies depending on the specific school, workplace, or institution. You should check the posted menu or contact the specific cafeteria for their exact update schedule.",
+        "sources": [],
+        "grounding_score": 0.125,
+        "is_grounded": false,
+        "citations": [],
+        "characteristics": [
+          "Generated purely from LLM parametric memory",
+          "No verifiable source citations attached",
+          "High risk of hallucination on private/organizational policies"
+        ]
+      },
+      "with_retrieval": {
+        "answer": "The campus cafeteria rotates its full menu every Monday morning at 7:",
+        "sources": [
+          {
+            "chunk_index": 0,
+            "doc_type": "guide",
+            "category": "campus_life",
+            "source": "campus-guide.md",
+            "citation_index": 1
+          },
+          {
+            "doc_type": "guide",
+            "chunk_index": 0,
+            "category": "account_access",
+            "source": "account-guide.md",
+            "citation_index": 2
+          }
+        ],
+        "grounding_score": 0.875,
+        "is_grounded": true,
+        "citations": [],
+        "characteristics": [
+          "Strictly grounded in injected retrieved chunks",
+          "Traceable citations [1], [2] linked to source metadata",
+          "Explicit fallback refusal if supporting context is missing"
+        ]
+      },
+      "supporting_chunks": [
+        {
+          "id": "campus-guide.md:0",
+          "source": "campus-guide.md",
+          "text": "Campus Facilities and Dining: When does the cafeteria menu change? The campus cafeteria rotates its full menu every Monday morning at 7:00 AM. Breakfast is served from 7:30 AM to 10:00 AM, lunch from 12:00 PM to 2:30 PM, and dinner from 6:00 PM to 8:30 PM."
+        },
+        {
+          "id": "account-guide.md:0",
+          "source": "account-guide.md",
+          "text": "How can a learner reset their password? Learners can reset their password by clicking 'Forgot Password' on the login portal, entering their registered email, and following the secure reset link sent to their inbox. Multi-factor authentication (MFA) recovery can also be initiated through admin support."
+        }
+      ]
+    },
+    {
+      "question": "How many days per week are employees permitted to work remotely?",
+      "without_retrieval": {
+        "answer": "** Just state that it depends on the specific company.",
+        "sources": [],
+        "grounding_score": 0.125,
+        "is_grounded": false,
+        "citations": [],
+        "characteristics": [
+          "Generated purely from LLM parametric memory",
+          "No verifiable source citations attached",
+          "High risk of hallucination on private/organizational policies"
+        ]
+      },
+      "with_retrieval": {
+        "answer": "Up to three days per week [1].",
+        "sources": [
+          {
+            "source": "remote_policy.txt",
+            "category": "workplace",
+            "chunk_index": 0,
+            "doc_type": "policy",
+            "citation_index": 1
+          },
+          {
+            "source": "account-guide.md",
+            "chunk_index": 0,
+            "doc_type": "guide",
+            "category": "account_access",
+            "citation_index": 2
+          }
+        ],
+        "grounding_score": 1.0,
+        "is_grounded": true,
+        "citations": [
+          "[1]"
+        ],
+        "characteristics": [
+          "Strictly grounded in injected retrieved chunks",
+          "Traceable citations [1], [2] linked to source metadata",
+          "Explicit fallback refusal if supporting context is missing"
+        ]
+      },
+      "supporting_chunks": [
+        {
+          "id": "remote_policy.txt:0",
+          "source": "remote_policy.txt",
+          "text": "Company Remote Work Policy (Effective January 1, 2026): Eligible employees are permitted to work remotely up to three days per week while maintaining standard core collaboration hours from 10 AM to 4 PM regardless of work location."
+        },
+        {
+          "id": "account-guide.md:0",
+          "source": "account-guide.md",
+          "text": "How can a learner reset their password? Learners can reset their password by clicking 'Forgot Password' on the login portal, entering their registered email, and following the secure reset link sent to their inbox. Multi-factor authentication (MFA) recovery can also be initiated through admin support."
+        }
+      ]
+    }
+  ]
+}
