@@ -1,20 +1,36 @@
-/* Theme variables for dark mode and teal accent */
+/* Enterprise Light/Dark Theme System */
 :root {
-  --bg-dark: #0f172a;
-  --panel-bg: #1e293b;
-  --accent-color: #00bfa6; /* teal accent */
-  --accent-hover: #00c4a7;
+  --bg-dark: #f8fafc;
+  --bg-surface: #ffffff;
+  --panel-bg: #ffffff;
+  --accent-color: #4f46e5;
+  --accent-hover: #4338ca;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --border-color: #e2e8f0;
+  --user-msg: #4f46e5;
+  --assistant-msg: #f1f5f9;
+  --error-bg: #fef2f2;
+  --error-border: #fecaca;
+  --error-text: #b91c1c;
+}
+
+.dark {
+  --bg-dark: #0b0f17;
+  --bg-surface: #111827;
+  --panel-bg: #111827;
+  --accent-color: #6366f1;
+  --accent-hover: #4f46e5;
   --text-main: #f8fafc;
   --text-muted: #94a3b8;
-  --border-color: #334155;
-  --user-msg: #1e40af;
-  --assistant-msg: #334155;
+  --border-color: #1f2937;
+  --user-msg: #4f46e5;
+  --assistant-msg: #1f2937;
   --error-bg: #450a0a;
   --error-border: #991b1b;
   --error-text: #fca5a5;
 }
 
-/* Smooth transition for theme changes */
 html {
-  transition: color 0.3s, background-color 0.3s;
+  transition: color 0.2s ease, background-color 0.2s ease;
 }
