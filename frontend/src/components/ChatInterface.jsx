@@ -116,13 +116,20 @@ export default function ChatInterface() {
     <div className="chat-container">
       <header className="chat-header">
         <div className="header-brand">
-          <span className="brand-icon">🛡️</span>
+          <span className="brand-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
+          </span>
           <div>
             <h1>PolicyPilot RAG Assistant</h1>
-            <p className="brand-subtitle">Enterprise Internal Policy & Document Q&A</p>
+            <p className="brand-subtitle">Enterprise Internal Policy &amp; Document Q&amp;A</p>
           </div>
         </div>
-        <span className="api-status">● Grounded answers</span>
+        <span className="api-status">
+          <span className="landing-status-dot" style={{ display: 'inline-block', marginRight: '6px' }} />
+          Grounded answers
+        </span>
       </header>
 
       <div className="chat-history">
@@ -154,12 +161,16 @@ export default function ChatInterface() {
 
                 {msg.error && (
                   <div className="error-banner">
-                    <p className="error-text">⚠️ {msg.error}</p>
+                    <p className="error-text">{msg.error}</p>
                     <button
                       className="retry-btn"
                       onClick={() => handleRetry(msg)}
                     >
-                      🔄 Retry
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                        <polyline points="1 4 1 10 7 10" />
+                        <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+                      </svg>
+                      Retry
                     </button>
                   </div>
                 )}
@@ -173,7 +184,11 @@ export default function ChatInterface() {
                 <div className="citations-section">
                   <details className="citations-details">
                     <summary className="citations-summary">
-                      📚 Retrieved sources ({msg.sources.length})
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ display: 'inline', marginRight: '5px' }}>
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                      </svg>
+                      Retrieved sources ({msg.sources.length})
                     </summary>
                     <ul className="sources-list">
                       {msg.sources.map((src, idx) => (

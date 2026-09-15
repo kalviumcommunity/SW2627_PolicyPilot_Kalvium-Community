@@ -9,7 +9,7 @@ const footerSections = [
     links: [
       { label: 'Document Ingestion (PDF/MD/HTML)', href: '#pipeline' },
       { label: 'Token-Bounded Chunking', href: '#pipeline' },
-      { label: 'ChromaDB Vector Embeddings', href: '#pipeline' },
+      { label: 'MongoDB Atlas Vector Search', href: '#pipeline' },
       { label: 'Cosine Similarity Search', href: '#pipeline' },
       { label: 'Cross-Score Candidate Re-Ranking', href: '#pipeline' },
       { label: 'Hallucination Guardrails', href: '#guardrails' },
@@ -27,14 +27,14 @@ const footerSections = [
     ],
   },
   {
-    title: 'Workspace & API',
+    title: 'Workspace & Storefront',
     links: [
-      { label: 'Policy Operations Dashboard', href: '/dashboard' },
-      { label: 'Interactive Streaming Assistant', href: '/chatbot' },
+      { label: 'Customer E-Commerce Store', href: '/store' },
+      { label: 'AI Live Order Tracking', href: '/store' },
+      { label: 'Merchant Integration Console', href: '/dashboard' },
+      { label: 'Interactive Policy Assistant', href: '/chatbot' },
+      { label: 'Admin Management Console', href: '/admin' },
       { label: 'FastAPI Backend Swagger Docs', href: 'http://localhost:8000/docs', external: true },
-      { label: 'Admin Policy Management', href: '/admin' },
-      { label: 'ChromaDB Vector Collections', href: '/dashboard' },
-      { label: 'SSE Endpoint Specification', href: '#features' },
     ],
   },
   {
@@ -52,7 +52,7 @@ const footerSections = [
 
 const telemetryItems = [
   { label: 'FastAPI Backend', status: 'Online (Port 8000)', color: '#059669' },
-  { label: 'ChromaDB Vector Store', status: 'Persistent & Synced', color: '#4f46e5' },
+  { label: 'MongoDB Vector Store', status: 'Atlas Connected & Synced', color: '#10b981' },
   { label: 'Query Cache', status: 'SHA-256 · 15m TTL Active', color: '#d97706' },
   { label: 'SSE Streaming', status: 'Active (/query/stream)', color: '#0284c7' },
   { label: 'Guardrail Engine', status: '0.65 Gate Enforced', color: '#db2777' },
@@ -133,7 +133,7 @@ export default function LandingFooter() {
 
           <div className="landing-footer-meta-tags">
             <span className="landing-meta-tag">FastAPI Backend</span>
-            <span className="landing-meta-tag">ChromaDB Vector</span>
+            <span className="landing-meta-tag">MongoDB Vector Search</span>
             <span className="landing-meta-tag">Cross Re-Ranking</span>
             <span className="landing-meta-tag">Grounded Citations</span>
           </div>

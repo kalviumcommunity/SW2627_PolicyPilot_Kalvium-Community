@@ -5,7 +5,7 @@ import React from 'react';
 const capabilities = [
   'Multi-Format Ingestion (PDF, MD, HTML, Plain Text)',
   'Token-Bounded Chunking with Context Overlap',
-  'OpenAI Embeddings & Persistent ChromaDB',
+  'OpenAI Embeddings & MongoDB Atlas Vector Search',
   'Hybrid Vector Cosine Similarity & Metadata Filtering',
   'Two-Stage Cross-Scoring Candidate Re-Ranking',
   'Strict Hallucination Guardrails & Refusals (0.65 Threshold)',

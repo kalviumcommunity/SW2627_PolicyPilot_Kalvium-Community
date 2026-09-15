@@ -37,8 +37,8 @@ const pipelineStages = [
   },
   {
     step: '03',
-    title: 'Embeddings & ChromaDB',
-    badge: 'Persistent Vector Store',
+    title: 'Embeddings & MongoDB',
+    badge: 'Vector Search Store',
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <ellipse cx="12" cy="5" rx="9" ry="3" />
@@ -46,8 +46,8 @@ const pipelineStages = [
         <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
       </svg>
     ),
-    desc: 'Transforms chunk text into dense OpenAI vector embeddings stored in persistent ChromaDB collections with indexed metadata attributes.',
-    specs: ['OpenAI text-embedding-ada', 'ChromaDB Local Persistence', 'Collection-Level Isolation'],
+    desc: 'Transforms chunk text into dense vector embeddings stored in persistent MongoDB collections with indexed metadata attributes and Atlas Vector Search.',
+    specs: ['OpenAI text-embedding-ada', 'MongoDB Atlas Vector Search', 'Collection-Level Isolation'],
   },
   {
     step: '04',

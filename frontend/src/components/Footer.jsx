@@ -9,7 +9,7 @@ const footerLinks = [
     links: [
       { label: 'Workspace Dashboard', href: '/dashboard' },
       { label: 'Policy Assistant', href: '/chatbot' },
-      { label: 'Vector Index Management', href: '/dashboard' },
+      { label: 'MongoDB Vector Index', href: '/dashboard' },
     ],
   },
   {
@@ -113,7 +113,7 @@ export default function Footer() {
         </p>
         <div className="app-footer-status">
           <span className="landing-status-dot" />
-          <span>ChromaDB Vector Store Connected · Latency ~210ms</span>
+          <span>MongoDB Vector Store Connected · Latency ~48ms</span>
         </div>
       </div>
     </footer>

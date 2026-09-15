@@ -5,7 +5,7 @@
  * @returns {Promise<{answer: string, citations: Object, sources: Array, usage?: Object}>} Parsed JSON API response.
  * @throws {Error} Throws error with descriptive message if request is invalid or fails.
  */
-export async function askQuestion(question) {
+export async function askQuestion(question, userMeta = {}) {
   if (!question || !question.trim()) {
     throw new Error("Question cannot be empty.");
   }
@@ -20,7 +20,13 @@ export async function askQuestion(question) {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ question: question.trim() }),
+      body: JSON.stringify({
+        question: question.trim(),
+        user_name: userMeta.user_name || "Ananya",
+        user_email: userMeta.user_email || "ananya@customer.com",
+        user_role: userMeta.user_role || "customer",
+        surface: userMeta.surface || "AI Policy Chat (/chatbot)"
+      }),
     });
 
     if (!response.ok) {
@@ -70,8 +76,9 @@ export function getStreamUrl() {
  *
  * @param {string} question - User question string.
  * @param {Object} handlers - Callbacks for token, citations, done, error event handling.
+ * @param {Object} userMeta - Optional user identity and surface metadata.
  */
-export async function streamQuestion(question, handlers = {}) {
+export async function streamQuestion(question, handlers = {}, userMeta = {}) {
   if (!question || !question.trim()) {
     throw new Error("Question cannot be empty.");
   }
@@ -86,7 +93,13 @@ export async function streamQuestion(question, handlers = {}) {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ question: question.trim() }),
+      body: JSON.stringify({
+        question: question.trim(),
+        user_name: userMeta.user_name || "Ananya",
+        user_email: userMeta.user_email || "ananya@customer.com",
+        user_role: userMeta.user_role || "customer",
+        surface: userMeta.surface || "AI Policy Chat (/chatbot)"
+      }),
       signal,
     });
   } catch (error) {

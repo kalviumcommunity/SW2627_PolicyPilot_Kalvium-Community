@@ -5,11 +5,11 @@ import { ThemeContext } from '../context/ThemeContext';
 import Link from 'next/link';
 
 const navLinks = [
-  { label: 'RAG Pipeline', href: '#pipeline' },
-  { label: 'Architecture', href: '#architecture' },
-  { label: 'Key Features', href: '#features' },
-  { label: 'Guardrails & Citations', href: '#guardrails' },
-  { label: 'Observability', href: '#observability' },
+  { label: 'E-Commerce Storefront', href: '/store' },
+  { label: 'AI Order Tracking', href: '/store' },
+  { label: 'Store Integrations', href: '/dashboard' },
+  { label: 'RAG Architecture', href: '#pipeline' },
+  { label: 'Admin Portal', href: '/admin' },
 ];
 
 export default function LandingNavbar() {
@@ -63,7 +63,7 @@ export default function LandingNavbar() {
           </Link>
 
           {/* System Status Pill */}
-          <div className="landing-nav-status-badge" title="FastAPI and ChromaDB online">
+          <div className="landing-nav-status-badge" title="FastAPI and MongoDB online">
             <span className="landing-status-dot" />
             <span className="landing-status-text">RAG Online</span>
           </div>
@@ -71,14 +71,14 @@ export default function LandingNavbar() {
           {/* Navigation Links */}
           <div className="landing-nav-links" aria-label="PolicyPilot navigation">
             {navLinks.map((link) => (
-              <a
+              <Link
                 key={link.label}
                 href={link.href}
                 className="landing-nav-link"
-                id={`landing-nav-${link.label.toLowerCase().replace(/[\s&]+/g, '-')}`}
+                id={`landing-nav-${link.label.toLowerCase().replace(/[\s&:]+/g, '-')}`}
               >
                 {link.label}
-              </a>
+              </Link>
             ))}
           </div>
 
@@ -145,37 +145,41 @@ export default function LandingNavbar() {
 
             <div className="landing-nav-divider" aria-hidden="true" />
 
-            {/* Sign In & CTA */}
-            <Link href="/login" className="landing-nav-signin" id="landing-signin-link">
-              Sign In
+            {/* Direct Link to E-Commerce Track Order */}
+            <Link
+              href="/store"
+              style={{
+                fontSize: '0.8rem',
+                fontWeight: 700,
+                color: '#059669',
+                background: '#f0fdf4',
+                border: '1px solid #bbf7d0',
+                padding: '0.45rem 0.85rem',
+                borderRadius: '7px',
+                textDecoration: 'none',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.35rem',
+                whiteSpace: 'nowrap'
+              }}
+              id="landing-track-order-btn"
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <rect x="1" y="3" width="15" height="13" />
+                <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
+                <circle cx="5.5" cy="18.5" r="2.5" />
+                <circle cx="18.5" cy="18.5" r="2.5" />
+              </svg>
+              Track Order
             </Link>
+
+            {/* Launch Workspace CTA */}
             <Link href="/dashboard" className="landing-nav-cta" id="landing-cta-link">
               Launch Workspace
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <polyline points="9 18 15 12 9 6" />
               </svg>
             </Link>
-
-            {/* Mobile Hamburger */}
-            <button
-              className="landing-nav-icon-btn landing-mobile-burger"
-              onClick={() => setMobileOpen((o) => !o)}
-              aria-label="Toggle mobile menu"
-              id="landing-mobile-burger"
-            >
-              {mobileOpen ? (
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="18" y1="6" x2="6" y2="18" />
-                  <line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
-              ) : (
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="3" y1="6" x2="21" y2="6" />
-                  <line x1="3" y1="12" x2="21" y2="12" />
-                  <line x1="3" y1="18" x2="21" y2="18" />
-                </svg>
-              )}
-            </button>
           </div>
         </div>
       </nav>
@@ -196,18 +200,21 @@ export default function LandingNavbar() {
             />
           </form>
           {navLinks.map((link) => (
-            <a
+            <Link
               key={link.label}
               href={link.href}
               className="landing-mobile-link"
               onClick={() => setMobileOpen(false)}
             >
               {link.label}
-            </a>
+            </Link>
           ))}
           <div style={{ height: '1px', background: 'var(--border-color)', margin: '0.6rem 0' }} />
-          <Link href="/login" className="landing-mobile-signin" onClick={() => setMobileOpen(false)}>
-            Sign In
+          <Link href="/store" className="landing-mobile-link" onClick={() => setMobileOpen(false)} style={{ color: '#059669', fontWeight: 700 }}>
+            Customer Store &amp; AI Order Tracking →
+          </Link>
+          <Link href="/admin" className="landing-mobile-link" onClick={() => setMobileOpen(false)}>
+            Admin Console (PIN Key: 8899) →
           </Link>
           <Link href="/dashboard" className="landing-mobile-cta" onClick={() => setMobileOpen(false)}>
             Launch Workspace →

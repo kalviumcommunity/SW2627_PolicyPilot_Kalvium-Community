@@ -2,7 +2,6 @@
 
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
-import Sidebar from "../../components/Sidebar";
 import { useAuth } from "../../context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -14,19 +13,15 @@ export default function DashboardLayout({ children }) {
   useEffect(() => {
     if (!isReady) return;
     if (!user) router.replace('/login');
-    else if (role !== 'user') router.replace(role === 'admin' ? '/admin' : '/login');
-  }, [isReady, user, role, router]);
+  }, [isReady, user, router]);
 
-  if (!isReady || !user || role !== 'user') return null;
+  if (!isReady || !user) return null;
 
   return (
-    <div className="flex min-h-screen bg-[var(--bg-dark)] text-[var(--text-main)]">
-      <Sidebar />
-      <div className="flex flex-col flex-1">
-        <Header />
-        <main className="flex-1 p-4">{children}</main>
-        <Footer />
-      </div>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--bg-dark, #f8fafc)', color: 'var(--text-main, #0f172a)' }}>
+      <Header />
+      <main style={{ flex: 1, width: '100%' }}>{children}</main>
+      <Footer />
     </div>
   );
 }
