@@ -114,7 +114,7 @@ def run_demo():
     q2 = "What is the policy for tuition reimbursement for PhD programs?"
     prompt_res2 = build_augmented_prompt(question=q2, retrieved_chunks=sample_chunks)
     print(f"Query 2 (Missing info): '{q2}'")
-    print(f"  -> Instruction enforces: 'If the answer is not in the context, say: I don't have enough information in the provided context.'")
+    print(f"  -> Instruction enforces: 'If the answer is not in the context, say: I do not have enough information in the provided context.'")
 
     # -------------------------------------------------------------
     # Step 4: Export JSON Results & Markdown Report
@@ -196,7 +196,7 @@ This report documents the implementation and verification of PolicyPilot's conte
 ## 5. Architectural Control Points
 
 1. **Why Label Chunks with Markers?** Enables verifiable citation auditing and prevents hallucinations.
-2. **Why Stay Within Token Budget?** Prevents context window truncation errors and leaves space for the model's generated answer.
+2. **Why Stay Within Token Budget?** Prevents context window truncation errors and leaves space for the models generated answer.
 3. **Why Enforce 'Only from Provided Context'?** Prevents general pre-training bias from overriding internal policy guidelines.
 
 ---
@@ -213,7 +213,7 @@ This report documents the implementation and verification of PolicyPilot's conte
 - *"Run `python src/run_prompt_augmentation_demo.py`. Walk through the assembled prompt on screen, pointing out:"*
   - **Source markers:** `[1] account-guide.md#0`
   - **Separators:** `---` between distinct chunks
-  - **Grounding instruction:** *"Answer the question using only the provided context. If the answer is not in the context, say: 'I don't have enough information in the provided context.' When possible, cite sources using markers like [1] or [2]."*
+  - **Grounding instruction:** *"Answer the question using only the provided context. If the answer is not in the context, say: 'I do not have enough information in the provided context.' When possible, cite sources using markers like [1] or [2]."*
 
 ### 4. Why the Model Is Told to Answer ONLY from Context (2:30 – 3:30)
 - *"Without the 'only from context' constraint, LLMs will rely on broad, unverified pre-training data rather than specific company policy guidelines. It also prevents the model from speculating or hallucinating when the knowledge base has no answer."*

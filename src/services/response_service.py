@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 """
 Response generation service for PolicyPilot RAG Assistant.
 
@@ -14,6 +15,8 @@ Generates grounded answers using retrieved context chunks, incorporates explicit
 source citations, enforces system prompt constraints, and handles refusal fallbacks.
 """
 
+=======
+>>>>>>> e2a059e (working on frontend)
 from __future__ import annotations
 
 import logging
@@ -306,8 +309,8 @@ from src.services.prompt_service import (
 # Constants
 DEFAULT_MIN_TOP_SCORE = 0.40
 DEFAULT_MIN_SUPPORTING_CHUNKS = 1
-SAFE_REFUSAL_MESSAGE = "I don't have enough reliable context to answer that."
-FALLBACK_RESPONSE = "I don't have enough information in the provided context."
+SAFE_REFUSAL_MESSAGE = "I do not have enough reliable context to answer that."
+FALLBACK_RESPONSE = "I do not have enough information in the provided context."
 
 
 def get_default_llm_client() -> Optional[OpenAI]:
@@ -589,9 +592,9 @@ def generate_ungrounded_answer(
     model: Optional[str] = None,
     temperature: float = 0.7,
 ) -> Dict[str, Any]:
-    """Generate an ungrounded answer directly from the model's parametric memory."""
+    """Generate an ungrounded answer directly from the models parametric memory."""
     messages = [
-        {"role": "system", "content": "You are a helpful general assistant. Answer the user's question directly in 1-2 sentences. Output ONLY the answer without any thinking process, preamble, or analysis."},
+        {"role": "system", "content": "You are a helpful general assistant. Answer the users question directly in 1-2 sentences. Output ONLY the answer without any thinking process, preamble, or analysis."},
         {"role": "user", "content": f"Answer this question: {question}"},
     ]
     answer = call_llm(

@@ -81,7 +81,7 @@ try:
     )
 
     # --------------------------------------------------
-    # 7. Read the model's response
+    # 7. Read the models response
     # --------------------------------------------------
 
     answer = response.choices[0].message.content

@@ -138,7 +138,7 @@ def rewrite_followup(
     client: Optional[Any] = None,
     model: Optional[str] = None,
 ) -> str:
-    """Rewrite a user's follow-up question as a standalone retrieval query using dialogue history.
+    """Rewrite a users follow-up question as a standalone retrieval query using dialogue history.
 
     Resolves ambiguous references, pronouns (it, that, they), and missing context
     so the query can be embedded and used for accurate vector retrieval.
@@ -161,7 +161,7 @@ def rewrite_followup(
 
     formatted_history = format_history_for_prompt(history)
 
-    prompt = f"""Rewrite the user's latest question as a standalone search query.
+    prompt = f"""Rewrite the users latest question as a standalone search query.
 Use the conversation history only to resolve references.
 Do not answer the question.
 

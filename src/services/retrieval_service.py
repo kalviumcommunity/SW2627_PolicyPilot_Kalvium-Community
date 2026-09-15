@@ -15,11 +15,15 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import re
 import hashlib
 import math
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set
+
+from pymongo import MongoClient
+from pymongo.errors import PyMongoError
 
 from src.services.embedding_service import EmbeddingService
 from src.services.document_service import DocumentService
@@ -61,6 +65,32 @@ class RetrievalService:
         dimension: int = 1536,
         embedding_fn: Optional[Any] = None,
     ):
+<<<<<<< HEAD
+=======
+        """Initialize RetrievalService with embedding service and vector store cache path.
+        """
+        self.embedding_service = embedding_service or EmbeddingService()
+        self.cache_file = Path(cache_file) if cache_file else DEFAULT_CACHE_FILE
+        self._vector_store_cache: Optional[Dict[str, Any]] = None
+        # Initialize Chroma client if environment variables are provided
+        mongo_uri = os.getenv("MONGODB_URI")
+        mongo_db = os.getenv("MONGODB_DB", "policypilot")
+        mongo_collection_name = os.getenv("MONGODB_COLLECTION", "chunks")
+        if mongo_uri:
+            try:
+                self.mongo_client = MongoClient(mongo_uri)
+                self.mongo_db = self.mongo_client[mongo_db]
+                self.mongo_collection = self.mongo_db[mongo_collection_name]
+            except PyMongoError as err:
+                logger.warning("Failed to initialize MongoDB client: %s", err)
+                self.mongo_client = None
+                self.mongo_db = None
+                self.mongo_collection = None
+        else:
+            self.mongo_client = None
+            self.mongo_db = None
+            self.mongo_collection = None
+>>>>>>> e2a059e (working on frontend)
 
         self.embedding_service = (
             embedding_service
@@ -110,6 +140,7 @@ class RetrievalService:
             else:
                 vector = _deterministic_embedding(query)
 
+<<<<<<< HEAD
             if not isinstance(vector, list):
                 vector = list(vector)
 
@@ -141,6 +172,14 @@ class RetrievalService:
         self,
         force_reload: bool = False,
     ) -> Dict[str, Any]:
+=======
+    def load_vector_store(self, force_reload: bool = False) -> Dict[str, Any]:
+        """Load vector store either from local cache or remote ChromaDB.
+
+        If a Chroma client is configured via environment variables, it fetches the collection
+        specified by CHROMA_DATABASE. Otherwise, it falls back to the local cache file or dynamic
+        indexing as before.
+>>>>>>> e2a059e (working on frontend)
         """
         Load pre-generated embeddings from cache.
 
@@ -154,6 +193,7 @@ class RetrievalService:
         ):
             return self._vector_store_cache
 
+<<<<<<< HEAD
         # -------------------------------------------------
         # Existing cache
         # -------------------------------------------------
@@ -211,6 +251,51 @@ class RetrievalService:
                 data_dir=str(data_dir)
             )
         )
+=======
+        # Remote ChromaDB path
+        if self.mongo_collection:
+            try:
+                cursor = self.mongo_collection.find({})
+                store: Dict[str, Any] = {}
+                for doc in cursor:
+                    chunk_id = str(doc.get("_id"))
+                    embedding = doc.get("embedding")
+                    if embedding is None:
+                        continue
+                    store[chunk_id] = {
+                        "chunk_id": chunk_id,
+                        "source": doc.get("source", "unknown"),
+                        "content": doc.get("content", ""),
+                        "embedding": embedding,
+                        "vector_dim": len(embedding),
+                        "chunk_index": doc.get("chunk_index", 0),
+                        "doc_type": Path(doc.get("source", "")).suffix.lstrip("."),
+                        "metadata": doc.get("metadata", {}),
+                    }
+                self._vector_store_cache = store
+                logger.info("Loaded %d chunks from MongoDB collection %s", len(store), self.mongo_collection.name)
+                return store
+            except PyMongoError as err:
+                logger.warning("Failed to load from MongoDB (%s). Falling back to local cache.", err)
+
+        # Local cache fallback
+        if self.cache_file.exists():
+            try:
+                with open(self.cache_file, "r", encoding="utf-8") as f:
+                    store = json.load(f)
+                    if isinstance(store, dict) and store:
+                        logger.info("Loaded %d embedded chunks from %s", len(store), self.cache_file)
+                        self._vector_store_cache = store
+                        return store
+            except Exception as err:
+                logger.warning("Failed to load vector store cache (%s). Re-indexing...", err)
+
+        # Dynamic indexing as last resort
+        logger.info("Indexing corpus documents dynamically for vector store...")
+        doc_service = DocumentService()
+        data_dir = PROJECT_ROOT / "data"
+        chunks = doc_service.load_and_chunk_documents(data_dir=str(data_dir))
+>>>>>>> e2a059e (working on frontend)
 
         store: Dict[str, Any] = {}
 

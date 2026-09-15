@@ -317,7 +317,7 @@ Grounded answer generation represents the final synthesis stage of the RAG pipel
 ### Core Architectural Guarantees:
 1. **Context-Only Generation:** Answers are synthesized exclusively from injected evidence chunks.
 2. **Source Accuracy & Attribution:** Claims map directly to chunk sentences and cite markers (`[1]`, `[2]`).
-3. **Missing-Context Fallback:** The system explicitly returns `"I don't have enough information in the provided context."` when evidence is missing, eliminating confident guesses.
+3. **Missing-Context Fallback:** The system explicitly returns `"I do not have enough information in the provided context."` when evidence is missing, eliminating confident guesses.
 4. **Hallucination Elimination:** Factual claims are verified against the knowledge corpus before delivery.
 
 ---
@@ -378,8 +378,8 @@ flowchart LR
     end
 ```
 
-1. **Evidence Bounding:** Injected context restricts the model's token prediction distribution to facts present in the prompt.
-2. **Explicit Negative Constraint:** The system prompt explicitly commands the model: *"If the answer is not in the context, say: I don't have enough information in the provided context."*
+1. **Evidence Bounding:** Injected context restricts the models token prediction distribution to facts present in the prompt.
+2. **Explicit Negative Constraint:** The system prompt explicitly commands the model: *"If the answer is not in the context, say: I do not have enough information in the provided context."*
 3. **Citation Markers:** Assigning source indices `[1]` forces the LLM to anchor each generated assertion to a specific evidence block.
 
 ---
@@ -410,7 +410,7 @@ Use this script outline for your video submission:
 - *"Grounding dramatically reduces hallucinations in three ways:*
   1. *It injects authoritative context directly into the prompt.*
   2. *It sets the temperature to 0.0 for deterministic factual fidelity.*
-  3. *It enforces an explicit refusal fallback: when a question like 'What is the PhD tuition policy?' is asked, the model outputs 'I don't have enough information in the provided context' instead of inventing a policy."*
+  3. *It enforces an explicit refusal fallback: when a question like 'What is the PhD tuition policy?' is asked, the model outputs 'I do not have enough information in the provided context' instead of inventing a policy."*
 
 ### 5. Follow-Up Question: How Do You Verify an Answer Is Actually Grounded? (3:30 – 4:45)
 - Answer clearly covering both **automated programmatic checks** and **human verification**:

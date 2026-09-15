@@ -1,14 +1,18 @@
-import "./globals.css";
 
-export const metadata = {
-  title: "PolicyPilot - RAG Document Assistant",
-  description: "Enterprise RAG Application with real-time streaming, citations, and caching",
-};
+import "./globals.css";
+import { ThemeProvider } from "../context/ThemeContext";
+import { AuthProvider } from "../context/AuthContext";
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <ThemeProvider>
+          <AuthProvider>{children}</AuthProvider>
+        </ThemeProvider>
+      </body>
     </html>
   );
 }
+
+

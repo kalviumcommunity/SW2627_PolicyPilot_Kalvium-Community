@@ -1,7 +1,7 @@
 """Demonstration script for Sprint 2 Concept 3.41 Hallucination Guardrails & Refusal Handling.
 
 Evaluates retrieval quality before generation, returns a safe refusal message
-("I don't have enough reliable context to answer that.") when context is weak,
+("I do not have enough reliable context to answer that.") when context is weak,
 and produces grounded answers with source citations when reliable supporting evidence exists.
 """
 
@@ -317,13 +317,13 @@ def generate_markdown_report(
         "### 3. Comparing Answered vs. Refusal Cases (1:45 – 2:45)",
         "- *\"Run `python src/run_guardrails_demo.py` in terminal.\"*",
         "- Show **Answered Case:** *'What evidence is required for project submission?'* -> Status: `answered`, score: `0.54`, cited: `submission-rubric.md`.",
-        "- Show **Refusal Case:** *'What is the refund policy for a product not in this corpus?'* -> Status: `refused_weak_context`, score: `<0.10`, answer: *'I don't have enough reliable context to answer that.'*.",
+        "- Show **Refusal Case:** *'What is the refund policy for a product not in this corpus?'* -> Status: `refused_weak_context`, score: `<0.10`, answer: *'I do not have enough reliable context to answer that.'*.",
         "",
         "### 4. Trade-Off Between Refusing and Answering (2:45 – 3:45)",
         "- *\"Explain the balance: refusing too often frustrates users, but answering too freely produces misinformation. Calibrating the score threshold based on evaluation ensures supported queries pass while unsupported queries are cleanly refused.\"*",
         "",
         "### 5. Follow-Up Question: Why Refusing is Safer in High-Stakes Domains (3:45 – 4:45)",
-        "- Answer: *\"In high-stakes domains like healthcare, finance, employment policies, and legal contracts, an honest 'I don't know' allows the user to consult human HR or legal counsel. A confident hallucinated answer, by contrast, creates direct liability, incorrect financial claims, or compliance violations.\"*",
+        "- Answer: *\"In high-stakes domains like healthcare, finance, employment policies, and legal contracts, an honest 'I do not know' allows the user to consult human HR or legal counsel. A confident hallucinated answer, by contrast, creates direct liability, incorrect financial claims, or compliance violations.\"*",
     ])
 
     report_path.write_text("\n".join(lines), encoding="utf-8")

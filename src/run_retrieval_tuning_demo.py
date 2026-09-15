@@ -596,7 +596,7 @@ def generate_markdown_report(
         "",
         "### 1. Introduction & Retrieval Relevance Definition (0:00 - 0:45)",
         "- *'Welcome to the PolicyPilot retrieval tuning demonstration. In a RAG pipeline, retrieval quality is the ultimate bottleneck: if retrieval misses the right document chunks, the language model is starved of factual context and either hallucinates or gives vague, unhelpful answers.'*",
-        "- *'Retrieval relevance means the retrieved chunks are directly useful, authoritative, and factually sufficient to answer the user's specific policy question.'*",
+        "- *'Retrieval relevance means the retrieved chunks are directly useful, authoritative, and factually sufficient to answer the users specific policy question.'*",
         "",
         "### 2. Experimental Setup & Compared Settings (0:45 - 1:45)",
         "- Show `src/run_retrieval_tuning_demo.py` and explain the 7 benchmark test queries.",

@@ -123,7 +123,7 @@ class CitationService:
     ) -> Dict[str, Any]:
         """Execute end-to-end citation pipeline: retrieve -> build citation map -> build cited prompt -> generate answer."""
         fallback_empty = {
-            "answer": "I don't have enough information in the provided context.",
+            "answer": "I do not have enough information in the provided context.",
             "citations": {},
         }
 
@@ -146,11 +146,11 @@ class CitationService:
         answer = self._generate_answer(question, retrieved_chunks, cited_prompt)
 
         if (
-            "don't have enough information" in answer.lower()
+            "do not have enough information" in answer.lower()
             or "unable to answer" in answer.lower()
         ):
             return {
-                "answer": "I don't have enough information in the provided context.",
+                "answer": "I do not have enough information in the provided context.",
                 "citations": {},
             }
 
@@ -298,4 +298,4 @@ class CitationService:
         if matching_sentences:
             return " ".join(matching_sentences)
 
-        return "I don't have enough information in the provided context."
+        return "I do not have enough information in the provided context."

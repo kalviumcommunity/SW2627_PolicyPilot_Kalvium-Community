@@ -32,7 +32,7 @@ def build_messages(system_content: str, user_content: str) -> List[Dict[str, str
 
     Args:
         system_content: Instructions defining assistant identity, scope, constraints, and fallback.
-        user_content: The user's query or turn task.
+        user_content: The users query or turn task.
 
     Returns:
         A list of role-content message dictionaries expected by OpenAI-compatible Chat API.
@@ -217,7 +217,7 @@ def build_augmented_prompt(
 
     system_instruction = (
         "You are a grounded assistant. Answer the question using only the provided context. "
-        "If the answer is not in the context, say: \"I don't have enough information in the provided context.\"\n"
+        "If the answer is not in the context, say: \"I do not have enough information in the provided context.\"\n"
         "When possible, cite sources using the markers like [1] or [2].\n"
         "Output ONLY the direct answer. Do not include thinking steps or preamble."
     )
