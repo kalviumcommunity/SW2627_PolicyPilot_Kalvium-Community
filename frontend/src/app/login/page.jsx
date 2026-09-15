@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 export default function LoginPage() {
-  const { login, signup, role, user } = useAuth() || {};
+  const { login, signup, role, user, isReady } = useAuth() || {};
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -16,12 +16,11 @@ export default function LoginPage() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    if (user && role) {
-      // Redirect based on role
+    if (isReady && user && role) {
       const target = role === 'admin' ? '/admin' : '/dashboard';
       router.replace(target);
     }
-  }, [user, role]);
+  }, [isReady, user, role, router]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

@@ -6,15 +6,18 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function AdminPage() {
-  const { user, role, logout } = useAuth() || {};
+  const { user, role, isReady, logout } = useAuth() || {};
   const router = useRouter();
   const [summary, setSummary] = useState(null);
   const [loadError, setLoadError] = useState('');
 
   useEffect(() => {
+    if (!isReady) return;
     if (!user) router.replace('/login');
     else if (role !== 'admin') router.replace('/dashboard');
-  }, [user, role, router]);
+  }, [isReady, user, role, router]);
+
+  if (!isReady || !user || role !== 'admin') return null;
 
   useEffect(() => {
     fetch('http://127.0.0.1:8000/admin/summary')

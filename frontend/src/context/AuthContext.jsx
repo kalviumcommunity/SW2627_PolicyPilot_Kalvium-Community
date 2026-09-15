@@ -7,6 +7,7 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [role, setRole] = useState(null);
+  const [isReady, setIsReady] = useState(false);
 
   const login = async (email, password) => {
     try {
@@ -37,11 +38,15 @@ export const AuthProvider = ({ children }) => {
   const loadUserFromToken = () => {
     const token = localStorage.getItem('token');
     if (token) {
-      // Decode token payload (base64) without validation just to get role/email
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      setUser({ email: payload.sub });
-      setRole(payload.role);
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        setUser({ email: payload.sub });
+        setRole(payload.role);
+      } catch {
+        localStorage.removeItem('token');
+      }
     }
+    setIsReady(true);
   };
 
   useEffect(() => {
@@ -49,7 +54,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, role, login, signup, logout }}>
+    <AuthContext.Provider value={{ user, role, isReady, login, signup, logout }}>
       {children}
     </AuthContext.Provider>
   );
