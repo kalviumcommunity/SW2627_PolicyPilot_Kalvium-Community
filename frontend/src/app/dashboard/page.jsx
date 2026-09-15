@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import PolicyChatWidget from '../../components/PolicyChatWidget';
 import { useAuth } from '../../context/AuthContext';
 
 // Sample Storefront Products
@@ -259,7 +258,7 @@ export default function DashboardPage() {
 
   return (
     <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '2rem 1.5rem 4rem 1.5rem', fontFamily: 'inherit' }}>
-      
+
       {/* Toast Notification */}
       {toastMessage && (
         <div style={{
@@ -459,7 +458,7 @@ export default function DashboardPage() {
             <circle cx="5.5" cy="18.5" r="2.5" />
             <circle cx="18.5" cy="18.5" r="2.5" />
           </svg>
-          My Orders &amp; AI Live Tracking ({orders.length})
+          My Orders &amp; AI Live Tracking
         </button>
 
         <button
@@ -1076,9 +1075,11 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            <button
-              onClick={() => openGlobalChat('Explain the ShopVerse 30-day return policy, damaged item policy, and seller dispatch SLA requirements.')}
+            <Link
+              href="/chatbot"
               style={{
+                display: 'block',
+                textAlign: 'center',
                 width: '100%',
                 padding: '0.8rem',
                 background: '#4f46e5',
@@ -1087,19 +1088,17 @@ export default function DashboardPage() {
                 borderRadius: '9px',
                 fontSize: '0.84rem',
                 fontWeight: 600,
-                cursor: 'pointer',
+                textDecoration: 'none',
                 marginTop: '1.5rem',
-                boxShadow: '0 2px 6px rgba(79,70,229,0.2)'
+                boxShadow: '0 2px 6px rgba(79,70,229,0.2)',
+                boxSizing: 'border-box'
               }}
             >
               Open Full Interactive Chat →
-            </button>
+            </Link>
           </div>
         </div>
       )}
-
-      {/* Floating Chat Widget */}
-      <PolicyChatWidget />
     </div>
   );
 }

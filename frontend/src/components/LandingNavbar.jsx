@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useContext } from 'react';
 import { ThemeContext } from '../context/ThemeContext';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 const navLinks = [
@@ -18,6 +19,7 @@ export default function LandingNavbar() {
   const [searchQuery, setSearchQuery] = useState('');
   const [mounted, setMounted] = useState(false);
   const { isDark, toggleDarkMode } = useContext(ThemeContext);
+  const router = useRouter();
 
   useEffect(() => {
     setMounted(true);
@@ -29,16 +31,14 @@ export default function LandingNavbar() {
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      window.dispatchEvent(
-        new CustomEvent('open-policy-chat-with-query', {
-          detail: { query: searchQuery.trim() },
-        })
-      );
+      router.push(`/chatbot?q=${encodeURIComponent(searchQuery.trim())}`);
+    } else {
+      router.push('/chatbot');
     }
   };
 
   const openChat = () => {
-    window.dispatchEvent(new Event('open-policy-chat'));
+    router.push('/chatbot');
   };
 
   return (
@@ -48,27 +48,28 @@ export default function LandingNavbar() {
         id="landing-navbar"
       >
         <div className="landing-nav-container">
-          {/* Brand & Logo */}
-          <Link href="/" className="landing-nav-logo" id="landing-logo-link">
-            <div className="landing-nav-logo-mark">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="currentColor" fillOpacity="0.15" />
-                <path d="M9 12l2 2 4-4" stroke="#4f46e5" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
-            <div className="landing-nav-logo-copy">
-              <span className="landing-nav-logo-text">PolicyPilot</span>
-              <span className="landing-nav-badge-pill">Enterprise RAG</span>
-            </div>
-          </Link>
+          {/* Brand & Status (Left) */}
+          <div className="landing-nav-left">
+            <Link href="/" className="landing-nav-logo" id="landing-logo-link">
+              <div className="landing-nav-logo-mark">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="currentColor" fillOpacity="0.15" />
+                  <path d="M9 12l2 2 4-4" stroke="#4f46e5" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
+              <div className="landing-nav-logo-copy">
+                <span className="landing-nav-logo-text">PolicyPilot</span>
+                <span className="landing-nav-badge-pill">Enterprise RAG</span>
+              </div>
+            </Link>
 
-          {/* System Status Pill */}
-          <div className="landing-nav-status-badge" title="FastAPI and MongoDB online">
-            <span className="landing-status-dot" />
-            <span className="landing-status-text">RAG Online</span>
+            <div className="landing-nav-status-badge" title="FastAPI and MongoDB online">
+              <span className="landing-status-dot" />
+              <span className="landing-status-text">RAG Online</span>
+            </div>
           </div>
 
-          {/* Navigation Links */}
+          {/* Navigation Links (Center) */}
           <div className="landing-nav-links" aria-label="PolicyPilot navigation">
             {navLinks.map((link) => (
               <Link
@@ -82,7 +83,7 @@ export default function LandingNavbar() {
             ))}
           </div>
 
-          {/* Right Actions */}
+          {/* Actions & Launch Workspace (Right) */}
           <div className="landing-nav-actions">
             {/* Search */}
             <form onSubmit={handleSearch} className="landing-nav-search" role="search">
@@ -142,36 +143,6 @@ export default function LandingNavbar() {
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
               </svg>
             </button>
-
-            <div className="landing-nav-divider" aria-hidden="true" />
-
-            {/* Direct Link to E-Commerce Track Order */}
-            <Link
-              href="/store"
-              style={{
-                fontSize: '0.8rem',
-                fontWeight: 700,
-                color: '#059669',
-                background: '#f0fdf4',
-                border: '1px solid #bbf7d0',
-                padding: '0.45rem 0.85rem',
-                borderRadius: '7px',
-                textDecoration: 'none',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.35rem',
-                whiteSpace: 'nowrap'
-              }}
-              id="landing-track-order-btn"
-            >
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <rect x="1" y="3" width="15" height="13" />
-                <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
-                <circle cx="5.5" cy="18.5" r="2.5" />
-                <circle cx="18.5" cy="18.5" r="2.5" />
-              </svg>
-              Track Order
-            </Link>
 
             {/* Launch Workspace CTA */}
             <Link href="/dashboard" className="landing-nav-cta" id="landing-cta-link">

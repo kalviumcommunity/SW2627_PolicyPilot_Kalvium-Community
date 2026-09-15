@@ -51,6 +51,13 @@ export default function HeroSection() {
             </svg>
           </Link>
 
+          <Link href="/chatbot" className="btn-outline" id="hero-chatbot-btn" style={{ background: '#eef2ff', color: '#4f46e5', borderColor: '#c7d2fe' }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            </svg>
+            AI Policy Chatbot
+          </Link>
+
           <Link href="/admin" className="btn-outline" id="hero-admin-btn">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />

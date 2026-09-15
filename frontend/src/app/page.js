@@ -9,7 +9,6 @@ import DealsSection from '../components/DealsSection';
 import TrustSection from '../components/TrustSection';
 import NewsletterSection from '../components/NewsletterSection';
 import LandingFooter from '../components/LandingFooter';
-import PolicyChatWidget from '../components/PolicyChatWidget';
 
 export default function Home() {
   return (
@@ -24,7 +23,6 @@ export default function Home() {
         <NewsletterSection />
       </main>
       <LandingFooter />
-      <PolicyChatWidget />
     </div>
   );
 }

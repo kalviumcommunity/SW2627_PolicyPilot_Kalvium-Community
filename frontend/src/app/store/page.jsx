@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import PolicyChatWidget from '../../components/PolicyChatWidget';
 
 // Authentic E-Commerce Products
 const STORE_PRODUCTS = [
@@ -231,18 +230,6 @@ export default function CustomerStorePage() {
     setCustomerUser(newUser);
     setAuthModalOpen(false);
     showToast(`Customer account created for ${newUser.name}!`);
-  };
-
-  const handleQuickDemoCustomer = () => {
-    const demoUser = {
-      name: 'Ananya',
-      email: 'ananya@customer.com',
-      address: '102 MG Road, Indiranagar, Bengaluru, KA 560038',
-      phone: '+91 98765 43210'
-    };
-    setCustomerUser(demoUser);
-    setAuthModalOpen(false);
-    showToast('Signed in with Demo Customer Account (Ananya)');
   };
 
   const handleCustomerLogout = () => {
@@ -1314,41 +1301,6 @@ export default function CustomerStorePage() {
               </button>
             </div>
 
-            {/* Quick Demo Customer Button */}
-            <div style={{ marginBottom: '1.25rem', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '0.85rem 1rem' }}>
-              <button
-                type="button"
-                onClick={handleQuickDemoCustomer}
-                id="quick-demo-customer-btn"
-                style={{
-                  width: '100%',
-                  padding: '0.65rem 1rem',
-                  background: '#059669',
-                  color: '#ffffff',
-                  border: 'none',
-                  borderRadius: '7px',
-                  fontSize: '0.82rem',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '0.4rem'
-                }}
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-                Sign In as Ananya (Demo Customer)
-              </button>
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', margin: '1rem 0' }}>
-              <div style={{ flex: 1, height: '1px', background: '#e2e8f0' }} />
-              <span style={{ fontSize: '0.72rem', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Or enter details</span>
-              <div style={{ flex: 1, height: '1px', background: '#e2e8f0' }} />
-            </div>
-
             {/* Tab switch */}
             <div style={{ display: 'flex', gap: '0.5rem', background: '#f1f5f9', padding: '0.25rem', borderRadius: '8px', marginBottom: '1.25rem' }}>
               <button
@@ -1573,9 +1525,6 @@ export default function CustomerStorePage() {
           </div>
         </div>
       )}
-
-      {/* Floating Policy Assistant */}
-      <PolicyChatWidget />
     </div>
   );
 }

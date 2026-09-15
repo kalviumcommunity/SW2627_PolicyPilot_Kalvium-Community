@@ -5,7 +5,7 @@ import axios from 'axios';
 
 export const AuthContext = createContext();
 
-const DEMO_USERS = [
+const DEFAULT_ACCOUNTS = [
   { email: 'admin@example.com', password: 'admin123', role: 'admin', name: 'Admin User' },
   { email: 'user@example.com', password: 'user123', role: 'user', name: 'Regular User' },
 ];
@@ -31,8 +31,8 @@ export const AuthProvider = ({ children }) => {
       setRole(userRole);
       return userRole;
     } catch (error) {
-      // Check if matches demo credentials as seamless instant fallback
-      const matched = DEMO_USERS.find(
+      // Check if matches default credentials as seamless fallback
+      const matched = DEFAULT_ACCOUNTS.find(
         (u) => u.email.toLowerCase() === normEmail && u.password === normPass
       );
       if (matched) {
@@ -47,7 +47,7 @@ export const AuthProvider = ({ children }) => {
       if (error.response?.data?.error) {
         throw new Error(error.response.data.error);
       }
-      throw new Error('Invalid email or password. Use user@example.com / user123 or admin@example.com / admin123.');
+      throw new Error('Invalid email or password.');
     }
   };
 
